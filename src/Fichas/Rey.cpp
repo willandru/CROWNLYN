@@ -1,10 +1,16 @@
 #include "Rey.h"
 
-std::vector<Posicion> Rey::getMovimientos(const Ficha& pieza, const Nodo& estado) const
+// ======================================================
+// MOVIMIENTOS DEL REY (SIN FILTRO DE JAQUE)
+// ======================================================
+
+std::vector<Posicion> Rey::getMovimientos(
+    const Ficha& pieza,
+    const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
-    Posicion origen = pieza.getPosicion();
+    const Posicion origen = pieza.getPosicion();
 
     const int dirs[8][2] =
     {
@@ -12,7 +18,7 @@ std::vector<Posicion> Rey::getMovimientos(const Ficha& pieza, const Nodo& estado
         { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }
     };
 
-    for (auto& d : dirs)
+    for (const auto& d : dirs)
     {
         int x = origen.x + d[0];
         int y = origen.y + d[1];
@@ -22,30 +28,40 @@ std::vector<Posicion> Rey::getMovimientos(const Ficha& pieza, const Nodo& estado
 
         const Ficha* f = obtenerFichaEn(estado, x, y);
 
-        // casilla vacía → movimiento válido
+        // casilla vacía
         if (!f)
         {
-            movimientos.push_back({x, y});
+            movimientos.push_back({ x, y });
+            continue;
         }
-        else
+
+        // captura solo si es enemigo
+        if (f->getColor() != pieza.getColor())
         {
-            // casilla ocupada → solo si es enemigo
-            if (f->getColor() != pieza.getColor())
-            {
-                movimientos.push_back({x, y});
-            }
+            movimientos.push_back({ x, y });
         }
     }
 
     return movimientos;
 }
 
+// ======================================================
+// VALIDACIÓN TABLERO
+// ======================================================
+
 bool Rey::esValida(const Nodo& estado, int x, int y) const
 {
     return estado.tablero.esValida(x, y);
 }
 
-const Ficha* Rey::obtenerFichaEn(const Nodo& estado, int x, int y) const
+// ======================================================
+// BUSCAR PIEZA EN CASILLA
+// ======================================================
+
+const Ficha* Rey::obtenerFichaEn(
+    const Nodo& estado,
+    int x,
+    int y) const
 {
     for (const Ficha& f : estado.piezas)
     {

@@ -60,3 +60,17 @@ void Ficha::setPosicion(Posicion p)
 {
     posicion = p;
 }
+
+std::string Ficha::tipoToString() const
+{
+    switch (tipo)
+    {
+        case TipoFicha::Peon:    return "Peon";
+        case TipoFicha::Torre:   return "Torre";
+        case TipoFicha::Caballo: return "Caballo";
+        case TipoFicha::Alfil:   return "Alfil";
+        case TipoFicha::Dama:    return "Dama";
+        case TipoFicha::Rey:     return "Rey";
+        default:                 return "Desconocido";
+    }
+}

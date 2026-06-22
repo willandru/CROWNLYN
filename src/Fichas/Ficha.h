@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 struct Posicion
 {
     int x;
@@ -36,6 +38,7 @@ public:
     Posicion getPosicion() const;
 
     void setPosicion(Posicion p);
+    std::string tipoToString() const;
 
 private:
     int id;              

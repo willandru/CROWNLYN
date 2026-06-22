@@ -6,16 +6,46 @@ std::vector<Posicion> Peon::getMovimientos(
 {
     std::vector<Posicion> movimientos;
 
-    Posicion o = pieza.getPosicion();
-    int dir = (pieza.getColor() == Color::Blanca) ? -1 : 1;
+    Posicion origen = pieza.getPosicion();
 
-    int xFront = o.x + dir;
-    int yFront = o.y;
+    int dir =
+        (pieza.getColor() == Color::Blanca)
+        ? -1
+        : 1;
+
+    // =====================================================
+    // MOVIMIENTO FRONTAL
+    // =====================================================
+
+    int xFront = origen.x + dir;
+    int yFront = origen.y;
 
     if (esValida(estado, xFront, yFront) &&
         !obtenerFichaEn(estado, xFront, yFront))
     {
-        movimientos.push_back({xFront, yFront});
+        movimientos.push_back({ xFront, yFront });
+    }
+
+    // =====================================================
+    // CAPTURAS DIAGONALES
+    // =====================================================
+
+    const int diagonales[2] = { -1, 1 };
+
+    for (int dy : diagonales)
+    {
+        int x = origen.x + dir;
+        int y = origen.y + dy;
+
+        if (!esValida(estado, x, y))
+            continue;
+
+        const Ficha* f = obtenerFichaEn(estado, x, y);
+
+        if (f && f->getColor() != pieza.getColor())
+        {
+            movimientos.push_back({ x, y });
+        }
     }
 
     return movimientos;
@@ -27,40 +57,41 @@ std::vector<Posicion> Peon::getAtaques(
 {
     std::vector<Posicion> ataques;
 
-    Posicion o = pieza.getPosicion();
-    int dir = (pieza.getColor() == Color::Blanca) ? -1 : 1;
+    Posicion origen = pieza.getPosicion();
 
-    const int diag[2][2] =
+    int dir =
+        (pieza.getColor() == Color::Blanca)
+        ? -1
+        : 1;
+
+    const int diagonales[2] = { -1, 1 };
+
+    for (int dy : diagonales)
     {
-        {dir, -1},
-        {dir,  1}
-    };
+        int x = origen.x + dir;
+        int y = origen.y + dy;
 
-    for (auto& d : diag)
-    {
-        int x = o.x + d[0];
-        int y = o.y + d[1];
-
-        if (!esValida(estado, x, y))
-            continue;
-
-        const Ficha* f = obtenerFichaEn(estado, x, y);
-
-        if (f && f->getColor() != pieza.getColor())
+        if (esValida(estado, x, y))
         {
-            ataques.push_back({x, y});
+            ataques.push_back({ x, y });
         }
     }
 
     return ataques;
 }
 
-bool Peon::esValida(const Nodo& estado, int x, int y) const
+bool Peon::esValida(
+    const Nodo& estado,
+    int x,
+    int y) const
 {
     return estado.tablero.esValida(x, y);
 }
 
-const Ficha* Peon::obtenerFichaEn(const Nodo& estado, int x, int y) const
+const Ficha* Peon::obtenerFichaEn(
+    const Nodo& estado,
+    int x,
+    int y) const
 {
     for (const Ficha& f : estado.piezas)
     {

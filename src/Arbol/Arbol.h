@@ -4,7 +4,9 @@
 #include <iostream>
 
 #include "Nodo.h"
-#include "DecisionTreeEngine.h"
+
+// forward declaration (CRÍTICO)
+class DecisionTreeEngine;
 
 class Arbol
 {
@@ -27,8 +29,8 @@ private:
     void liberarNodo(Nodo* nodo);
 
 private:
-    Nodo* raiz;
+    Nodo* raiz = nullptr;
     std::vector<Nodo*> nodos;
 
-    DecisionTreeEngine engine;
+    DecisionTreeEngine* engine;   // ✔️ POINTER (evita error)
 };

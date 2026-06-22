@@ -31,13 +31,17 @@ int main()
 
     std::cout << "\n=== NIVEL 1 ===\n";
     arbol.construirSiguienteNivel();
-    arbol.imprimirNivel();
+    //arbol.imprimirNivel();
 
     std::cout << "\n=== NIVEL 2 ===\n";
     arbol.construirSiguienteNivel();
-    arbol.imprimirNivel();
+    //arbol.imprimirNivel();
 
     std::cout << "\n=== NIVEL 3 ===\n";
+    arbol.construirSiguienteNivel();
+    //arbol.imprimirNivel();
+
+    std::cout << "\n=== NIVEL 4 ===\n";
     arbol.construirSiguienteNivel();
     arbol.imprimirNivel();
 

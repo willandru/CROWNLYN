@@ -1,21 +1,22 @@
 #include "Arbol.h"
+#include "DecisionTreeEngine.h"
 
-// ======================================================
-// CONSTRUCTOR / DESTRUCTOR
 // ======================================================
 
 Arbol::Arbol()
 {
     raiz = nullptr;
+    engine = new DecisionTreeEngine();
 }
+
+// ======================================================
 
 Arbol::~Arbol()
 {
     eliminarSubarbol();
+    delete engine;
 }
 
-// ======================================================
-// SET ROOT
 // ======================================================
 
 void Arbol::setNodoInicial(Nodo* r)
@@ -29,23 +30,17 @@ void Arbol::setNodoInicial(Nodo* r)
 }
 
 // ======================================================
-// LIBERACIÓN DFS SEGURA
-// ======================================================
 
 void Arbol::liberarNodo(Nodo* nodo)
 {
     if (!nodo) return;
 
     for (Nodo* h : nodo->hijos)
-    {
         liberarNodo(h);
-    }
 
     delete nodo;
 }
 
-// ======================================================
-// LIMPIEZA TOTAL
 // ======================================================
 
 void Arbol::eliminarSubarbol()
@@ -60,8 +55,6 @@ void Arbol::eliminarSubarbol()
 }
 
 // ======================================================
-// ACCESO
-// ======================================================
 
 const std::vector<Nodo*>& Arbol::getNodos() const
 {
@@ -69,31 +62,27 @@ const std::vector<Nodo*>& Arbol::getNodos() const
 }
 
 // ======================================================
-// EXPANSIÓN NIVEL
-// ======================================================
 
 void Arbol::construirSiguienteNivel()
 {
-    std::vector<Nodo*> nuevosNodos;
-    nuevosNodos.reserve(nodos.size() * 4);
+    std::vector<Nodo*> nuevos;
 
     for (Nodo* n : nodos)
     {
         if (!n) continue;
 
-        engine.expandirNodo(n);
+        engine->expandirNodo(n);
 
         for (Nodo* h : n->hijos)
         {
-            nuevosNodos.push_back(h);
+            if (h)
+                nuevos.push_back(h);
         }
     }
 
-    nodos = std::move(nuevosNodos);
+    nodos = std::move(nuevos);
 }
 
-// ======================================================
-// MULTINIVEL
 // ======================================================
 
 void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
@@ -110,8 +99,6 @@ void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
 }
 
 // ======================================================
-// DEBUG
-// ======================================================
 
 void Arbol::imprimirNivel() const
 {
@@ -123,17 +110,55 @@ void Arbol::imprimirNivel() const
     {
         if (!n) continue;
 
+        // ======================================================
+        // FILTRO DEBUG: SOLO NODOS CON REY EN (1,1)
+        // ======================================================
+
+        bool match = false;
+
+        for (const Ficha& f : n->piezas)
+        {
+            if (f.getTipo() == TipoFicha::Rey &&
+                f.getPosicion().x == 1 &&
+                f.getPosicion().y == 1)
+            {
+                match = true;
+                break;
+            }
+        }
+
+        if (!match)
+            continue;
+
+        // ======================================================
+
+        Color jugador = n->turnoActual;
+
+        bool mate   = engine->esMate(*n, jugador);
+        bool tablas = engine->esAhogado(*n, jugador);
+        bool jaque  = engine->estaEnJaque(*n, jugador);
+
         std::cout << "Nodo " << i++ << "\n";
         std::cout << "Piezas: " << n->piezas.size() << "\n";
 
         for (const Ficha& f : n->piezas)
         {
             std::cout
-                << "  Pieza Tipo: " << (int)f.getTipo()
+                << "  Pieza Tipo: " << f.tipoToString()
                 << " Color: " << (f.getColor() == Color::Blanca ? "Blanca" : "Negra")
                 << " Pos(" << f.getPosicion().x << "," << f.getPosicion().y << ")\n";
         }
+
+        std::cout << "Estado: ";
+        if (mate) std::cout << "MATE";
+        else if (tablas) std::cout << "TABLAS";
+        else if (jaque) std::cout << "JAQUE";
+        else std::cout << "NORMAL";
+
+        std::cout << "\n";
     }
+
+    
 
     std::cout << "=======================\n";
 }

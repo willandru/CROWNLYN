@@ -1,9 +1,5 @@
 #include "DecisionTreeEngine.h"
 
-#include "Torre.h"
-#include "Rey.h"
-#include "Peon.h"
-
 // ======================================================
 // CONSTRUCTOR
 // ======================================================
@@ -11,7 +7,7 @@
 DecisionTreeEngine::DecisionTreeEngine() {}
 
 // ======================================================
-// EXPANSIÓN (OPTIMIZADA)
+// EXPANSIÓN DEL ÁRBOL
 // ======================================================
 
 void DecisionTreeEngine::expandirNodo(Nodo* nodo)
@@ -20,8 +16,8 @@ void DecisionTreeEngine::expandirNodo(Nodo* nodo)
 
     Color jugador = nodo->turnoActual;
 
-    // si es mate no expandir
-    if (esMate(*nodo, jugador))
+    // corte temprano
+    if (esMate(*nodo, jugador) || esAhogado(*nodo, jugador))
         return;
 
     for (const Ficha& f : nodo->piezas)
@@ -29,23 +25,19 @@ void DecisionTreeEngine::expandirNodo(Nodo* nodo)
         if (f.getColor() != jugador)
             continue;
 
-        // 1 sola generación de movimientos
-        std::vector<Posicion> movs = obtenerMovimientosFicha(f, *nodo);
+        auto movs = obtenerMovimientosFicha(f, *nodo);
 
         for (const Posicion& p : movs)
         {
-            // validación usando simulación directa
             if (!esMovimientoLegal(*nodo, f, p))
                 continue;
 
-            Nodo* hijo = new Nodo(*nodo);
+            Nodo nuevo = simularMovimiento(*nodo, f, p);
 
-            *hijo = simularMovimiento(*nodo, f, p);
+            Nodo* hijo = new Nodo(nuevo);
 
             hijo->turnoActual =
-                (jugador == Color::Blanca)
-                ? Color::Negra
-                : Color::Blanca;
+                (jugador == Color::Blanca) ? Color::Negra : Color::Blanca;
 
             nodo->agregarHijo(hijo);
         }
@@ -53,7 +45,47 @@ void DecisionTreeEngine::expandirNodo(Nodo* nodo)
 }
 
 // ======================================================
-// MOVIMIENTOS (UNA SOLA FUENTE)
+// SIMULACIÓN
+// ======================================================
+
+Nodo DecisionTreeEngine::simularMovimiento(
+    const Nodo& estado,
+    const Ficha& ficha,
+    const Posicion& destino) const
+{
+    Nodo copia = estado;
+
+    const int id = ficha.getId();
+
+    // eliminar pieza capturada
+    for (auto it = copia.piezas.begin(); it != copia.piezas.end(); ++it)
+    {
+        if (it->getPosicion().x == destino.x &&
+            it->getPosicion().y == destino.y)
+        {
+            if (it->getTipo() == TipoFicha::Rey)
+                return estado; // no capturar rey (seguridad)
+
+            copia.piezas.erase(it);
+            break;
+        }
+    }
+
+    // mover pieza
+    for (Ficha& f : copia.piezas)
+    {
+        if (f.getId() == id)
+        {
+            f.setPosicion(destino);
+            break;
+        }
+    }
+
+    return copia;
+}
+
+// ======================================================
+// MOVIMIENTOS POR PIEZA
 // ======================================================
 
 std::vector<Posicion> DecisionTreeEngine::obtenerMovimientosFicha(
@@ -77,47 +109,31 @@ std::vector<Posicion> DecisionTreeEngine::obtenerMovimientosFicha(
 }
 
 // ======================================================
-// SIMULACIÓN
+// ATAQUES (CONSISTENTE, SIN DUPLICACIÓN)
 // ======================================================
 
-Nodo DecisionTreeEngine::simularMovimiento(
-    const Nodo& estado,
-    const Ficha& ficha,
-    const Posicion& destino) const
+std::vector<Posicion> DecisionTreeEngine::obtenerAtaquesFicha(
+    const Ficha& f,
+    const Nodo& estado) const
 {
-    Nodo copia = estado;
-
-    int id = ficha.getId();
-
-    // eliminar captura
-    for (auto it = copia.piezas.begin(); it != copia.piezas.end(); )
+    switch (f.getTipo())
     {
-        if (it->getPosicion().x == destino.x &&
-            it->getPosicion().y == destino.y)
-        {
-            it = copia.piezas.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
+        case TipoFicha::Torre:
+            return Torre().getMovimientos(f, estado);
 
-    // mover pieza
-    for (Ficha& f : copia.piezas)
-    {
-        if (f.getId() == id)
-        {
-            f.setPosicion(destino);
-            break;
-        }
-    }
+        case TipoFicha::Rey:
+            return Rey().getMovimientos(f, estado);
 
-    return copia;
+        case TipoFicha::Peon:
+            return Peon().getAtaques(f, estado);
+
+        default:
+            return {};
+    }
 }
 
 // ======================================================
-// MOVIMIENTO LEGAL (NO DUPLICA MOVIMIENTOS)
+// LEGALIDAD
 // ======================================================
 
 bool DecisionTreeEngine::esMovimientoLegal(
@@ -126,11 +142,12 @@ bool DecisionTreeEngine::esMovimientoLegal(
     const Posicion& destino) const
 {
     Nodo sim = simularMovimiento(estado, ficha, destino);
+
     return !estaEnJaque(sim, ficha.getColor());
 }
 
 // ======================================================
-// JAQUE (SIN REGENERAR MOVIMIENTOS EXTRA)
+// JAQUE
 // ======================================================
 
 bool DecisionTreeEngine::estaEnJaque(
@@ -142,9 +159,8 @@ bool DecisionTreeEngine::estaEnJaque(
     if (!rey)
         return false;
 
-    Color enemigo = (color == Color::Blanca)
-        ? Color::Negra
-        : Color::Blanca;
+    Color enemigo =
+        (color == Color::Blanca) ? Color::Negra : Color::Blanca;
 
     return casillaAtacada(
         estado,
@@ -154,24 +170,23 @@ bool DecisionTreeEngine::estaEnJaque(
 }
 
 // ======================================================
-// ATAQUE A CASILLA (REUTILIZA MOVIMIENTOS YA EXISTENTES)
+// CASILLA ATACADA (ÚNICA FUENTE DE VERDAD)
 // ======================================================
 
 bool DecisionTreeEngine::casillaAtacada(
     const Nodo& estado,
     int x,
     int y,
-    Color porQuien) const
+    Color atacante) const
 {
     for (const Ficha& f : estado.piezas)
     {
-        if (f.getColor() != porQuien)
+        if (f.getColor() != atacante)
             continue;
 
-        // REUTILIZA MISMO GENERADOR (NO OTRO SISTEMA)
-        std::vector<Posicion> movs = obtenerMovimientosFicha(f, estado);
+        auto ataques = obtenerAtaquesFicha(f, estado);
 
-        for (const Posicion& p : movs)
+        for (const Posicion& p : ataques)
         {
             if (p.x == x && p.y == y)
                 return true;
@@ -193,15 +208,14 @@ const Ficha* DecisionTreeEngine::encontrarRey(
     {
         if (f.getTipo() == TipoFicha::Rey &&
             f.getColor() == color)
-        {
             return &f;
-        }
     }
+
     return nullptr;
 }
 
 // ======================================================
-// MOVIMIENTOS LEGALES (NO DUPLICA SIMULACIÓN)
+// MOVIMIENTOS LEGALES
 // ======================================================
 
 bool DecisionTreeEngine::tieneMovimientosLegales(
@@ -213,7 +227,7 @@ bool DecisionTreeEngine::tieneMovimientosLegales(
         if (f.getColor() != color)
             continue;
 
-        std::vector<Posicion> movs = obtenerMovimientosFicha(f, estado);
+        auto movs = obtenerMovimientosFicha(f, estado);
 
         for (const Posicion& p : movs)
         {
@@ -235,4 +249,37 @@ bool DecisionTreeEngine::esMate(
 {
     return estaEnJaque(estado, color)
         && !tieneMovimientosLegales(estado, color);
+}
+
+// ======================================================
+// AHOGADO
+// ======================================================
+
+bool DecisionTreeEngine::esAhogado(
+    const Nodo& estado,
+    Color color) const
+{
+    return !estaEnJaque(estado, color)
+        && !tieneMovimientosLegales(estado, color);
+}
+
+// ======================================================
+// UTILIDAD
+// ======================================================
+
+bool DecisionTreeEngine::casillaOcupadaPorColor(
+    const Nodo& estado,
+    int x,
+    int y,
+    Color color) const
+{
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getPosicion().x == x &&
+            f.getPosicion().y == y &&
+            f.getColor() == color)
+            return true;
+    }
+
+    return false;
 }
