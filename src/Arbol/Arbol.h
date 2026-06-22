@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Nodo.h"
-#include "Ficha.h"
+#include "DecisionTreeEngine.h"
 
 class Arbol
 {
@@ -13,6 +13,9 @@ public:
     ~Arbol();
 
     void setNodoInicial(Nodo* raiz);
+
+    void agregarNodo(Nodo* nodo);
+    void eliminarSubarbol();
 
     void construirSiguienteNivel();
     void construirDesdeNodo(Nodo* nodo, int profundidadMax);
@@ -25,9 +28,5 @@ private:
     Nodo* raiz;
     std::vector<Nodo*> nodos;
 
-    std::vector<Posicion> obtenerMovimientosFicha(const Ficha& f, const Nodo& estado) const;
-    void expandirNodo(Nodo* nodo);
-
-    // NUEVO: validación de legalidad
-    bool esMovimientoLegal(Nodo* nodo, Color color) const;
+    DecisionTreeEngine engine;
 };

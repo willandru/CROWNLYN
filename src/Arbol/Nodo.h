@@ -1,9 +1,8 @@
 #pragma once
 
 #include <vector>
-
-#include "Tablero.h"
 #include "Ficha.h"
+#include "Tablero.h"
 
 class Nodo
 {
@@ -12,28 +11,20 @@ public:
     Nodo(const Nodo& other);
     ~Nodo();
 
-    Tablero tablero;
-    Color turnoActual;
-
-    std::vector<Ficha> piezas;
-
-    Nodo* padre;
-    std::vector<Nodo*> hijos;
-
     void agregarHijo(Nodo* hijo);
-    Nodo* clonar() const;
+    void liberarHijos();
 
     const Ficha* obtenerFichaEn(int x, int y) const;
     bool hayFichaEn(int x, int y) const;
 
-    void liberarHijos();
+public:
+    std::vector<Ficha> piezas;
+    std::vector<Nodo*> hijos;
+    Nodo* padre;
 
-    // JAQUE
-    bool estaEnJaque(Color color) const;
-    bool casillaAtacada(int x, int y, Color porQuien) const;
+    Color turnoActual;
+    Tablero tablero;
 
 private:
     void copiar(const Nodo& other);
-
-    const Ficha* encontrarRey(Color color) const;
 };
