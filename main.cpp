@@ -40,5 +40,10 @@ int main()
     arbol.construirSiguienteNivel();
     arbol.imprimirNivel();
 
+    std::cout << "....SIGUINETE TURNO.......\n";
+
+    arbol.construirSiguienteNivel();
+    arbol.imprimirNivel();
+
     return 0;
 }
