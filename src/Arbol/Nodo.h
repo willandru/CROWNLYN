@@ -17,6 +17,12 @@ public:
     const Ficha* obtenerFichaEn(int x, int y) const;
     bool hayFichaEn(int x, int y) const;
 
+    const Ficha* obtenerFichaPorId(int id) const;
+    Ficha* obtenerFichaPorId(int id);
+
+private:
+    void copiar(const Nodo& other);
+
 public:
     std::vector<Ficha> piezas;
     std::vector<Nodo*> hijos;
@@ -24,7 +30,4 @@ public:
 
     Color turnoActual;
     Tablero tablero;
-
-private:
-    void copiar(const Nodo& other);
 };

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 struct Posicion
 {
     int x;
@@ -28,7 +26,10 @@ class Ficha
 {
 public:
     Ficha();
-    Ficha(TipoFicha tipo, Color color, Posicion pos);
+    Ficha(int id, TipoFicha tipo, Color color, Posicion pos);
+    Ficha(int id, TipoFicha tipo, Color color, int x, int y);
+
+    int getId() const;
 
     TipoFicha getTipo() const;
     Color getColor() const;
@@ -36,10 +37,8 @@ public:
 
     void setPosicion(Posicion p);
 
-    // En MODELO B: la lógica NO está en la ficha
-    // se calcula externamente (ej: Motor / Sistema de reglas)
-
 private:
+    int id;              
     TipoFicha tipo;
     Color color;
     Posicion posicion;

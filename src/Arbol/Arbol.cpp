@@ -15,24 +15,31 @@ Arbol::~Arbol()
 }
 
 // ======================================================
-// INICIALIZACIÓN
+// SET ROOT
 // ======================================================
 
 void Arbol::setNodoInicial(Nodo* r)
 {
+    eliminarSubarbol();
+
     raiz = r;
-    nodos.clear();
 
     if (raiz)
-    {
         nodos.push_back(raiz);
-    }
 }
 
-void Arbol::agregarNodo(Nodo* nodo)
+// ======================================================
+// LIBERACIÓN SEGURA (DFS)
+// ======================================================
+
+void Arbol::liberarNodo(Nodo* nodo)
 {
     if (!nodo) return;
-    nodos.push_back(nodo);
+
+    for (Nodo* h : nodo->hijos)
+        liberarNodo(h);
+
+    delete nodo;
 }
 
 // ======================================================
@@ -43,7 +50,7 @@ void Arbol::eliminarSubarbol()
 {
     if (raiz)
     {
-        delete raiz;
+        liberarNodo(raiz);
         raiz = nullptr;
     }
 
@@ -72,40 +79,37 @@ void Arbol::construirSiguienteNivel()
     {
         if (!n) continue;
 
-        // genera hijos dentro del nodo
+        // IMPORTANTE: evitar acumulación previa
+        // (si expandes varias veces sin reset, esto es crítico)
+        n->hijos.clear();
+
         engine.expandirNodo(n);
 
-        // recolecta hijos generados
         for (Nodo* h : n->hijos)
         {
-            nuevosNodos.push_back(h);
+            if (h)
+                nuevosNodos.push_back(h);
         }
-
-        // IMPORTANTE:
-        // NO limpiar hijos aquí, porque rompes la estructura del árbol
     }
 
-    nodos = nuevosNodos;
+    nodos = std::move(nuevosNodos);
 }
 
 // ======================================================
-// EXPANSIÓN MULTINIVEL
+// MULTINIVEL
 // ======================================================
 
 void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
 {
+    eliminarSubarbol();
+
     raiz = nodo;
-    nodos.clear();
 
     if (raiz)
-    {
         nodos.push_back(raiz);
-    }
 
     for (int i = 0; i < profundidadMax; i++)
-    {
         construirSiguienteNivel();
-    }
 }
 
 // ======================================================
@@ -120,8 +124,9 @@ void Arbol::imprimirNivel() const
 
     for (const Nodo* n : nodos)
     {
-        std::cout << "Nodo " << i++ << "\n";
+        if (!n) continue;
 
+        std::cout << "Nodo " << i++ << "\n";
         std::cout << "Piezas: " << n->piezas.size() << "\n";
 
         for (const Ficha& f : n->piezas)

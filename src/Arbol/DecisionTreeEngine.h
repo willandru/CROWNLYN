@@ -40,4 +40,9 @@ private:
     const Ficha* encontrarRey(
         const Nodo& estado,
         Color color) const;
+
+private:
+    const Ficha* encontrarPorId(
+        const Nodo& estado,
+        int id) const;
 };

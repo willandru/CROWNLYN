@@ -8,12 +8,10 @@
 // CONSTRUCTOR
 // ======================================================
 
-DecisionTreeEngine::DecisionTreeEngine()
-{
-}
+DecisionTreeEngine::DecisionTreeEngine() {}
 
 // ======================================================
-// EXPANSIÓN DEL ÁRBOL
+// EXPANSIÓN
 // ======================================================
 
 void DecisionTreeEngine::expandirNodo(Nodo* nodo)
@@ -27,23 +25,17 @@ void DecisionTreeEngine::expandirNodo(Nodo* nodo)
         if (f.getColor() != jugador)
             continue;
 
-        std::vector<Posicion> movimientos =
-            obtenerMovimientosFicha(f, *nodo);
+        auto movimientos = obtenerMovimientosFicha(f, *nodo);
 
         for (const Posicion& p : movimientos)
         {
-            // validar legalidad (incluye jaque)
             if (!esMovimientoLegal(*nodo, f, p))
                 continue;
 
-            // crear estado hijo
             Nodo* hijo = new Nodo(*nodo);
 
-            // aplicar movimiento + captura
-            Nodo simulado = simularMovimiento(*nodo, f, p);
-            *hijo = simulado;
+            *hijo = simularMovimiento(*nodo, f, p);
 
-            // cambiar turno
             hijo->turnoActual =
                 (jugador == Color::Blanca)
                 ? Color::Negra
@@ -79,7 +71,7 @@ std::vector<Posicion> DecisionTreeEngine::obtenerMovimientosFicha(
 }
 
 // ======================================================
-// SIMULACIÓN (CAPTURA REAL)
+// SIMULACIÓN (ID-BASED)
 // ======================================================
 
 Nodo DecisionTreeEngine::simularMovimiento(
@@ -89,7 +81,9 @@ Nodo DecisionTreeEngine::simularMovimiento(
 {
     Nodo copia = estado;
 
-    // 1. eliminar pieza enemiga en destino
+    int id = ficha.getId();
+
+    // 1. eliminar pieza en destino (si existe)
     for (auto it = copia.piezas.begin(); it != copia.piezas.end(); )
     {
         if (it->getPosicion().x == destino.x &&
@@ -103,11 +97,10 @@ Nodo DecisionTreeEngine::simularMovimiento(
         }
     }
 
-    // 2. mover pieza origen
+    // 2. mover por ID
     for (Ficha& f : copia.piezas)
     {
-        if (f.getPosicion().x == ficha.getPosicion().x &&
-            f.getPosicion().y == ficha.getPosicion().y)
+        if (f.getId() == id)
         {
             f.setPosicion(destino);
             break;

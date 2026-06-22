@@ -9,15 +9,23 @@ int main()
 {
     Nodo* raiz = new Nodo();
 
-    // Estado del mundo
+    // ======================================================
+    // ESTADO INICIAL
+    // ======================================================
     raiz->tablero = Tablero(3, 3);
     raiz->turnoActual = Color::Blanca;
 
-    // piezas iniciales
-    raiz->piezas.push_back(Ficha(TipoFicha::Rey,   Color::Negra,  {0, 2}));
-    raiz->piezas.push_back(Ficha(TipoFicha::Torre, Color::Blanca, {2, 0}));
-    raiz->piezas.push_back(Ficha(TipoFicha::Peon,  Color::Blanca, {2, 1}));
+    // ======================================================
+    // PIEZAS INICIALES (FORMA SEGURA)
+    // ======================================================
 
+    raiz->piezas.push_back(Ficha(1, TipoFicha::Rey,   Color::Negra,  {0, 2}));
+    raiz->piezas.push_back(Ficha(2, TipoFicha::Torre, Color::Blanca, {2, 0}));
+    raiz->piezas.push_back(Ficha(3, TipoFicha::Peon,  Color::Blanca, {2, 1}));
+
+    // ======================================================
+    // ARBOL
+    // ======================================================
     Arbol arbol;
     arbol.setNodoInicial(raiz);
 

@@ -14,7 +14,6 @@ public:
 
     void setNodoInicial(Nodo* raiz);
 
-    void agregarNodo(Nodo* nodo);
     void eliminarSubarbol();
 
     void construirSiguienteNivel();
@@ -23,6 +22,9 @@ public:
     const std::vector<Nodo*>& getNodos() const;
 
     void imprimirNivel() const;
+
+private:
+    void liberarNodo(Nodo* nodo);
 
 private:
     Nodo* raiz;
