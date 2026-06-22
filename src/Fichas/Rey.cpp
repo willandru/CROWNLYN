@@ -20,14 +20,20 @@ std::vector<Posicion> Rey::getMovimientos(const Ficha& pieza, const Nodo& estado
         if (!esValida(estado, x, y))
             continue;
 
-        if (esCasillaOcupada(estado, x, y))
+        const Ficha* f = obtenerFichaEn(estado, x, y);
+
+        // casilla vacía → movimiento válido
+        if (!f)
         {
-            if (esCaptura(estado, x, y, pieza))
-                movimientos.push_back({x, y});
+            movimientos.push_back({x, y});
         }
         else
         {
-            movimientos.push_back({x, y});
+            // casilla ocupada → solo si es enemigo
+            if (f->getColor() != pieza.getColor())
+            {
+                movimientos.push_back({x, y});
+            }
         }
     }
 
@@ -39,22 +45,16 @@ bool Rey::esValida(const Nodo& estado, int x, int y) const
     return estado.tablero.esValida(x, y);
 }
 
-bool Rey::esCasillaOcupada(const Nodo& estado, int x, int y) const
+const Ficha* Rey::obtenerFichaEn(const Nodo& estado, int x, int y) const
 {
     for (const Ficha& f : estado.piezas)
     {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return true;
+        if (f.getPosicion().x == x &&
+            f.getPosicion().y == y)
+        {
+            return &f;
+        }
     }
-    return false;
-}
 
-bool Rey::esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return f.getColor() != piezaOrigen.getColor();
-    }
-    return false;
+    return nullptr;
 }

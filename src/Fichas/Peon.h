@@ -13,6 +13,5 @@ public:
 
 private:
     bool esValida(const Nodo& estado, int x, int y) const;
-    bool esCasillaOcupada(const Nodo& estado, int x, int y) const;
-    bool esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const;
+    const Ficha* obtenerFichaEn(const Nodo& estado, int x, int y) const;
 };

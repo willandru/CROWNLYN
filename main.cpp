@@ -7,41 +7,29 @@
 
 int main()
 {
-    // Nodo raíz
     Nodo* raiz = new Nodo();
 
-    // Tablero 3x3 (configuración dinámica)
+    // Estado del mundo
     raiz->tablero = Tablero(3, 3);
-
-    // Turno inicial
     raiz->turnoActual = Color::Blanca;
 
-    // Estado inicial
-
-    // Rey negro en (0, 0)
-    raiz->piezas.push_back(Ficha(TipoFicha::Rey, Color::Negra, {0, 2}));
-
-    // Torre blanca en (2, 2)
+    // piezas iniciales
+    raiz->piezas.push_back(Ficha(TipoFicha::Rey,   Color::Negra,  {0, 2}));
     raiz->piezas.push_back(Ficha(TipoFicha::Torre, Color::Blanca, {2, 0}));
+    raiz->piezas.push_back(Ficha(TipoFicha::Peon,  Color::Blanca, {2, 1}));
 
-    // Peón blanco en (2, 1)
-    raiz->piezas.push_back(Ficha(TipoFicha::Peon, Color::Blanca, {2, 1}));
-
-    // Árbol
     Arbol arbol;
     arbol.setNodoInicial(raiz);
 
-    // Expansión inicial
+    std::cout << "\n=== NIVEL 1 ===\n";
     arbol.construirSiguienteNivel();
     arbol.imprimirNivel();
 
-    std::cout << "....SIGUINETE TURNO.......\n";
-
+    std::cout << "\n=== NIVEL 2 ===\n";
     arbol.construirSiguienteNivel();
     arbol.imprimirNivel();
 
-    std::cout << "....SIGUINETE TURNO.......\n";
-
+    std::cout << "\n=== NIVEL 3 ===\n";
     arbol.construirSiguienteNivel();
     arbol.imprimirNivel();
 

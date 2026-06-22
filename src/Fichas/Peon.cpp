@@ -1,74 +1,55 @@
 #include "Peon.h"
 
-std::vector<Posicion> Peon::getMovimientos(const Ficha& pieza, const Nodo& estado) const
+std::vector<Posicion> Peon::getMovimientos(
+    const Ficha& pieza,
+    const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
-    Posicion origen = pieza.getPosicion();
+    Posicion o = pieza.getPosicion();
+    int dir = (pieza.getColor() == Color::Blanca) ? -1 : 1;
 
-    int direccion = (pieza.getColor() == Color::Blanca) ? -1 : 1;
-
-    // Movimiento hacia adelante
-    int xFront = origen.x + direccion;
-    int yFront = origen.y;
+    int xFront = o.x + dir;
+    int yFront = o.y;
 
     if (esValida(estado, xFront, yFront) &&
-        !esCasillaOcupada(estado, xFront, yFront))
+        !obtenerFichaEn(estado, xFront, yFront))
     {
-        movimientos.push_back({ xFront, yFront });
-    }
-
-    // Captura diagonal izquierda
-    int xLeft = origen.x + direccion;
-    int yLeft = origen.y - 1;
-
-    if (esValida(estado, xLeft, yLeft) &&
-        esCasillaOcupada(estado, xLeft, yLeft) &&
-        esCaptura(estado, xLeft, yLeft, pieza))
-    {
-        movimientos.push_back({ xLeft, yLeft });
-    }
-
-    // Captura diagonal derecha
-    int xRight = origen.x + direccion;
-    int yRight = origen.y + 1;
-
-    if (esValida(estado, xRight, yRight) &&
-        esCasillaOcupada(estado, xRight, yRight) &&
-        esCaptura(estado, xRight, yRight, pieza))
-    {
-        movimientos.push_back({ xRight, yRight });
+        movimientos.push_back({xFront, yFront});
     }
 
     return movimientos;
 }
 
-std::vector<Posicion> Peon::getAtaques(const Ficha& pieza, const Nodo& estado) const
+std::vector<Posicion> Peon::getAtaques(
+    const Ficha& pieza,
+    const Nodo& estado) const
 {
     std::vector<Posicion> ataques;
 
-    Posicion origen = pieza.getPosicion();
+    Posicion o = pieza.getPosicion();
+    int dir = (pieza.getColor() == Color::Blanca) ? -1 : 1;
 
-    int direccion = (pieza.getColor() == Color::Blanca) ? -1 : 1;
-
-    int xLeft = origen.x + direccion;
-    int yLeft = origen.y - 1;
-
-    if (esValida(estado, xLeft, yLeft) &&
-        esCasillaOcupada(estado, xLeft, yLeft) &&
-        esCaptura(estado, xLeft, yLeft, pieza))
+    const int diag[2][2] =
     {
-        ataques.push_back({ xLeft, yLeft });
-    }
+        {dir, -1},
+        {dir,  1}
+    };
 
-    int xRight = origen.x + direccion;
-    int yRight = origen.y + 1;
-
-    if (esValida(estado, xRight, yRight) &&
-        esCasillaOcupada(estado, xRight, yRight) &&
-        esCaptura(estado, xRight, yRight, pieza))
+    for (auto& d : diag)
     {
-        ataques.push_back({ xRight, yRight });
+        int x = o.x + d[0];
+        int y = o.y + d[1];
+
+        if (!esValida(estado, x, y))
+            continue;
+
+        const Ficha* f = obtenerFichaEn(estado, x, y);
+
+        if (f && f->getColor() != pieza.getColor())
+        {
+            ataques.push_back({x, y});
+        }
     }
 
     return ataques;
@@ -79,24 +60,16 @@ bool Peon::esValida(const Nodo& estado, int x, int y) const
     return estado.tablero.esValida(x, y);
 }
 
-bool Peon::esCasillaOcupada(const Nodo& estado, int x, int y) const
+const Ficha* Peon::obtenerFichaEn(const Nodo& estado, int x, int y) const
 {
     for (const Ficha& f : estado.piezas)
     {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return true;
+        if (f.getPosicion().x == x &&
+            f.getPosicion().y == y)
+        {
+            return &f;
+        }
     }
 
-    return false;
-}
-
-bool Peon::esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return f.getColor() != piezaOrigen.getColor();
-    }
-
-    return false;
+    return nullptr;
 }

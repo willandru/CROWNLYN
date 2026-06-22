@@ -1,11 +1,8 @@
 #include "Arbol.h"
 
-// piezas
-#include "Torre.h"
-#include "Rey.h"
-#include "Peon.h"
-
-#include <iostream>
+// ======================================================
+// CONSTRUCTOR / DESTRUCTOR
+// ======================================================
 
 Arbol::Arbol()
 {
@@ -14,9 +11,12 @@ Arbol::Arbol()
 
 Arbol::~Arbol()
 {
-    if (raiz)
-        delete raiz;
+    eliminarSubarbol();
 }
+
+// ======================================================
+// INICIALIZACIÓN
+// ======================================================
 
 void Arbol::setNodoInicial(Nodo* r)
 {
@@ -24,36 +24,83 @@ void Arbol::setNodoInicial(Nodo* r)
     nodos.clear();
 
     if (raiz)
+    {
         nodos.push_back(raiz);
+    }
 }
+
+void Arbol::agregarNodo(Nodo* nodo)
+{
+    if (!nodo) return;
+    nodos.push_back(nodo);
+}
+
+// ======================================================
+// LIMPIEZA TOTAL
+// ======================================================
+
+void Arbol::eliminarSubarbol()
+{
+    if (raiz)
+    {
+        delete raiz;
+        raiz = nullptr;
+    }
+
+    nodos.clear();
+}
+
+// ======================================================
+// ACCESO
+// ======================================================
 
 const std::vector<Nodo*>& Arbol::getNodos() const
 {
     return nodos;
 }
 
+// ======================================================
+// EXPANSIÓN DE UN NIVEL
+// ======================================================
+
 void Arbol::construirSiguienteNivel()
 {
     std::vector<Nodo*> nuevosNodos;
+    nuevosNodos.reserve(nodos.size() * 4);
 
     for (Nodo* n : nodos)
     {
-        expandirNodo(n);
+        if (!n) continue;
 
+        // genera hijos dentro del nodo
+        engine.expandirNodo(n);
+
+        // recolecta hijos generados
         for (Nodo* h : n->hijos)
         {
             nuevosNodos.push_back(h);
         }
+
+        // IMPORTANTE:
+        // NO limpiar hijos aquí, porque rompes la estructura del árbol
     }
 
     nodos = nuevosNodos;
 }
 
+// ======================================================
+// EXPANSIÓN MULTINIVEL
+// ======================================================
+
 void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
 {
     raiz = nodo;
     nodos.clear();
-    nodos.push_back(nodo);
+
+    if (raiz)
+    {
+        nodos.push_back(raiz);
+    }
 
     for (int i = 0; i < profundidadMax; i++)
     {
@@ -61,99 +108,31 @@ void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
     }
 }
 
-void Arbol::expandirNodo(Nodo* nodo)
-{
-    if (!nodo) return;
-
-    for (const Ficha& f : nodo->piezas)
-    {
-        if (f.getColor() != nodo->turnoActual)
-            continue;
-
-        std::vector<Posicion> movimientos = obtenerMovimientosFicha(f, *nodo);
-
-        for (const Posicion& p : movimientos)
-        {
-            Nodo* hijo = nodo->clonar();
-
-            // aplicar movimiento
-            for (Ficha& hf : hijo->piezas)
-            {
-                if (hf.getPosicion().x == f.getPosicion().x &&
-                    hf.getPosicion().y == f.getPosicion().y)
-                {
-                    hf.setPosicion(p);
-                    break;
-                }
-            }
-
-            // cambiar turno
-            hijo->turnoActual = (nodo->turnoActual == Color::Blanca)
-                                ? Color::Negra
-                                : Color::Blanca;
-
-            // 🔴 FILTRO CRÍTICO: JAQUE
-            if (hijo->estaEnJaque(nodo->turnoActual))
-            {
-                delete hijo;
-                continue;
-            }
-
-            nodo->agregarHijo(hijo);
-        }
-    }
-}
-
-std::vector<Posicion> Arbol::obtenerMovimientosFicha(const Ficha& f, const Nodo& estado) const
-{
-    switch (f.getTipo())
-    {
-        case TipoFicha::Torre:
-        {
-            Torre t;
-            return t.getMovimientos(f, estado);
-        }
-
-        case TipoFicha::Rey:
-        {
-            Rey r;
-            return r.getMovimientos(f, estado);
-        }
-
-        case TipoFicha::Peon:
-        {
-            Peon p;
-            return p.getMovimientos(f, estado);
-        }
-
-        default:
-            return {};
-    }
-}
+// ======================================================
+// DEBUG
+// ======================================================
 
 void Arbol::imprimirNivel() const
 {
-    std::cout << "\n=== NIVEL ACTUAL DEL ARBOL ===\n";
+    std::cout << "\n=== NIVEL DEL ARBOL ===\n";
 
-    int idxNodo = 0;
+    int i = 0;
 
     for (const Nodo* n : nodos)
     {
-        std::cout << "\nNodo " << idxNodo++ << "\n";
-        std::cout << "Turno: " << (n->turnoActual == Color::Blanca ? "Blanca" : "Negra") << "\n";
-        std::cout << "Piezas: " << n->piezas.size() << "\n";
+        std::cout << "Nodo " << i++ << "\n";
 
-        int idx = 0;
+        std::cout << "Piezas: " << n->piezas.size() << "\n";
+        std::cout << "Hijos: " << n->hijos.size() << "\n";
+
         for (const Ficha& f : n->piezas)
         {
-            std::cout << "  Pieza " << idx++
-                      << " Tipo: " << (int)f.getTipo()
-                      << " Color: " << (f.getColor() == Color::Blanca ? "Blanca" : "Negra")
-                      << " Pos(" << f.getPosicion().x << "," << f.getPosicion().y << ")\n";
+            std::cout
+                << "  Pieza Tipo: " << (int)f.getTipo()
+                << " Color: " << (f.getColor() == Color::Blanca ? "Blanca" : "Negra")
+                << " Pos(" << f.getPosicion().x << "," << f.getPosicion().y << ")\n";
         }
-
-        std::cout << "Hijos: " << n->hijos.size() << "\n";
     }
 
-    std::cout << "==============================\n";
+    std::cout << "=======================\n";
 }

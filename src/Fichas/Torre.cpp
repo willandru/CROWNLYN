@@ -1,6 +1,8 @@
 #include "Torre.h"
 
-std::vector<Posicion> Torre::getMovimientos(const Ficha& pieza, const Nodo& estado) const
+std::vector<Posicion> Torre::getMovimientos(
+    const Ficha& pieza,
+    const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
@@ -21,15 +23,23 @@ std::vector<Posicion> Torre::getMovimientos(const Ficha& pieza, const Nodo& esta
 
         while (esValida(estado, x, y))
         {
-            if (esCasillaOcupada(estado, x, y))
+            const Ficha* f = obtenerFichaEn(estado, x, y);
+
+            if (!f)
             {
-                if (esCaptura(estado, x, y, pieza))
-                    movimientos.push_back({x, y});
-
-                break;
+                // casilla vacía
+                movimientos.push_back({x, y});
             }
+            else
+            {
+                // ocupada → solo si enemigo
+                if (f->getColor() != pieza.getColor())
+                {
+                    movimientos.push_back({x, y});
+                }
 
-            movimientos.push_back({x, y});
+                break; // siempre bloquea el rayo
+            }
 
             x += d[0];
             y += d[1];
@@ -44,22 +54,16 @@ bool Torre::esValida(const Nodo& estado, int x, int y) const
     return estado.tablero.esValida(x, y);
 }
 
-bool Torre::esCasillaOcupada(const Nodo& estado, int x, int y) const
+const Ficha* Torre::obtenerFichaEn(const Nodo& estado, int x, int y) const
 {
     for (const Ficha& f : estado.piezas)
     {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return true;
+        if (f.getPosicion().x == x &&
+            f.getPosicion().y == y)
+        {
+            return &f;
+        }
     }
-    return false;
-}
 
-bool Torre::esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
-            return f.getColor() != piezaOrigen.getColor();
-    }
-    return false;
+    return nullptr;
 }

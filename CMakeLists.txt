@@ -12,6 +12,7 @@ set(SOURCES
     src/Arbol/Nodo.cpp
     src/Arbol/Tablero.cpp
     src/Arbol/Turno.cpp
+    src/Arbol/DecisionTreeEngine.cpp
 
     src/Fichas/Ficha.cpp
     src/Fichas/Peon.cpp
