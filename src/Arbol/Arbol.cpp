@@ -5,6 +5,8 @@
 #include "Rey.h"
 #include "Peon.h"
 
+#include <iostream>
+
 Arbol::Arbol()
 {
     raiz = nullptr;
@@ -74,7 +76,6 @@ void Arbol::expandirNodo(Nodo* nodo)
         {
             Nodo* hijo = nodo->clonar();
 
-            // mover ficha en el hijo
             for (Ficha& hf : hijo->piezas)
             {
                 if (hf.getPosicion().x == f.getPosicion().x &&
@@ -119,4 +120,31 @@ std::vector<Posicion> Arbol::obtenerMovimientosFicha(const Ficha& f, const Nodo&
         default:
             return {};
     }
+}
+
+void Arbol::imprimirNivel() const
+{
+    std::cout << "\n=== NIVEL ACTUAL DEL ARBOL ===\n";
+
+    int idxNodo = 0;
+
+    for (const Nodo* n : nodos)
+    {
+        std::cout << "\nNodo " << idxNodo++ << "\n";
+        std::cout << "Turno: " << (n->turnoActual == Color::Blanca ? "Blanca" : "Negra") << "\n";
+        std::cout << "Piezas: " << n->piezas.size() << "\n";
+
+        int idx = 0;
+        for (const Ficha& f : n->piezas)
+        {
+            std::cout << "  Pieza " << idx++
+                      << " Tipo: " << (int)f.getTipo()
+                      << " Color: " << (f.getColor() == Color::Blanca ? "Blanca" : "Negra")
+                      << " Pos(" << f.getPosicion().x << "," << f.getPosicion().y << ")\n";
+        }
+
+        std::cout << "Hijos: " << n->hijos.size() << "\n";
+    }
+
+    std::cout << "==============================\n";
 }

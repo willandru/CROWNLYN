@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 #include "Nodo.h"
 #include "Ficha.h"
@@ -17,6 +18,9 @@ public:
     void construirDesdeNodo(Nodo* nodo, int profundidadMax);
 
     const std::vector<Nodo*>& getNodos() const;
+
+    // DEBUG
+    void imprimirNivel() const;
 
 private:
     Nodo* raiz;

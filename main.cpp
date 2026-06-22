@@ -19,10 +19,10 @@ int main()
     // Estado inicial
 
     // Rey negro en (0, 0)
-    raiz->piezas.push_back(Ficha(TipoFicha::Rey, Color::Negra, {0, 0}));
+    raiz->piezas.push_back(Ficha(TipoFicha::Rey, Color::Negra, {0, 2}));
 
     // Torre blanca en (2, 2)
-    raiz->piezas.push_back(Ficha(TipoFicha::Torre, Color::Blanca, {2, 2}));
+    raiz->piezas.push_back(Ficha(TipoFicha::Torre, Color::Blanca, {2, 0}));
 
     // Peón blanco en (2, 1)
     raiz->piezas.push_back(Ficha(TipoFicha::Peon, Color::Blanca, {2, 1}));
@@ -33,8 +33,12 @@ int main()
 
     // Expansión inicial
     arbol.construirSiguienteNivel();
+    arbol.imprimirNivel();
 
-    std::cout << "Crownlyn inicializado correctamente\n";
+    std::cout << "....SIGUINETE TURNO.......\n";
+
+    arbol.construirSiguienteNivel();
+    arbol.imprimirNivel();
 
     return 0;
 }
