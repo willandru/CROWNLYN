@@ -1,6 +1,6 @@
 #include "Arbol.h"
 
-// Fichas (MODELO B - funciones externas)
+// piezas
 #include "Torre.h"
 #include "Rey.h"
 #include "Peon.h"
@@ -76,6 +76,7 @@ void Arbol::expandirNodo(Nodo* nodo)
         {
             Nodo* hijo = nodo->clonar();
 
+            // aplicar movimiento
             for (Ficha& hf : hijo->piezas)
             {
                 if (hf.getPosicion().x == f.getPosicion().x &&
@@ -86,9 +87,17 @@ void Arbol::expandirNodo(Nodo* nodo)
                 }
             }
 
+            // cambiar turno
             hijo->turnoActual = (nodo->turnoActual == Color::Blanca)
                                 ? Color::Negra
                                 : Color::Blanca;
+
+            // 🔴 FILTRO CRÍTICO: JAQUE
+            if (hijo->estaEnJaque(nodo->turnoActual))
+            {
+                delete hijo;
+                continue;
+            }
 
             nodo->agregarHijo(hijo);
         }

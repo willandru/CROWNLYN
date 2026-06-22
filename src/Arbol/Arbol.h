@@ -19,7 +19,6 @@ public:
 
     const std::vector<Nodo*>& getNodos() const;
 
-    // DEBUG
     void imprimirNivel() const;
 
 private:
@@ -28,4 +27,7 @@ private:
 
     std::vector<Posicion> obtenerMovimientosFicha(const Ficha& f, const Nodo& estado) const;
     void expandirNodo(Nodo* nodo);
+
+    // NUEVO: validación de legalidad
+    bool esMovimientoLegal(Nodo* nodo, Color color) const;
 };

@@ -28,6 +28,12 @@ public:
 
     void liberarHijos();
 
+    // JAQUE
+    bool estaEnJaque(Color color) const;
+    bool casillaAtacada(int x, int y, Color porQuien) const;
+
 private:
     void copiar(const Nodo& other);
+
+    const Ficha* encontrarRey(Color color) const;
 };

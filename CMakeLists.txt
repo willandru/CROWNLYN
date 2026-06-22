@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(CROWLYN)
+project(CROWNLYN)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,9 +22,9 @@ set(SOURCES
     src/Fichas/Rey.cpp
 )
 
-add_executable(CROWLYN ${SOURCES})
+add_executable(CROWNLYN ${SOURCES})
 
-target_include_directories(CROWLYN PRIVATE
+target_include_directories(CROWNLYN PRIVATE
     src
     src/Arbol
     src/Fichas
