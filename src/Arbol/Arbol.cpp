@@ -1,75 +1,84 @@
 #include "Arbol.h"
+#include "Ficha.h"
 
 Arbol::Arbol()
 {
-    raiz = nullptr;
-    nivelActual = 0;
 }
 
 Arbol::~Arbol()
 {
-    if (raiz)
+    liberar();
+}
+
+void Arbol::construir(Nodo* raiz, int profundidadMaxima)
+{
+    liberar();
+
+    if (!raiz || profundidadMaxima <= 0)
+        return;
+
+    Turno primerTurno;
+    primerTurno.nodos.push_back(raiz);
+
+    turnos.push_back(primerTurno);
+
+    expandirTurno(turnos[0], profundidadMaxima);
+}
+
+void Arbol::expandirTurno(Turno& turnoActual, int profundidad)
+{
+    if (profundidad <= 0)
+        return;
+
+    Turno siguienteTurno;
+
+    for (Nodo* nodo : turnoActual.nodos)
     {
-        delete raiz;
-        raiz = nullptr;
+        for (Ficha* f : nodo->piezas)
+        {
+            std::vector<Posicion> movs = f->getMovimientos(*nodo);
+
+            for (const Posicion& p : movs)
+            {
+                Nodo* hijo = nodo->clonar();
+
+                // mover ficha en el hijo
+                for (Ficha* fh : hijo->piezas)
+                {
+                    if (fh->getPosicion().x == f->getPosicion().x &&
+                        fh->getPosicion().y == f->getPosicion().y)
+                    {
+                        fh->setPosicion(p);
+                        break;
+                    }
+                }
+
+                hijo->agregarHijo(hijo);
+                siguienteTurno.nodos.push_back(hijo);
+            }
+        }
     }
 
-    for (auto& nivel : niveles)
+    turnos.push_back(siguienteTurno);
+
+    expandirTurno(turnos.back(), profundidad - 1);
+}
+
+const std::vector<Turno>& Arbol::getTurnos() const
+{
+    return turnos;
+}
+
+void Arbol::liberar()
+{
+    for (Turno& t : turnos)
     {
-        for (Nodo* n : nivel)
+        for (Nodo* n : t.nodos)
         {
             delete n;
         }
-    }
-}
-
-void Arbol::setNodoInicial(Nodo* raiz)
-{
-    this->raiz = raiz;
-
-    niveles.clear();
-    niveles.push_back({raiz});
-    nivelActual = 0;
-}
-
-Nodo* Arbol::getNodoInicial() const
-{
-    return raiz;
-}
-
-const std::vector<Nodo*>& Arbol::getNodosDelNivelActual() const
-{
-    return niveles[nivelActual];
-}
-
-void Arbol::construirSiguienteNivel()
-{
-    if (nivelActual >= (int)niveles.size()) return;
-
-    std::vector<Nodo*> siguienteNivel;
-
-    for (Nodo* nodo : niveles[nivelActual])
-    {
-        expandirNodo(nodo, siguienteNivel);
+        t.nodos.clear();
     }
 
-    if (!siguienteNivel.empty())
-    {
-        niveles.push_back(siguienteNivel);
-        nivelActual++;
-    }
-}
-
-void Arbol::expandirNodo(Nodo* nodo, std::vector<Nodo*>& siguienteNivel)
-{
-    if (!nodo) return;
-
-    // aquí irá la lógica futura:
-    // - recorrer piezas del nodo
-    // - generar movimientos
-    // - clonar nodos
-    // - cambiar turno
-    // - agregar hijos
-
-    nodo->agregarHijo(nullptr); // placeholder estructural
+    turnos.clear();
 }

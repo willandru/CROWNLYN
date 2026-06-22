@@ -1,7 +1,13 @@
 #pragma once
 
 #include <vector>
+
 #include "Nodo.h"
+
+struct Turno
+{
+    std::vector<Nodo*> nodos;
+};
 
 class Arbol
 {
@@ -9,20 +15,14 @@ public:
     Arbol();
     ~Arbol();
 
-    void setNodoInicial(Nodo* raiz);
-    Nodo* getNodoInicial() const;
+    void construir(Nodo* raiz, int profundidadMaxima);
 
-    void construirSiguienteNivel();
+    const std::vector<Turno>& getTurnos() const;
 
-    const std::vector<Nodo*>& getNodosDelNivelActual() const;
+    void liberar();
 
 private:
-    Nodo* raiz;
+    std::vector<Turno> turnos;
 
-    // niveles del árbol (cada nivel = turno)
-    std::vector<std::vector<Nodo*>> niveles;
-
-    int nivelActual;
-
-    void expandirNodo(Nodo* nodo, std::vector<Nodo*>& siguienteNivel);
+    void expandirTurno(Turno& turnoActual, int profundidad);
 };

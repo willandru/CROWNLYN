@@ -1,11 +1,5 @@
 #include "Tablero.h"
 
-Tablero::Tablero()
-{
-    ancho = 3;
-    alto = 3;
-}
-
 Tablero::Tablero(int ancho, int alto)
 {
     this->ancho = ancho;
@@ -20,12 +14,6 @@ int Tablero::getAncho() const
 int Tablero::getAlto() const
 {
     return alto;
-}
-
-void Tablero::setDimensiones(int ancho, int alto)
-{
-    this->ancho = ancho;
-    this->alto = alto;
 }
 
 bool Tablero::esValida(int x, int y) const

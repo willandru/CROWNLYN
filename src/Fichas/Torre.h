@@ -1,18 +1,19 @@
 #pragma once
 
-#include "Ficha.h"
 #include <vector>
 
-class Nodo;
+#include "Ficha.h"
 
-class Torre
+class Torre : public Ficha
 {
 public:
-    Torre();
-    ~Torre();
+    Torre(Color color, Posicion pos);
+    ~Torre() override;
 
-    std::vector<Posicion> getMovimientos(const Nodo& estado, Posicion origen) const;
+    std::vector<Posicion> getMovimientos(const Nodo& estado) const override;
 
 private:
     bool esValida(const Nodo& estado, int x, int y) const;
+    bool esCasillaOcupada(const Nodo& estado, int x, int y) const;
+    bool esCaptura(const Nodo& estado, int x, int y, const Ficha* piezaOrigen) const;
 };

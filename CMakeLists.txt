@@ -5,10 +5,6 @@ project(CROWLYN)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Directorio de headers
-include_directories(src)
-
-# Archivos fuente
 set(SOURCES
     main.cpp
 
@@ -27,3 +23,5 @@ set(SOURCES
 )
 
 add_executable(CROWLYN ${SOURCES})
+
+target_include_directories(CROWLYN PRIVATE src)
