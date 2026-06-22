@@ -3,17 +3,15 @@
 #include <vector>
 
 #include "Ficha.h"
+#include "Nodo.h"
 
-class Peon : public Ficha
+class Peon
 {
 public:
-    Peon(Color color, Posicion pos);
-    ~Peon() override;
-
-    std::vector<Posicion> getMovimientos(const Nodo& estado) const override;
+    std::vector<Posicion> getMovimientos(const Ficha& pieza, const Nodo& estado) const;
 
 private:
     bool esValida(const Nodo& estado, int x, int y) const;
     bool esCasillaOcupada(const Nodo& estado, int x, int y) const;
-    bool esCaptura(const Nodo& estado, int x, int y, const Ficha* piezaOrigen) const;
+    bool esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const;
 };

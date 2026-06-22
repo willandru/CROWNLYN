@@ -3,11 +3,7 @@
 #include <vector>
 
 #include "Nodo.h"
-
-struct Turno
-{
-    std::vector<Nodo*> nodos;
-};
+#include "Ficha.h"
 
 class Arbol
 {
@@ -15,14 +11,17 @@ public:
     Arbol();
     ~Arbol();
 
-    void construir(Nodo* raiz, int profundidadMaxima);
+    void setNodoInicial(Nodo* raiz);
 
-    const std::vector<Turno>& getTurnos() const;
+    void construirSiguienteNivel();
+    void construirDesdeNodo(Nodo* nodo, int profundidadMax);
 
-    void liberar();
+    const std::vector<Nodo*>& getNodos() const;
 
 private:
-    std::vector<Turno> turnos;
+    Nodo* raiz;
+    std::vector<Nodo*> nodos;
 
-    void expandirTurno(Turno& turnoActual, int profundidad);
+    std::vector<Posicion> obtenerMovimientosFicha(const Ficha& f, const Nodo& estado) const;
+    void expandirNodo(Nodo* nodo);
 };

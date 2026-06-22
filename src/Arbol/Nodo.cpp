@@ -18,11 +18,6 @@ Nodo::Nodo(const Nodo& other)
 Nodo::~Nodo()
 {
     liberarHijos();
-
-    for (Ficha* f : piezas)
-    {
-        delete f;
-    }
     piezas.clear();
 }
 
@@ -41,39 +36,28 @@ Nodo* Nodo::clonar() const
 
 void Nodo::copiar(const Nodo& other)
 {
-    piezas.clear();
-
-    for (Ficha* f : other.piezas)
-    {
-        piezas.push_back(clonarFicha(f));
-    }
-
+    piezas = other.piezas;
     hijos.clear();
-}
-
-Ficha* Nodo::clonarFicha(const Ficha* f) const
-{
-    return new Ficha(*f);
-}
-
-bool Nodo::hayFichaEn(int x, int y) const
-{
-    for (Ficha* f : piezas)
-    {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
-            return true;
-    }
-    return false;
 }
 
 const Ficha* Nodo::obtenerFichaEn(int x, int y) const
 {
-    for (Ficha* f : piezas)
+    for (const Ficha& f : piezas)
     {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
-            return f;
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
+            return &f;
     }
     return nullptr;
+}
+
+bool Nodo::hayFichaEn(int x, int y) const
+{
+    for (const Ficha& f : piezas)
+    {
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
+            return true;
+    }
+    return false;
 }
 
 void Nodo::liberarHijos()

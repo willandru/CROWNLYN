@@ -24,4 +24,8 @@ set(SOURCES
 
 add_executable(CROWLYN ${SOURCES})
 
-target_include_directories(CROWLYN PRIVATE src)
+target_include_directories(CROWLYN PRIVATE
+    src
+    src/Arbol
+    src/Fichas
+)

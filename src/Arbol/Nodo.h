@@ -15,7 +15,7 @@ public:
     Tablero tablero;
     Color turnoActual;
 
-    std::vector<Ficha*> piezas;
+    std::vector<Ficha> piezas;
 
     Nodo* padre;
     std::vector<Nodo*> hijos;
@@ -30,5 +30,4 @@ public:
 
 private:
     void copiar(const Nodo& other);
-    Ficha* clonarFicha(const Ficha* f) const;
 };

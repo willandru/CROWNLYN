@@ -2,7 +2,11 @@
 
 #include <vector>
 
-class Nodo;
+struct Posicion
+{
+    int x;
+    int y;
+};
 
 enum class Color
 {
@@ -20,17 +24,11 @@ enum class TipoFicha
     Rey
 };
 
-struct Posicion
-{
-    int x;
-    int y;
-};
-
 class Ficha
 {
 public:
+    Ficha();
     Ficha(TipoFicha tipo, Color color, Posicion pos);
-    virtual ~Ficha();
 
     TipoFicha getTipo() const;
     Color getColor() const;
@@ -38,10 +36,10 @@ public:
 
     void setPosicion(Posicion p);
 
-    // Contrato polimórfico
-    virtual std::vector<Posicion> getMovimientos(const Nodo& estado) const = 0;
+    // En MODELO B: la lógica NO está en la ficha
+    // se calcula externamente (ej: Motor / Sistema de reglas)
 
-protected:
+private:
     TipoFicha tipo;
     Color color;
     Posicion posicion;

@@ -1,47 +1,10 @@
 #include "Torre.h"
-#include "Nodo.h"
 
-Torre::Torre(Color color, Posicion pos)
-    : Ficha(TipoFicha::Torre, color, pos)
-{
-}
-
-Torre::~Torre()
-{
-}
-
-bool Torre::esValida(const Nodo& estado, int x, int y) const
-{
-    return estado.tablero.esValida(x, y);
-}
-
-bool Torre::esCasillaOcupada(const Nodo& estado, int x, int y) const
-{
-    for (const Ficha* f : estado.piezas)
-    {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
-            return true;
-    }
-    return false;
-}
-
-bool Torre::esCaptura(const Nodo& estado, int x, int y, const Ficha* piezaOrigen) const
-{
-    for (const Ficha* f : estado.piezas)
-    {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
-            return f->getColor() != piezaOrigen->getColor();
-    }
-    return false;
-}
-
-std::vector<Posicion> Torre::getMovimientos(const Nodo& estado) const
+std::vector<Posicion> Torre::getMovimientos(const Ficha& pieza, const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
-    Posicion origen = this->getPosicion();
-
-    const Ficha* piezaOrigen = this;
+    Posicion origen = pieza.getPosicion();
 
     const int dirs[4][2] =
     {
@@ -60,7 +23,7 @@ std::vector<Posicion> Torre::getMovimientos(const Nodo& estado) const
         {
             if (esCasillaOcupada(estado, x, y))
             {
-                if (esCaptura(estado, x, y, piezaOrigen))
+                if (esCaptura(estado, x, y, pieza))
                     movimientos.push_back({x, y});
 
                 break;
@@ -74,4 +37,29 @@ std::vector<Posicion> Torre::getMovimientos(const Nodo& estado) const
     }
 
     return movimientos;
+}
+
+bool Torre::esValida(const Nodo& estado, int x, int y) const
+{
+    return estado.tablero.esValida(x, y);
+}
+
+bool Torre::esCasillaOcupada(const Nodo& estado, int x, int y) const
+{
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
+            return true;
+    }
+    return false;
+}
+
+bool Torre::esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const
+{
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
+            return f.getColor() != piezaOrigen.getColor();
+    }
+    return false;
 }

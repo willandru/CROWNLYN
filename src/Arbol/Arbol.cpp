@@ -1,84 +1,122 @@
 #include "Arbol.h"
-#include "Ficha.h"
+
+// Fichas (MODELO B - funciones externas)
+#include "Torre.h"
+#include "Rey.h"
+#include "Peon.h"
 
 Arbol::Arbol()
 {
+    raiz = nullptr;
 }
 
 Arbol::~Arbol()
 {
-    liberar();
+    if (raiz)
+        delete raiz;
 }
 
-void Arbol::construir(Nodo* raiz, int profundidadMaxima)
+void Arbol::setNodoInicial(Nodo* r)
 {
-    liberar();
+    raiz = r;
+    nodos.clear();
 
-    if (!raiz || profundidadMaxima <= 0)
-        return;
-
-    Turno primerTurno;
-    primerTurno.nodos.push_back(raiz);
-
-    turnos.push_back(primerTurno);
-
-    expandirTurno(turnos[0], profundidadMaxima);
+    if (raiz)
+        nodos.push_back(raiz);
 }
 
-void Arbol::expandirTurno(Turno& turnoActual, int profundidad)
+const std::vector<Nodo*>& Arbol::getNodos() const
 {
-    if (profundidad <= 0)
-        return;
+    return nodos;
+}
 
-    Turno siguienteTurno;
+void Arbol::construirSiguienteNivel()
+{
+    std::vector<Nodo*> nuevosNodos;
 
-    for (Nodo* nodo : turnoActual.nodos)
+    for (Nodo* n : nodos)
     {
-        for (Ficha* f : nodo->piezas)
-        {
-            std::vector<Posicion> movs = f->getMovimientos(*nodo);
+        expandirNodo(n);
 
-            for (const Posicion& p : movs)
+        for (Nodo* h : n->hijos)
+        {
+            nuevosNodos.push_back(h);
+        }
+    }
+
+    nodos = nuevosNodos;
+}
+
+void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
+{
+    raiz = nodo;
+    nodos.clear();
+    nodos.push_back(nodo);
+
+    for (int i = 0; i < profundidadMax; i++)
+    {
+        construirSiguienteNivel();
+    }
+}
+
+void Arbol::expandirNodo(Nodo* nodo)
+{
+    if (!nodo) return;
+
+    for (const Ficha& f : nodo->piezas)
+    {
+        if (f.getColor() != nodo->turnoActual)
+            continue;
+
+        std::vector<Posicion> movimientos = obtenerMovimientosFicha(f, *nodo);
+
+        for (const Posicion& p : movimientos)
+        {
+            Nodo* hijo = nodo->clonar();
+
+            // mover ficha en el hijo
+            for (Ficha& hf : hijo->piezas)
             {
-                Nodo* hijo = nodo->clonar();
-
-                // mover ficha en el hijo
-                for (Ficha* fh : hijo->piezas)
+                if (hf.getPosicion().x == f.getPosicion().x &&
+                    hf.getPosicion().y == f.getPosicion().y)
                 {
-                    if (fh->getPosicion().x == f->getPosicion().x &&
-                        fh->getPosicion().y == f->getPosicion().y)
-                    {
-                        fh->setPosicion(p);
-                        break;
-                    }
+                    hf.setPosicion(p);
+                    break;
                 }
-
-                hijo->agregarHijo(hijo);
-                siguienteTurno.nodos.push_back(hijo);
             }
+
+            hijo->turnoActual = (nodo->turnoActual == Color::Blanca)
+                                ? Color::Negra
+                                : Color::Blanca;
+
+            nodo->agregarHijo(hijo);
         }
     }
-
-    turnos.push_back(siguienteTurno);
-
-    expandirTurno(turnos.back(), profundidad - 1);
 }
 
-const std::vector<Turno>& Arbol::getTurnos() const
+std::vector<Posicion> Arbol::obtenerMovimientosFicha(const Ficha& f, const Nodo& estado) const
 {
-    return turnos;
-}
-
-void Arbol::liberar()
-{
-    for (Turno& t : turnos)
+    switch (f.getTipo())
     {
-        for (Nodo* n : t.nodos)
+        case TipoFicha::Torre:
         {
-            delete n;
+            Torre t;
+            return t.getMovimientos(f, estado);
         }
-        t.nodos.clear();
-    }
 
-    turnos.clear();
+        case TipoFicha::Rey:
+        {
+            Rey r;
+            return r.getMovimientos(f, estado);
+        }
+
+        case TipoFicha::Peon:
+        {
+            Peon p;
+            return p.getMovimientos(f, estado);
+        }
+
+        default:
+            return {};
+    }
 }

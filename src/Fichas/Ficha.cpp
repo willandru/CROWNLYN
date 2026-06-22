@@ -1,14 +1,17 @@
 #include "Ficha.h"
 
+Ficha::Ficha()
+{
+    tipo = TipoFicha::Peon;
+    color = Color::Blanca;
+    posicion = {0, 0};
+}
+
 Ficha::Ficha(TipoFicha tipo, Color color, Posicion pos)
 {
     this->tipo = tipo;
     this->color = color;
     this->posicion = pos;
-}
-
-Ficha::~Ficha()
-{
 }
 
 TipoFicha Ficha::getTipo() const

@@ -3,6 +3,7 @@
 class Tablero
 {
 public:
+    Tablero();
     Tablero(int ancho, int alto);
 
     int getAncho() const;

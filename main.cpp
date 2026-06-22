@@ -3,40 +3,38 @@
 #include "Arbol.h"
 #include "Nodo.h"
 #include "Tablero.h"
-#include "Rey.h"
-#include "Torre.h"
-#include "Peon.h"
+#include "Ficha.h"
 
 int main()
 {
-    // 1. Nodo raíz
+    // Nodo raíz
     Nodo* raiz = new Nodo();
 
-    // 2. Tablero 3x3
+    // Tablero 3x3 (configuración dinámica)
     raiz->tablero = Tablero(3, 3);
 
-    // 3. Turno inicial
+    // Turno inicial
     raiz->turnoActual = Color::Blanca;
 
-    // 4. Crear piezas iniciales (estado base)
+    // Estado inicial
 
-    // Rey negro en (1,0)
-    Rey* reyNegro = new Rey(Color::Negra, {1, 0});
-    raiz->piezas.push_back(reyNegro);
+    // Rey negro en (0, 0)
+    raiz->piezas.push_back(Ficha(TipoFicha::Rey, Color::Negra, {0, 0}));
 
-    // Torre blanca en (2,2)
-    Torre* torreBlanca = new Torre(Color::Blanca, {2, 2});
-    raiz->piezas.push_back(torreBlanca);
+    // Torre blanca en (2, 2)
+    raiz->piezas.push_back(Ficha(TipoFicha::Torre, Color::Blanca, {2, 2}));
 
-    // Peón blanco en (2,1)
-    Peon* peonBlanco = new Peon(Color::Blanca, {2, 1});
-    raiz->piezas.push_back(peonBlanco);
+    // Peón blanco en (2, 1)
+    raiz->piezas.push_back(Ficha(TipoFicha::Peon, Color::Blanca, {2, 1}));
 
-    // 5. Construcción del árbol
+    // Árbol
     Arbol arbol;
-    arbol.construir(raiz, 1);
+    arbol.setNodoInicial(raiz);
 
-    std::cout << "Crownlyn inicializado correctamente (tablero 3x3)\n";
+    // Expansión inicial
+    arbol.construirSiguienteNivel();
+
+    std::cout << "Crownlyn inicializado correctamente\n";
 
     return 0;
 }

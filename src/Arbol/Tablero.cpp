@@ -1,5 +1,11 @@
 #include "Tablero.h"
 
+Tablero::Tablero()
+{
+    this->ancho = 0;
+    this->alto = 0;
+}
+
 Tablero::Tablero(int ancho, int alto)
 {
     this->ancho = ancho;

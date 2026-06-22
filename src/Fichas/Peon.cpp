@@ -1,13 +1,44 @@
 #include "Peon.h"
-#include "Nodo.h"
 
-Peon::Peon(Color color, Posicion pos)
-    : Ficha(TipoFicha::Peon, color, pos)
+std::vector<Posicion> Peon::getMovimientos(const Ficha& pieza, const Nodo& estado) const
 {
-}
+    std::vector<Posicion> movimientos;
 
-Peon::~Peon()
-{
+    Posicion origen = pieza.getPosicion();
+
+    int direccion = (pieza.getColor() == Color::Blanca) ? -1 : 1;
+
+    // movimiento hacia adelante
+    int xFront = origen.x + direccion;
+    int y = origen.y;
+
+    if (esValida(estado, xFront, y) && !esCasillaOcupada(estado, xFront, y))
+    {
+        movimientos.push_back({xFront, y});
+    }
+
+    // capturas diagonales
+    int xLeft = origen.x + direccion;
+    int yLeft = origen.y - 1;
+
+    int xRight = origen.x + direccion;
+    int yRight = origen.y + 1;
+
+    if (esValida(estado, xLeft, yLeft) &&
+        esCasillaOcupada(estado, xLeft, yLeft) &&
+        esCaptura(estado, xLeft, yLeft, pieza))
+    {
+        movimientos.push_back({xLeft, yLeft});
+    }
+
+    if (esValida(estado, xRight, yRight) &&
+        esCasillaOcupada(estado, xRight, yRight) &&
+        esCaptura(estado, xRight, yRight, pieza))
+    {
+        movimientos.push_back({xRight, yRight});
+    }
+
+    return movimientos;
 }
 
 bool Peon::esValida(const Nodo& estado, int x, int y) const
@@ -17,58 +48,20 @@ bool Peon::esValida(const Nodo& estado, int x, int y) const
 
 bool Peon::esCasillaOcupada(const Nodo& estado, int x, int y) const
 {
-    for (const Ficha* f : estado.piezas)
+    for (const Ficha& f : estado.piezas)
     {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
             return true;
     }
     return false;
 }
 
-bool Peon::esCaptura(const Nodo& estado, int x, int y, const Ficha* piezaOrigen) const
+bool Peon::esCaptura(const Nodo& estado, int x, int y, const Ficha& piezaOrigen) const
 {
-    for (const Ficha* f : estado.piezas)
+    for (const Ficha& f : estado.piezas)
     {
-        if (f->getPosicion().x == x && f->getPosicion().y == y)
-            return f->getColor() != piezaOrigen->getColor();
+        if (f.getPosicion().x == x && f.getPosicion().y == y)
+            return f.getColor() != piezaOrigen.getColor();
     }
     return false;
-}
-
-std::vector<Posicion> Peon::getMovimientos(const Nodo& estado) const
-{
-    std::vector<Posicion> movimientos;
-
-    Posicion origen = this->getPosicion();
-    const Ficha* piezaOrigen = this;
-
-    int dir = (this->getColor() == Color::Blanca) ? -1 : 1;
-
-    // Movimiento hacia adelante
-    int xFwd = origen.x;
-    int yFwd = origen.y + dir;
-
-    if (esValida(estado, xFwd, yFwd) && !esCasillaOcupada(estado, xFwd, yFwd))
-    {
-        movimientos.push_back({xFwd, yFwd});
-    }
-
-    // Capturas diagonales
-    int xLeft = origen.x - 1;
-    int xRight = origen.x + 1;
-    int yDiag = origen.y + dir;
-
-    if (esValida(estado, xLeft, yDiag) &&
-        esCaptura(estado, xLeft, yDiag, piezaOrigen))
-    {
-        movimientos.push_back({xLeft, yDiag});
-    }
-
-    if (esValida(estado, xRight, yDiag) &&
-        esCaptura(estado, xRight, yDiag, piezaOrigen))
-    {
-        movimientos.push_back({xRight, yDiag});
-    }
-
-    return movimientos;
 }
