@@ -123,7 +123,6 @@ void Arbol::imprimirNivel() const
         std::cout << "Nodo " << i++ << "\n";
 
         std::cout << "Piezas: " << n->piezas.size() << "\n";
-        std::cout << "Hijos: " << n->hijos.size() << "\n";
 
         for (const Ficha& f : n->piezas)
         {
