@@ -1,6 +1,6 @@
 #include "Nodo.h"
 
-// Piezas
+// piezas
 #include "Torre.h"
 #include "Rey.h"
 #include "Peon.h"
@@ -68,15 +68,14 @@ bool Nodo::hayFichaEn(int x, int y) const
 void Nodo::liberarHijos()
 {
     for (Nodo* h : hijos)
-    {
         delete h;
-    }
+
     hijos.clear();
 }
 
-// ===============================
+// =======================
 // JAQUE
-// ===============================
+// =======================
 
 const Ficha* Nodo::encontrarRey(Color color) const
 {
