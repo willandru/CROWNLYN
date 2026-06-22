@@ -28,6 +28,13 @@ public:
 
     void liberarHijos();
 
+    // NUEVO: validación de estado
+    bool estaEnJaque(Color color) const;
+
 private:
     void copiar(const Nodo& other);
+
+    // helpers internos para jaque
+    const Ficha* encontrarRey(Color color) const;
+    bool casillaAtacada(int x, int y, Color porQuien) const;
 };
