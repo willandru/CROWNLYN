@@ -9,6 +9,7 @@ class Peon
 {
 public:
     std::vector<Posicion> getMovimientos(const Ficha& pieza, const Nodo& estado) const;
+    std::vector<Posicion> getAtaques(const Ficha& pieza, const Nodo& estado) const;
 
 private:
     bool esValida(const Nodo& estado, int x, int y) const;
