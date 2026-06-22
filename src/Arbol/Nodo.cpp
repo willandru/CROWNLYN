@@ -1,5 +1,9 @@
 #include "Nodo.h"
 
+// ======================================================
+// CONSTRUCTOR
+// ======================================================
+
 Nodo::Nodo()
 {
     padre = nullptr;
@@ -7,25 +11,27 @@ Nodo::Nodo()
     tablero = Tablero();
 }
 
+// ======================================================
+// COPIA CONSTRUCTORA
+// ======================================================
+
 Nodo::Nodo(const Nodo& other)
 {
     padre = nullptr;
     copiar(other);
 }
 
-Nodo::~Nodo()
-{
-    liberarHijos();
-}
+// ======================================================
+// COPIA INTERNA (SIN ROMPER ÁRBOL)
+// ======================================================
 
-// ======================================================
-// COPIA PROFUNDA DEL ESTADO
-// ======================================================
 void Nodo::copiar(const Nodo& other)
 {
     piezas = other.piezas;
 
+    // ❗ NO copiar hijos (el árbol controla estructura)
     hijos.clear();
+
     padre = nullptr;
 
     turnoActual = other.turnoActual;
@@ -33,8 +39,9 @@ void Nodo::copiar(const Nodo& other)
 }
 
 // ======================================================
-// HIJOS
+// AGREGAR HIJO (RELACIÓN PADRE-HIJO)
 // ======================================================
+
 void Nodo::agregarHijo(Nodo* hijo)
 {
     if (!hijo) return;
@@ -43,26 +50,26 @@ void Nodo::agregarHijo(Nodo* hijo)
     hijos.push_back(hijo);
 }
 
-void Nodo::liberarHijos()
-{
-    for (Nodo* h : hijos)
-        delete h;
-
-    hijos.clear();
-}
-
 // ======================================================
-// BUSQUEDA POR POSICION
+// BUSCAR FICHA POR POSICIÓN
 // ======================================================
+
 const Ficha* Nodo::obtenerFichaEn(int x, int y) const
 {
     for (const Ficha& f : piezas)
     {
-        if (f.getPosicion().x == x && f.getPosicion().y == y)
+        if (f.getPosicion().x == x &&
+            f.getPosicion().y == y)
+        {
             return &f;
+        }
     }
     return nullptr;
 }
+
+// ======================================================
+// CHECK RÁPIDO
+// ======================================================
 
 bool Nodo::hayFichaEn(int x, int y) const
 {
@@ -70,8 +77,9 @@ bool Nodo::hayFichaEn(int x, int y) const
 }
 
 // ======================================================
-// BUSQUEDA POR ID (CRÍTICO PARA EL ENGINE)
+// BUSCAR POR ID (CONST)
 // ======================================================
+
 const Ficha* Nodo::obtenerFichaPorId(int id) const
 {
     for (const Ficha& f : piezas)
@@ -81,6 +89,10 @@ const Ficha* Nodo::obtenerFichaPorId(int id) const
     }
     return nullptr;
 }
+
+// ======================================================
+// BUSCAR POR ID (MODIFICABLE)
+// ======================================================
 
 Ficha* Nodo::obtenerFichaPorId(int id)
 {

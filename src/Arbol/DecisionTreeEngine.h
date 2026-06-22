@@ -31,6 +31,14 @@ public:
         int y,
         Color porQuien) const;
 
+    bool tieneMovimientosLegales(
+        const Nodo& estado,
+        Color color) const;
+
+    bool esMate(
+        const Nodo& estado,
+        Color color) const;
+
 private:
     Nodo simularMovimiento(
         const Nodo& estado,
@@ -40,9 +48,4 @@ private:
     const Ficha* encontrarRey(
         const Nodo& estado,
         Color color) const;
-
-private:
-    const Ficha* encontrarPorId(
-        const Nodo& estado,
-        int id) const;
 };

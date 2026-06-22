@@ -9,10 +9,10 @@ class Nodo
 public:
     Nodo();
     Nodo(const Nodo& other);
-    ~Nodo();
+
+    ~Nodo() = default;
 
     void agregarHijo(Nodo* hijo);
-    void liberarHijos();
 
     const Ficha* obtenerFichaEn(int x, int y) const;
     bool hayFichaEn(int x, int y) const;

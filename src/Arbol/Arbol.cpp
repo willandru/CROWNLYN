@@ -29,7 +29,7 @@ void Arbol::setNodoInicial(Nodo* r)
 }
 
 // ======================================================
-// LIBERACIÓN SEGURA (DFS)
+// LIBERACIÓN DFS SEGURA
 // ======================================================
 
 void Arbol::liberarNodo(Nodo* nodo)
@@ -37,7 +37,9 @@ void Arbol::liberarNodo(Nodo* nodo)
     if (!nodo) return;
 
     for (Nodo* h : nodo->hijos)
+    {
         liberarNodo(h);
+    }
 
     delete nodo;
 }
@@ -67,7 +69,7 @@ const std::vector<Nodo*>& Arbol::getNodos() const
 }
 
 // ======================================================
-// EXPANSIÓN DE UN NIVEL
+// EXPANSIÓN NIVEL
 // ======================================================
 
 void Arbol::construirSiguienteNivel()
@@ -79,16 +81,11 @@ void Arbol::construirSiguienteNivel()
     {
         if (!n) continue;
 
-        // IMPORTANTE: evitar acumulación previa
-        // (si expandes varias veces sin reset, esto es crítico)
-        n->hijos.clear();
-
         engine.expandirNodo(n);
 
         for (Nodo* h : n->hijos)
         {
-            if (h)
-                nuevosNodos.push_back(h);
+            nuevosNodos.push_back(h);
         }
     }
 
