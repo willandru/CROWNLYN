@@ -25,6 +25,8 @@ public:
 
     void imprimirNivel() const;
 
+    void resumenNivel() const;
+
 private:
     void liberarNodo(Nodo* nodo);
 
@@ -32,5 +34,5 @@ private:
     Nodo* raiz = nullptr;
     std::vector<Nodo*> nodos;
 
-    DecisionTreeEngine* engine;   // ✔️ POINTER (evita error)
+    DecisionTreeEngine* engine;
 };

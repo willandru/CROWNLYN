@@ -4,7 +4,9 @@
 // CONSTRUCTOR
 // ======================================================
 
-DecisionTreeEngine::DecisionTreeEngine() {}
+DecisionTreeEngine::DecisionTreeEngine()
+{
+}
 
 // ======================================================
 // EXPANSIÓN DEL ÁRBOL
@@ -12,13 +14,17 @@ DecisionTreeEngine::DecisionTreeEngine() {}
 
 void DecisionTreeEngine::expandirNodo(Nodo* nodo)
 {
-    if (!nodo) return;
+    if (!nodo)
+        return;
 
     Color jugador = nodo->turnoActual;
 
-    // corte temprano
-    if (esMate(*nodo, jugador) || esAhogado(*nodo, jugador))
+    if (esMate(*nodo, jugador) ||
+        esDerrota(*nodo) ||
+        sinMovimientos(*nodo, jugador))
+    {
         return;
+    }
 
     for (const Ficha& f : nodo->piezas)
     {
@@ -37,7 +43,9 @@ void DecisionTreeEngine::expandirNodo(Nodo* nodo)
             Nodo* hijo = new Nodo(nuevo);
 
             hijo->turnoActual =
-                (jugador == Color::Blanca) ? Color::Negra : Color::Blanca;
+                (jugador == Color::Blanca)
+                ? Color::Negra
+                : Color::Blanca;
 
             nodo->agregarHijo(hijo);
         }
@@ -57,21 +65,21 @@ Nodo DecisionTreeEngine::simularMovimiento(
 
     const int id = ficha.getId();
 
-    // eliminar pieza capturada
-    for (auto it = copia.piezas.begin(); it != copia.piezas.end(); ++it)
+    for (auto it = copia.piezas.begin();
+         it != copia.piezas.end();
+         ++it)
     {
         if (it->getPosicion().x == destino.x &&
             it->getPosicion().y == destino.y)
         {
             if (it->getTipo() == TipoFicha::Rey)
-                return estado; // no capturar rey (seguridad)
+                return estado;
 
             copia.piezas.erase(it);
             break;
         }
     }
 
-    // mover pieza
     for (Ficha& f : copia.piezas)
     {
         if (f.getId() == id)
@@ -109,7 +117,7 @@ std::vector<Posicion> DecisionTreeEngine::obtenerMovimientosFicha(
 }
 
 // ======================================================
-// ATAQUES (CONSISTENTE, SIN DUPLICACIÓN)
+// ATAQUES
 // ======================================================
 
 std::vector<Posicion> DecisionTreeEngine::obtenerAtaquesFicha(
@@ -141,9 +149,14 @@ bool DecisionTreeEngine::esMovimientoLegal(
     const Ficha& ficha,
     const Posicion& destino) const
 {
-    Nodo sim = simularMovimiento(estado, ficha, destino);
+    Nodo sim = simularMovimiento(
+        estado,
+        ficha,
+        destino);
 
-    return !estaEnJaque(sim, ficha.getColor());
+    return !estaEnJaque(
+        sim,
+        ficha.getColor());
 }
 
 // ======================================================
@@ -154,13 +167,18 @@ bool DecisionTreeEngine::estaEnJaque(
     const Nodo& estado,
     Color color) const
 {
-    const Ficha* rey = encontrarRey(estado, color);
+    const Ficha* rey =
+        encontrarRey(
+            estado,
+            color);
 
     if (!rey)
         return false;
 
     Color enemigo =
-        (color == Color::Blanca) ? Color::Negra : Color::Blanca;
+        (color == Color::Blanca)
+        ? Color::Negra
+        : Color::Blanca;
 
     return casillaAtacada(
         estado,
@@ -170,7 +188,7 @@ bool DecisionTreeEngine::estaEnJaque(
 }
 
 // ======================================================
-// CASILLA ATACADA (ÚNICA FUENTE DE VERDAD)
+// CASILLA ATACADA
 // ======================================================
 
 bool DecisionTreeEngine::casillaAtacada(
@@ -184,12 +202,18 @@ bool DecisionTreeEngine::casillaAtacada(
         if (f.getColor() != atacante)
             continue;
 
-        auto ataques = obtenerAtaquesFicha(f, estado);
+        auto ataques =
+            obtenerAtaquesFicha(
+                f,
+                estado);
 
         for (const Posicion& p : ataques)
         {
-            if (p.x == x && p.y == y)
+            if (p.x == x &&
+                p.y == y)
+            {
                 return true;
+            }
         }
     }
 
@@ -208,7 +232,9 @@ const Ficha* DecisionTreeEngine::encontrarRey(
     {
         if (f.getTipo() == TipoFicha::Rey &&
             f.getColor() == color)
+        {
             return &f;
+        }
     }
 
     return nullptr;
@@ -227,12 +253,20 @@ bool DecisionTreeEngine::tieneMovimientosLegales(
         if (f.getColor() != color)
             continue;
 
-        auto movs = obtenerMovimientosFicha(f, estado);
+        auto movs =
+            obtenerMovimientosFicha(
+                f,
+                estado);
 
         for (const Posicion& p : movs)
         {
-            if (esMovimientoLegal(estado, f, p))
+            if (esMovimientoLegal(
+                    estado,
+                    f,
+                    p))
+            {
                 return true;
+            }
         }
     }
 
@@ -247,20 +281,64 @@ bool DecisionTreeEngine::esMate(
     const Nodo& estado,
     Color color) const
 {
-    return estaEnJaque(estado, color)
-        && !tieneMovimientosLegales(estado, color);
+    return estaEnJaque(
+               estado,
+               color)
+        &&
+           !tieneMovimientosLegales(
+               estado,
+               color);
 }
 
 // ======================================================
-// AHOGADO
+// DERROTA
 // ======================================================
 
-bool DecisionTreeEngine::esAhogado(
+bool DecisionTreeEngine::esDerrota(
+    const Nodo& estado) const
+{
+    int blancas = 0;
+    int negras  = 0;
+
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getColor() == Color::Blanca)
+            ++blancas;
+        else
+            ++negras;
+    }
+
+    return blancas == 0 &&
+           negras > 0;
+}
+
+// ======================================================
+// SIN MOVIMIENTOS
+// ======================================================
+
+bool DecisionTreeEngine::sinMovimientos(
     const Nodo& estado,
     Color color) const
 {
-    return !estaEnJaque(estado, color)
-        && !tieneMovimientosLegales(estado, color);
+    return !tieneMovimientosFisicos(estado, color);
+}
+
+bool DecisionTreeEngine::tieneMovimientosFisicos(
+    const Nodo& estado,
+    Color color) const
+{
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getColor() != color)
+            continue;
+
+        auto movs = obtenerMovimientosFicha(f, estado);
+
+        if (!movs.empty())
+            return true;
+    }
+
+    return false;
 }
 
 // ======================================================
@@ -278,7 +356,9 @@ bool DecisionTreeEngine::casillaOcupadaPorColor(
         if (f.getPosicion().x == x &&
             f.getPosicion().y == y &&
             f.getColor() == color)
+        {
             return true;
+        }
     }
 
     return false;
