@@ -1,7 +1,7 @@
 #include "Rey.h"
 
 // ======================================================
-// MOVIMIENTOS DEL REY (SIN FILTRO DE JAQUE)
+// MOVIMIENTOS LEGALES
 // ======================================================
 
 std::vector<Posicion> Rey::getMovimientos(
@@ -10,43 +10,72 @@ std::vector<Posicion> Rey::getMovimientos(
 {
     std::vector<Posicion> movimientos;
 
-    const Posicion origen = pieza.getPosicion();
+    const Posicion o = pieza.getPosicion();
+
+    const Color enemigo =
+        (pieza.getColor() == Color::Blanca)
+        ? Color::Negra
+        : Color::Blanca;
 
     const int dirs[8][2] =
     {
-        { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
-        { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }
+        {1,0},{-1,0},{0,1},{0,-1},
+        {1,1},{1,-1},{-1,1},{-1,-1}
     };
 
     for (const auto& d : dirs)
     {
-        int x = origen.x + d[0];
-        int y = origen.y + d[1];
+        int x = o.x + d[0];
+        int y = o.y + d[1];
 
         if (!esValida(estado, x, y))
             continue;
 
+        // REGLA: no moverse a casillas ocupadas por piezas propias
         const Ficha* f = obtenerFichaEn(estado, x, y);
-
-        // casilla vacía
-        if (!f)
-        {
-            movimientos.push_back({ x, y });
+        if (f && f->getColor() == pieza.getColor())
             continue;
-        }
 
-        // captura solo si es enemigo
-        if (f->getColor() != pieza.getColor())
-        {
-            movimientos.push_back({ x, y });
-        }
+        // IMPORTANTE:
+        // el control de jaque NO se calcula aquí
+        // lo filtra el DecisionTreeEngine
+
+        movimientos.push_back({x, y});
     }
 
     return movimientos;
 }
 
 // ======================================================
-// VALIDACIÓN TABLERO
+// ATAQUES (CONTROL REAL DE CASILLAS)
+// ======================================================
+
+std::vector<Posicion> Rey::getAtaques(
+    const Ficha& pieza,
+    const Nodo& estado) const
+{
+    std::vector<Posicion> ataques;
+
+    const Posicion o = pieza.getPosicion();
+
+    const int dirs[8][2] =
+    {
+        {1,0},{-1,0},{0,1},{0,-1},
+        {1,1},{1,-1},{-1,1},{-1,-1}
+    };
+
+    for (const auto& d : dirs)
+    {
+        int x = o.x + d[0];
+        int y = o.y + d[1];
+
+        if (esValida(estado, x, y))
+            ataques.push_back({x, y});
+    }
+
+    return ataques;
+}
+
 // ======================================================
 
 bool Rey::esValida(const Nodo& estado, int x, int y) const
@@ -54,23 +83,7 @@ bool Rey::esValida(const Nodo& estado, int x, int y) const
     return estado.tablero.esValida(x, y);
 }
 
-// ======================================================
-// BUSCAR PIEZA EN CASILLA
-// ======================================================
-
-const Ficha* Rey::obtenerFichaEn(
-    const Nodo& estado,
-    int x,
-    int y) const
+const Ficha* Rey::obtenerFichaEn(const Nodo& estado, int x, int y) const
 {
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x &&
-            f.getPosicion().y == y)
-        {
-            return &f;
-        }
-    }
-
-    return nullptr;
+    return estado.obtenerFichaEn(x, y);
 }

@@ -1,59 +1,83 @@
 #include "DecisionTreeEngine.h"
+#include <iostream>
 
 // ======================================================
-// CONSTRUCTOR
-// ======================================================
 
-DecisionTreeEngine::DecisionTreeEngine()
-{
-}
+DecisionTreeEngine::DecisionTreeEngine() {}
 
 // ======================================================
-// EXPANSIÓN DEL ÁRBOL
+// EXPANSIÓN DEL NODO
 // ======================================================
 
 void DecisionTreeEngine::expandirNodo(Nodo* nodo)
 {
     if (!nodo)
+    {
+        std::cout << "[EXPAND] NULL\n";
         return;
+    }
+
+    std::cout << "\n[EXPAND] piezas=" << nodo->piezas.size()
+              << " turno=" << (nodo->turnoActual == Color::Blanca ? "Blanca" : "Negra") << "\n";
 
     Color jugador = nodo->turnoActual;
 
-    if (esMate(*nodo, jugador) ||
-        esDerrota(*nodo) ||
-        sinMovimientos(*nodo, jugador))
-    {
-        return;
-    }
+    int hijos = 0;
+    int procesadas = 0;
 
     for (const Ficha& f : nodo->piezas)
     {
+        std::cout << "\n[PIEZA] ID=" << f.getId()
+                  << " tipo=" << (int)f.getTipo()
+                  << " color=" << (f.getColor() == Color::Blanca ? "B" : "N") << "\n";
+
         if (f.getColor() != jugador)
+        {
+            std::cout << "  skip turno\n";
             continue;
+        }
+
+        procesadas++;
 
         auto movs = obtenerMovimientosFicha(f, *nodo);
 
+        std::cout << "[MOV] ID=" << f.getId()
+                  << " movs=" << movs.size() << "\n";
+
         for (const Posicion& p : movs)
         {
-            if (!esMovimientoLegal(*nodo, f, p))
-                continue;
+            std::cout << "   -> probando (" << p.x << "," << p.y << ")\n";
 
             Nodo nuevo = simularMovimiento(*nodo, f, p);
 
-            Nodo* hijo = new Nodo(nuevo);
+            if (!esNodoValido(nuevo))
+            {
+                std::cout << "   X nodo invalido\n";
+                continue;
+            }
 
-            hijo->turnoActual =
-                (jugador == Color::Blanca)
-                ? Color::Negra
-                : Color::Blanca;
+            if (estaEnJaque(nuevo, jugador))
+            {
+                std::cout << "   X en jaque\n";
+                continue;
+            }
+
+            Nodo* hijo = new Nodo(nuevo);
+            hijo->turnoActual = (jugador == Color::Blanca) ? Color::Negra : Color::Blanca;
 
             nodo->agregarHijo(hijo);
+            hijos++;
+
+            std::cout << "   + hijo creado\n";
         }
     }
+
+    std::cout << "\n[EXPAND FIN] procesadas=" << procesadas
+              << " hijos=" << hijos << "\n";
 }
 
 // ======================================================
-// SIMULACIÓN
+// SIMULACIÓN SEGURA
 // ======================================================
 
 Nodo DecisionTreeEngine::simularMovimiento(
@@ -63,61 +87,67 @@ Nodo DecisionTreeEngine::simularMovimiento(
 {
     Nodo copia = estado;
 
-    const int id = ficha.getId();
+    std::cout << "[SIM] ID=" << ficha.getId()
+              << " -> (" << destino.x << "," << destino.y << ")\n";
 
-    for (auto it = copia.piezas.begin();
-         it != copia.piezas.end();
-         ++it)
+    // eliminar SOLO pieza enemiga en destino
+    for (auto it = copia.piezas.begin(); it != copia.piezas.end(); )
     {
         if (it->getPosicion().x == destino.x &&
             it->getPosicion().y == destino.y)
         {
-            if (it->getTipo() == TipoFicha::Rey)
-                return estado;
+            if (it->getColor() != ficha.getColor())
+            {
+                std::cout << "[SIM] captura\n";
+                it = copia.piezas.erase(it);
+                continue;
+            }
+        }
+        ++it;
+    }
 
-            copia.piezas.erase(it);
+    // mover pieza original
+    bool ok = false;
+
+    for (Ficha& f : copia.piezas)
+    {
+        if (f.getId() == ficha.getId())
+        {
+            f.setPosicion(destino);
+            ok = true;
             break;
         }
     }
 
-    for (Ficha& f : copia.piezas)
+    if (!ok)
     {
-        if (f.getId() == id)
-        {
-            f.setPosicion(destino);
-            break;
-        }
+        std::cout << "[SIM] ERROR pieza perdida ID=" << ficha.getId() << "\n";
+        copia.piezas.clear();
     }
 
     return copia;
 }
 
 // ======================================================
-// MOVIMIENTOS POR PIEZA
-// ======================================================
 
 std::vector<Posicion> DecisionTreeEngine::obtenerMovimientosFicha(
     const Ficha& f,
     const Nodo& estado) const
 {
+    std::cout << "[MOV] ID=" << f.getId() << "\n";
+
     switch (f.getTipo())
     {
-        case TipoFicha::Torre:
-            return Torre().getMovimientos(f, estado);
-
-        case TipoFicha::Rey:
-            return Rey().getMovimientos(f, estado);
-
-        case TipoFicha::Peon:
-            return Peon().getMovimientos(f, estado);
-
-        default:
-            return {};
+        case TipoFicha::Torre:   return Torre().getMovimientos(f, estado);
+        case TipoFicha::Alfil:   return Alfil().getMovimientos(f, estado);
+        case TipoFicha::Dama:    return Dama().getMovimientos(f, estado);
+        case TipoFicha::Caballo: return Caballo().getMovimientos(f, estado);
+        case TipoFicha::Rey:     return Rey().getMovimientos(f, estado);
+        case TipoFicha::Peon:    return Peon().getMovimientos(f, estado);
+        default: return {};
     }
 }
 
-// ======================================================
-// ATAQUES
 // ======================================================
 
 std::vector<Posicion> DecisionTreeEngine::obtenerAtaquesFicha(
@@ -126,69 +156,45 @@ std::vector<Posicion> DecisionTreeEngine::obtenerAtaquesFicha(
 {
     switch (f.getTipo())
     {
-        case TipoFicha::Torre:
-            return Torre().getMovimientos(f, estado);
-
-        case TipoFicha::Rey:
-            return Rey().getMovimientos(f, estado);
-
-        case TipoFicha::Peon:
-            return Peon().getAtaques(f, estado);
-
-        default:
-            return {};
+        case TipoFicha::Torre:   return Torre().getAtaques(f, estado);
+        case TipoFicha::Alfil:   return Alfil().getAtaques(f, estado);
+        case TipoFicha::Dama:    return Dama().getAtaques(f, estado);
+        case TipoFicha::Caballo: return Caballo().getAtaques(f, estado);
+        case TipoFicha::Rey:     return Rey().getAtaques(f, estado);
+        case TipoFicha::Peon:    return Peon().getAtaques(f, estado);
+        default: return {};
     }
 }
 
-// ======================================================
-// LEGALIDAD
-// ======================================================
-
-bool DecisionTreeEngine::esMovimientoLegal(
-    const Nodo& estado,
-    const Ficha& ficha,
-    const Posicion& destino) const
-{
-    Nodo sim = simularMovimiento(
-        estado,
-        ficha,
-        destino);
-
-    return !estaEnJaque(
-        sim,
-        ficha.getColor());
-}
-
-// ======================================================
-// JAQUE
 // ======================================================
 
 bool DecisionTreeEngine::estaEnJaque(
     const Nodo& estado,
     Color color) const
 {
-    const Ficha* rey =
-        encontrarRey(
-            estado,
-            color);
+    const Ficha* rey = encontrarRey(estado, color);
 
     if (!rey)
-        return false;
+    {
+        std::cout << "[CHECK] rey missing\n";
+        return true;
+    }
 
-    Color enemigo =
-        (color == Color::Blanca)
-        ? Color::Negra
-        : Color::Blanca;
+    Color enemigo = (color == Color::Blanca) ? Color::Negra : Color::Blanca;
 
-    return casillaAtacada(
+    bool atk = casillaAtacada(
         estado,
         rey->getPosicion().x,
         rey->getPosicion().y,
         enemigo);
+
+    std::cout << "[CHECK] rey (" << rey->getPosicion().x
+              << "," << rey->getPosicion().y
+              << ") -> " << (atk ? "EN JAQUE" : "LIBRE") << "\n";
+
+    return atk;
 }
 
-// ======================================================
-// CASILLA ATACADA
 // ======================================================
 
 bool DecisionTreeEngine::casillaAtacada(
@@ -202,26 +208,16 @@ bool DecisionTreeEngine::casillaAtacada(
         if (f.getColor() != atacante)
             continue;
 
-        auto ataques =
-            obtenerAtaquesFicha(
-                f,
-                estado);
+        auto ataques = obtenerAtaquesFicha(f, estado);
 
         for (const Posicion& p : ataques)
-        {
-            if (p.x == x &&
-                p.y == y)
-            {
+            if (p.x == x && p.y == y)
                 return true;
-            }
-        }
     }
 
     return false;
 }
 
-// ======================================================
-// REY
 // ======================================================
 
 const Ficha* DecisionTreeEngine::encontrarRey(
@@ -229,137 +225,15 @@ const Ficha* DecisionTreeEngine::encontrarRey(
     Color color) const
 {
     for (const Ficha& f : estado.piezas)
-    {
-        if (f.getTipo() == TipoFicha::Rey &&
-            f.getColor() == color)
-        {
+        if (f.getTipo() == TipoFicha::Rey && f.getColor() == color)
             return &f;
-        }
-    }
 
     return nullptr;
 }
 
 // ======================================================
-// MOVIMIENTOS LEGALES
-// ======================================================
 
-bool DecisionTreeEngine::tieneMovimientosLegales(
-    const Nodo& estado,
-    Color color) const
+bool DecisionTreeEngine::esNodoValido(const Nodo& estado) const
 {
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getColor() != color)
-            continue;
-
-        auto movs =
-            obtenerMovimientosFicha(
-                f,
-                estado);
-
-        for (const Posicion& p : movs)
-        {
-            if (esMovimientoLegal(
-                    estado,
-                    f,
-                    p))
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-// ======================================================
-// MATE
-// ======================================================
-
-bool DecisionTreeEngine::esMate(
-    const Nodo& estado,
-    Color color) const
-{
-    return estaEnJaque(
-               estado,
-               color)
-        &&
-           !tieneMovimientosLegales(
-               estado,
-               color);
-}
-
-// ======================================================
-// DERROTA
-// ======================================================
-
-bool DecisionTreeEngine::esDerrota(
-    const Nodo& estado) const
-{
-    int blancas = 0;
-    int negras  = 0;
-
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getColor() == Color::Blanca)
-            ++blancas;
-        else
-            ++negras;
-    }
-
-    return blancas == 0 &&
-           negras > 0;
-}
-
-// ======================================================
-// SIN MOVIMIENTOS
-// ======================================================
-
-bool DecisionTreeEngine::sinMovimientos(
-    const Nodo& estado,
-    Color color) const
-{
-    return !tieneMovimientosFisicos(estado, color);
-}
-
-bool DecisionTreeEngine::tieneMovimientosFisicos(
-    const Nodo& estado,
-    Color color) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getColor() != color)
-            continue;
-
-        auto movs = obtenerMovimientosFicha(f, estado);
-
-        if (!movs.empty())
-            return true;
-    }
-
-    return false;
-}
-
-// ======================================================
-// UTILIDAD
-// ======================================================
-
-bool DecisionTreeEngine::casillaOcupadaPorColor(
-    const Nodo& estado,
-    int x,
-    int y,
-    Color color) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x &&
-            f.getPosicion().y == y &&
-            f.getColor() == color)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return !estado.piezas.empty();
 }

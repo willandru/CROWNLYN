@@ -25,19 +25,26 @@ void Arbol::setNodoInicial(Nodo* r)
 
     raiz = r;
 
-    if (raiz)
-        nodos.push_back(raiz);
+    if (!raiz)
+        return;
+
+    if (raiz->piezas.empty())
+        return;
+
+    nodos.push_back(raiz);
 }
 
 // ======================================================
 
 void Arbol::liberarNodo(Nodo* nodo)
 {
-    if (!nodo) return;
+    if (!nodo)
+        return;
 
     for (Nodo* h : nodo->hijos)
         liberarNodo(h);
 
+    nodo->hijos.clear();
     delete nodo;
 }
 
@@ -45,12 +52,8 @@ void Arbol::liberarNodo(Nodo* nodo)
 
 void Arbol::eliminarSubarbol()
 {
-    if (raiz)
-    {
-        liberarNodo(raiz);
-        raiz = nullptr;
-    }
-
+    liberarNodo(raiz);
+    raiz = nullptr;
     nodos.clear();
 }
 
@@ -69,9 +72,14 @@ void Arbol::construirSiguienteNivel()
 
     for (Nodo* n : nodos)
     {
-        if (!n) continue;
+        if (!n)
+            continue;
+
+        size_t before = n->hijos.size();
 
         engine->expandirNodo(n);
+
+        size_t after = n->hijos.size();
 
         for (Nodo* h : n->hijos)
         {
@@ -91,8 +99,10 @@ void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
 
     raiz = nodo;
 
-    if (raiz)
-        nodos.push_back(raiz);
+    if (!raiz)
+        return;
+
+    nodos.push_back(raiz);
 
     for (int i = 0; i < profundidadMax; i++)
         construirSiguienteNivel();
@@ -111,13 +121,6 @@ void Arbol::imprimirNivel() const
         if (!n)
             continue;
 
-        Color jugador = n->turnoActual;
-
-        bool mate     = engine->esMate(*n, jugador);
-        bool derrota  = engine->esDerrota(*n);
-        bool sinMov   = engine->sinMovimientos(*n, jugador);
-        bool jaque    = engine->estaEnJaque(*n, jugador);
-
         std::cout << "Nodo " << i++ << "\n";
         std::cout << "Piezas: " << n->piezas.size() << "\n";
 
@@ -130,20 +133,8 @@ void Arbol::imprimirNivel() const
         }
 
         std::cout << "Estado: ";
-
-        if (mate)
-            std::cout << "MATE";
-        else if (derrota)
-            std::cout << "DERROTA";
-        else if (sinMov)
-            std::cout << "SIN_MOVIMIENTOS";
-        else if (jaque)
-            std::cout << "JAQUE";
-        else
-            std::cout << "NORMAL";
-
-        std::cout << "\n";
-        std::cout << "-----------------------\n";
+        std::cout << (n->piezas.empty() ? "VACIO" : "OK");
+        std::cout << "\n-----------------------\n";
     }
 
     std::cout << "=======================\n";
@@ -155,36 +146,15 @@ void Arbol::resumenNivel() const
 {
     std::cout << "\n=== RESUMEN NIVEL ===\n";
 
-    int jaqueCount = 0;
-    int mateCount = 0;
-    int derrotaCount = 0;
-    int sinMovCount = 0;
+    std::cout << "Nodos: " << nodos.size() << "\n";
+
+    int vacios = 0;
 
     for (const Nodo* n : nodos)
-    {
-        if (!n)
-            continue;
+        if (!n || n->piezas.empty())
+            vacios++;
 
-        Color jugador = n->turnoActual;
-
-        if (engine->estaEnJaque(*n, jugador))
-            jaqueCount++;
-
-        if (engine->esMate(*n, jugador))
-            mateCount++;
-
-        if (engine->esDerrota(*n))
-            derrotaCount++;
-
-        if (engine->sinMovimientos(*n, jugador))
-            sinMovCount++;
-    }
-
-    std::cout << "Nodos: " << nodos.size() << "\n";
-    std::cout << "Jaques: " << jaqueCount << "\n";
-    std::cout << "Mates: " << mateCount << "\n";
-    std::cout << "Derrotas: " << derrotaCount << "\n";
-    std::cout << "Sin movimientos: " << sinMovCount << "\n";
+    std::cout << "Nodos vacios: " << vacios << "\n";
 
     std::cout << "=====================\n";
 }

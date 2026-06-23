@@ -13,7 +13,7 @@ int main()
     raiz->turnoActual = Color::Blanca;
 
     // Rey negro
-    raiz->piezas.push_back(Ficha(1, TipoFicha::Rey, Color::Negra, {0, 0}));
+    raiz->piezas.push_back(Ficha(1, TipoFicha::Rey, Color::Negra, {1, 1}));
 
     // Torre blanca atacante
     raiz->piezas.push_back(Ficha(2, TipoFicha::Torre, Color::Blanca, {3, 0}));
@@ -32,14 +32,15 @@ int main()
 
     std::cout << "\n=== NIVEL 1 ===\n";
     arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
+    arbol.imprimirNivel();
     arbol.resumenNivel();
 
     std::cout << "\n=== NIVEL 2 ===\n";
     arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
+    arbol.imprimirNivel();
     arbol.resumenNivel();
 
+    /*
     std::cout << "\n=== NIVEL 3 ===\n";
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
@@ -48,39 +49,17 @@ int main()
     std::cout << "\n=== NIVEL 4 ===\n";
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
-    arbol.resumenNivel();
+    //arbol.resumenNivel();
     
     
     
      std::cout << "\n=== NIVEL 5 ===\n";
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
-    arbol.resumenNivel();
+    //arbol.resumenNivel();
+    */
 
-    std::cout << "\n=== NIVEL 6 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
 
-    std::cout << "\n=== NIVEL 7 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 8 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 9 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 10 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
     
     
 
