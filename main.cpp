@@ -32,14 +32,15 @@ int main()
 
     std::cout << "\n=== NIVEL 1 ===\n";
     arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
+    arbol.imprimirNivel();
     arbol.resumenNivel();
 
     std::cout << "\n=== NIVEL 2 ===\n";
     arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
+    arbol.imprimirNivel();
+    //arbol.resumenNivel();
 
+    /*
     std::cout << "\n=== NIVEL 3 ===\n";
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
@@ -49,38 +50,7 @@ int main()
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
     arbol.resumenNivel();
-    
-    
-    
-     std::cout << "\n=== NIVEL 5 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 6 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 7 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 8 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 9 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
-
-    std::cout << "\n=== NIVEL 10 ===\n";
-    arbol.construirSiguienteNivel();
-    //arbol.imprimirNivel();
-    arbol.resumenNivel();
+    */
     
     
 
