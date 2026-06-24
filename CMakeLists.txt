@@ -57,7 +57,10 @@ add_executable(
 
     TestsMain.cpp
 
+    src/Test/TestSuite.cpp
     src/Test/TestStates.cpp
+    src/Test/TestGameAnalyzer.cpp
+    src/Test/TestDecisionTreeEngine.cpp
 
     ${CROWNLYN_CORE}
 )

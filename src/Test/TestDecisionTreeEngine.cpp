@@ -1,4 +1,4 @@
-#include "TestStates.h"
+#include "TestDecisionTreeEngine.h"
 
 #include <iostream>
 
@@ -6,51 +6,68 @@
 // EJECUCIÓN
 // =====================================================
 
-void TestStates::ejecutar()
+void TestDecisionTreeEngine::ejecutar()
 {
     total = 0;
     pass = 0;
 
     std::cout << "\n=========================================\n";
-    std::cout << "STATE EVALUATOR TESTS\n";
+    std::cout << "DECISION TREE ENGINE TESTS\n";
     std::cout << "=========================================\n";
 
     // =====================================
-    // TABLAS
+    // EXPANSIÓN BÁSICA
     // =====================================
 
-    test_Tablas_MismoTipo();
-    test_NoTablas_TiposDistintos();
+    test_NodoNull();
+
+    test_NodoTerminal_NoGeneraHijos();
+
+    test_NodoNoTerminal_GeneraHijos();
 
     // =====================================
-    // DERROTA
+    // CAMBIO DE TURNO
     // =====================================
 
-    test_Derrota_BlancasSinPiezas();
-    test_NoDerrota_AmbosJugadores();
+    test_CambioTurno_BlancaANegra();
+
+    test_CambioTurno_NegraABlanca();
 
     // =====================================
-    // SIN MOVIMIENTOS
+    // GENERACIÓN DE HIJOS
     // =====================================
 
-    test_BlancoSinMovimientos();
-    test_NegroSinMovimientos();
+    test_MultiplesHijos();
+
+    test_CapturaGeneraMenosPiezas();
 
     // =====================================
-    // MATE
+    // FILTRO DE MOVIMIENTOS
     // =====================================
 
-    test_Mate_Blanco();
-    test_Mate_Negro();
+    test_NoGeneraMovimientoIlegal();
+
+    test_SoloMovimientosLegales();
 
     // =====================================
-    // TERMINALES
+    // BUGS DE REGRESIÓN
     // =====================================
 
-    test_EstadoTerminal_Tablas();
-    test_EstadoTerminal_Derrota();
-    test_EstadoTerminal_Mate();
-    test_EstadoTerminal_SinMovimientos();
+    test_Bug_PeonBordeSuperior();
+
+    test_Bug_PeonSinMovimientos();
+
+    test_Bug_EstadoTerminalExpandido();
+
+    // =====================================
+    // INTEGRACIÓN
+    // =====================================
+
+    test_ExpandirUnaVez();
+
+    test_ExpandirConCaptura();
+
+    test_ExpandirConVariasOpciones();
 
     resumen();
 }
@@ -59,7 +76,7 @@ void TestStates::ejecutar()
 // UTILIDADES
 // =====================================================
 
-void TestStates::verificar(
+void TestDecisionTreeEngine::verificar(
     const std::string& nombre,
     bool resultado)
 {
@@ -78,10 +95,10 @@ void TestStates::verificar(
 
 // =====================================================
 
-void TestStates::resumen()
+void TestDecisionTreeEngine::resumen()
 {
     std::cout << "\n=========================================\n";
-    std::cout << "RESUMEN STATE EVALUATOR\n";
+    std::cout << "RESUMEN DECISION TREE ENGINE\n";
     std::cout << "=========================================\n";
 
     std::cout << "TOTAL : " << total << "\n";
@@ -92,119 +109,148 @@ void TestStates::resumen()
 }
 
 // =====================================================
-// TABLAS
+// EXPANSIÓN BÁSICA
 // =====================================================
 
-void TestStates::test_Tablas_MismoTipo()
+void TestDecisionTreeEngine::test_NodoNull()
 {
     verificar(
-        "Tablas_MismoTipo",
+        "NodoNull",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_NoTablas_TiposDistintos()
+void TestDecisionTreeEngine::test_NodoTerminal_NoGeneraHijos()
 {
     verificar(
-        "NoTablas_TiposDistintos",
-        false);
-}
-
-// =====================================================
-// DERROTA
-// =====================================================
-
-void TestStates::test_Derrota_BlancasSinPiezas()
-{
-    verificar(
-        "Derrota_BlancasSinPiezas",
+        "NodoTerminal_NoGeneraHijos",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_NoDerrota_AmbosJugadores()
+void TestDecisionTreeEngine::test_NodoNoTerminal_GeneraHijos()
 {
     verificar(
-        "NoDerrota_AmbosJugadores",
+        "NodoNoTerminal_GeneraHijos",
         false);
 }
 
 // =====================================================
-// SIN MOVIMIENTOS
+// CAMBIO DE TURNO
 // =====================================================
 
-void TestStates::test_BlancoSinMovimientos()
+void TestDecisionTreeEngine::test_CambioTurno_BlancaANegra()
 {
     verificar(
-        "BlancoSinMovimientos",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_NegroSinMovimientos()
-{
-    verificar(
-        "NegroSinMovimientos",
-        false);
-}
-
-// =====================================================
-// MATE
-// =====================================================
-
-void TestStates::test_Mate_Blanco()
-{
-    verificar(
-        "Mate_Blanco",
+        "CambioTurno_BlancaANegra",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_Mate_Negro()
+void TestDecisionTreeEngine::test_CambioTurno_NegraABlanca()
 {
     verificar(
-        "Mate_Negro",
+        "CambioTurno_NegraABlanca",
         false);
 }
 
 // =====================================================
-// TERMINALES
+// GENERACIÓN DE HIJOS
 // =====================================================
 
-void TestStates::test_EstadoTerminal_Tablas()
+void TestDecisionTreeEngine::test_MultiplesHijos()
 {
     verificar(
-        "EstadoTerminal_Tablas",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Derrota()
-{
-    verificar(
-        "EstadoTerminal_Derrota",
+        "MultiplesHijos",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_EstadoTerminal_Mate()
+void TestDecisionTreeEngine::test_CapturaGeneraMenosPiezas()
 {
     verificar(
-        "EstadoTerminal_Mate",
+        "CapturaGeneraMenosPiezas",
+        false);
+}
+
+// =====================================================
+// FILTRO DE MOVIMIENTOS
+// =====================================================
+
+void TestDecisionTreeEngine::test_NoGeneraMovimientoIlegal()
+{
+    verificar(
+        "NoGeneraMovimientoIlegal",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_EstadoTerminal_SinMovimientos()
+void TestDecisionTreeEngine::test_SoloMovimientosLegales()
 {
     verificar(
-        "EstadoTerminal_SinMovimientos",
+        "SoloMovimientosLegales",
+        false);
+}
+
+// =====================================================
+// BUGS DE REGRESIÓN
+// =====================================================
+
+void TestDecisionTreeEngine::test_Bug_PeonBordeSuperior()
+{
+    verificar(
+        "Bug_PeonBordeSuperior",
+        false);
+}
+
+// =====================================================
+
+void TestDecisionTreeEngine::test_Bug_PeonSinMovimientos()
+{
+    verificar(
+        "Bug_PeonSinMovimientos",
+        false);
+}
+
+// =====================================================
+
+void TestDecisionTreeEngine::test_Bug_EstadoTerminalExpandido()
+{
+    verificar(
+        "Bug_EstadoTerminalExpandido",
+        false);
+}
+
+// =====================================================
+// INTEGRACIÓN
+// =====================================================
+
+void TestDecisionTreeEngine::test_ExpandirUnaVez()
+{
+    verificar(
+        "ExpandirUnaVez",
+        false);
+}
+
+// =====================================================
+
+void TestDecisionTreeEngine::test_ExpandirConCaptura()
+{
+    verificar(
+        "ExpandirConCaptura",
+        false);
+}
+
+// =====================================================
+
+void TestDecisionTreeEngine::test_ExpandirConVariasOpciones()
+{
+    verificar(
+        "ExpandirConVariasOpciones",
         false);
 }

@@ -1,10 +1,10 @@
-#include "TestStates.h"
+#include "TestSuite.h"
 
 int main()
 {
-    TestStates tests;
+    TestSuite suite;
 
-    tests.ejecutar();
+    suite.ejecutar();
 
     return 0;
 }

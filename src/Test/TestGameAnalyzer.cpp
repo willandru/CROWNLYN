@@ -1,4 +1,4 @@
-#include "TestStates.h"
+#include "TestGameAnalyzer.h"
 
 #include <iostream>
 
@@ -6,51 +6,47 @@
 // EJECUCIÓN
 // =====================================================
 
-void TestStates::ejecutar()
+void TestGameAnalyzer::ejecutar()
 {
     total = 0;
     pass = 0;
 
     std::cout << "\n=========================================\n";
-    std::cout << "STATE EVALUATOR TESTS\n";
+    std::cout << "GAME ANALYZER TESTS\n";
     std::cout << "=========================================\n";
 
     // =====================================
-    // TABLAS
+    // VALIDACIÓN DE ESTADOS
     // =====================================
 
-    test_Tablas_MismoTipo();
-    test_NoTablas_TiposDistintos();
+    test_EstadoInicialValido();
+    test_EstadoInicialInvalido_SinNegras();
+    test_EstadoInicialInvalido_AmbosEnJaque();
 
     // =====================================
-    // DERROTA
+    // JAQUE
     // =====================================
 
-    test_Derrota_BlancasSinPiezas();
-    test_NoDerrota_AmbosJugadores();
+    test_BlancoEnJaque();
+    test_NegroEnJaque();
+    test_SinJaque();
 
     // =====================================
-    // SIN MOVIMIENTOS
+    // MOVIMIENTOS
     // =====================================
 
+    test_BlancoTieneMovimientos();
     test_BlancoSinMovimientos();
+
+    test_NegroTieneMovimientos();
     test_NegroSinMovimientos();
 
     // =====================================
-    // MATE
+    // TURNO INICIAL
     // =====================================
 
-    test_Mate_Blanco();
-    test_Mate_Negro();
-
-    // =====================================
-    // TERMINALES
-    // =====================================
-
-    test_EstadoTerminal_Tablas();
-    test_EstadoTerminal_Derrota();
-    test_EstadoTerminal_Mate();
-    test_EstadoTerminal_SinMovimientos();
+    test_SugerirTurno_Blanco();
+    test_SugerirTurno_Negro();
 
     resumen();
 }
@@ -59,7 +55,7 @@ void TestStates::ejecutar()
 // UTILIDADES
 // =====================================================
 
-void TestStates::verificar(
+void TestGameAnalyzer::verificar(
     const std::string& nombre,
     bool resultado)
 {
@@ -78,10 +74,10 @@ void TestStates::verificar(
 
 // =====================================================
 
-void TestStates::resumen()
+void TestGameAnalyzer::resumen()
 {
     std::cout << "\n=========================================\n";
-    std::cout << "RESUMEN STATE EVALUATOR\n";
+    std::cout << "RESUMEN GAME ANALYZER\n";
     std::cout << "=========================================\n";
 
     std::cout << "TOTAL : " << total << "\n";
@@ -92,50 +88,77 @@ void TestStates::resumen()
 }
 
 // =====================================================
-// TABLAS
+// VALIDACIÓN DE ESTADOS
 // =====================================================
 
-void TestStates::test_Tablas_MismoTipo()
+void TestGameAnalyzer::test_EstadoInicialValido()
 {
     verificar(
-        "Tablas_MismoTipo",
+        "EstadoInicialValido",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_NoTablas_TiposDistintos()
+void TestGameAnalyzer::test_EstadoInicialInvalido_SinNegras()
 {
     verificar(
-        "NoTablas_TiposDistintos",
-        false);
-}
-
-// =====================================================
-// DERROTA
-// =====================================================
-
-void TestStates::test_Derrota_BlancasSinPiezas()
-{
-    verificar(
-        "Derrota_BlancasSinPiezas",
+        "EstadoInicialInvalido_SinNegras",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_NoDerrota_AmbosJugadores()
+void TestGameAnalyzer::test_EstadoInicialInvalido_AmbosEnJaque()
 {
     verificar(
-        "NoDerrota_AmbosJugadores",
+        "EstadoInicialInvalido_AmbosEnJaque",
         false);
 }
 
 // =====================================================
-// SIN MOVIMIENTOS
+// JAQUE
 // =====================================================
 
-void TestStates::test_BlancoSinMovimientos()
+void TestGameAnalyzer::test_BlancoEnJaque()
+{
+    verificar(
+        "BlancoEnJaque",
+        false);
+}
+
+// =====================================================
+
+void TestGameAnalyzer::test_NegroEnJaque()
+{
+    verificar(
+        "NegroEnJaque",
+        false);
+}
+
+// =====================================================
+
+void TestGameAnalyzer::test_SinJaque()
+{
+    verificar(
+        "SinJaque",
+        false);
+}
+
+// =====================================================
+// MOVIMIENTOS
+// =====================================================
+
+void TestGameAnalyzer::test_BlancoTieneMovimientos()
+{
+    verificar(
+        "BlancoTieneMovimientos",
+        false);
+}
+
+// =====================================================
+
+void TestGameAnalyzer::test_BlancoSinMovimientos()
 {
     verificar(
         "BlancoSinMovimientos",
@@ -144,7 +167,16 @@ void TestStates::test_BlancoSinMovimientos()
 
 // =====================================================
 
-void TestStates::test_NegroSinMovimientos()
+void TestGameAnalyzer::test_NegroTieneMovimientos()
+{
+    verificar(
+        "NegroTieneMovimientos",
+        false);
+}
+
+// =====================================================
+
+void TestGameAnalyzer::test_NegroSinMovimientos()
 {
     verificar(
         "NegroSinMovimientos",
@@ -152,59 +184,21 @@ void TestStates::test_NegroSinMovimientos()
 }
 
 // =====================================================
-// MATE
+// TURNO INICIAL
 // =====================================================
 
-void TestStates::test_Mate_Blanco()
+void TestGameAnalyzer::test_SugerirTurno_Blanco()
 {
     verificar(
-        "Mate_Blanco",
+        "SugerirTurno_Blanco",
         false);
 }
 
 // =====================================================
 
-void TestStates::test_Mate_Negro()
+void TestGameAnalyzer::test_SugerirTurno_Negro()
 {
     verificar(
-        "Mate_Negro",
-        false);
-}
-
-// =====================================================
-// TERMINALES
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Tablas()
-{
-    verificar(
-        "EstadoTerminal_Tablas",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Derrota()
-{
-    verificar(
-        "EstadoTerminal_Derrota",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Mate()
-{
-    verificar(
-        "EstadoTerminal_Mate",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_SinMovimientos()
-{
-    verificar(
-        "EstadoTerminal_SinMovimientos",
+        "SugerirTurno_Negro",
         false);
 }
