@@ -2,6 +2,8 @@
 #include "DecisionTreeEngine.h"
 
 // ======================================================
+// CONSTRUCTOR
+// ======================================================
 
 Arbol::Arbol()
 {
@@ -10,6 +12,8 @@ Arbol::Arbol()
 }
 
 // ======================================================
+// DESTRUCTOR
+// ======================================================
 
 Arbol::~Arbol()
 {
@@ -17,6 +21,8 @@ Arbol::~Arbol()
     delete engine;
 }
 
+// ======================================================
+// DEFINIR RAÍZ
 // ======================================================
 
 void Arbol::setNodoInicial(Nodo* r)
@@ -28,12 +34,11 @@ void Arbol::setNodoInicial(Nodo* r)
     if (!raiz)
         return;
 
-    if (raiz->piezas.empty())
-        return;
-
     nodos.push_back(raiz);
 }
 
+// ======================================================
+// LIBERACIÓN RECURSIVA
 // ======================================================
 
 void Arbol::liberarNodo(Nodo* nodo)
@@ -45,18 +50,25 @@ void Arbol::liberarNodo(Nodo* nodo)
         liberarNodo(h);
 
     nodo->hijos.clear();
+
     delete nodo;
 }
 
 // ======================================================
+// ELIMINAR TODO EL ÁRBOL
+// ======================================================
 
 void Arbol::eliminarSubarbol()
 {
-    liberarNodo(raiz);
+    if (raiz)
+        liberarNodo(raiz);
+
     raiz = nullptr;
     nodos.clear();
 }
 
+// ======================================================
+// NIVEL ACTUAL
 // ======================================================
 
 const std::vector<Nodo*>& Arbol::getNodos() const
@@ -64,6 +76,8 @@ const std::vector<Nodo*>& Arbol::getNodos() const
     return nodos;
 }
 
+// ======================================================
+// EXPANSIÓN DE UN NIVEL
 // ======================================================
 
 void Arbol::construirSiguienteNivel()
@@ -75,11 +89,7 @@ void Arbol::construirSiguienteNivel()
         if (!n)
             continue;
 
-        size_t before = n->hijos.size();
-
         engine->expandirNodo(n);
-
-        size_t after = n->hijos.size();
 
         for (Nodo* h : n->hijos)
         {
@@ -91,6 +101,8 @@ void Arbol::construirSiguienteNivel()
     nodos = std::move(nuevos);
 }
 
+// ======================================================
+// CONSTRUCCIÓN DESDE RAÍZ
 // ======================================================
 
 void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
@@ -108,6 +120,8 @@ void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
         construirSiguienteNivel();
 }
 
+// ======================================================
+// DEBUG NIVEL
 // ======================================================
 
 void Arbol::imprimirNivel() const
@@ -127,19 +141,21 @@ void Arbol::imprimirNivel() const
         for (const Ficha& f : n->piezas)
         {
             std::cout
-                << "  Pieza Tipo: " << f.tipoToString()
+                << "  Tipo: " << f.tipoToString()
                 << " Color: " << (f.getColor() == Color::Blanca ? "Blanca" : "Negra")
                 << " Pos(" << f.getPosicion().x << "," << f.getPosicion().y << ")\n";
         }
 
-        std::cout << "Estado: ";
-        std::cout << (n->piezas.empty() ? "VACIO" : "OK");
-        std::cout << "\n-----------------------\n";
+        std::cout << "Estado: "
+                  << (n->piezas.empty() ? "VACIO" : "OK")
+                  << "\n-----------------------\n";
     }
 
     std::cout << "=======================\n";
 }
 
+// ======================================================
+// RESUMEN NIVEL
 // ======================================================
 
 void Arbol::resumenNivel() const
