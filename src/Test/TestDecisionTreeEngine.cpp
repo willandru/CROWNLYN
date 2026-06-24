@@ -1,79 +1,33 @@
 #include "TestDecisionTreeEngine.h"
 
+#include "DecisionTreeEngine.h"
+#include "Nodo.h"
+#include "Ficha.h"
+
 #include <iostream>
 
-// =====================================================
-// EJECUCIÓN
 // =====================================================
 
 void TestDecisionTreeEngine::ejecutar()
 {
-    total = 0;
-    pass = 0;
-
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "DECISION TREE ENGINE TESTS\n";
     std::cout << "=========================================\n";
 
-    // =====================================
-    // EXPANSIÓN BÁSICA
-    // =====================================
+    test_expandirNodo_null();
 
-    test_NodoNull();
+    test_nodoTerminal_noGeneraHijos();
 
-    test_NodoTerminal_NoGeneraHijos();
+    test_nodoConMovimientos_generaHijos();
 
-    test_NodoNoTerminal_GeneraHijos();
+    test_cambioTurno();
 
-    // =====================================
-    // CAMBIO DE TURNO
-    // =====================================
-
-    test_CambioTurno_BlancaANegra();
-
-    test_CambioTurno_NegraABlanca();
-
-    // =====================================
-    // GENERACIÓN DE HIJOS
-    // =====================================
-
-    test_MultiplesHijos();
-
-    test_CapturaGeneraMenosPiezas();
-
-    // =====================================
-    // FILTRO DE MOVIMIENTOS
-    // =====================================
-
-    test_NoGeneraMovimientoIlegal();
-
-    test_SoloMovimientosLegales();
-
-    // =====================================
-    // BUGS DE REGRESIÓN
-    // =====================================
-
-    test_Bug_PeonBordeSuperior();
-
-    test_Bug_PeonSinMovimientos();
-
-    test_Bug_EstadoTerminalExpandido();
-
-    // =====================================
-    // INTEGRACIÓN
-    // =====================================
-
-    test_ExpandirUnaVez();
-
-    test_ExpandirConCaptura();
-
-    test_ExpandirConVariasOpciones();
+    test_hijoGenerado();
 
     resumen();
 }
 
-// =====================================================
-// UTILIDADES
 // =====================================================
 
 void TestDecisionTreeEngine::verificar(
@@ -97,7 +51,8 @@ void TestDecisionTreeEngine::verificar(
 
 void TestDecisionTreeEngine::resumen()
 {
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "RESUMEN DECISION TREE ENGINE\n";
     std::cout << "=========================================\n";
 
@@ -109,148 +64,158 @@ void TestDecisionTreeEngine::resumen()
 }
 
 // =====================================================
-// EXPANSIÓN BÁSICA
+// NULL
 // =====================================================
 
-void TestDecisionTreeEngine::test_NodoNull()
+void TestDecisionTreeEngine::test_expandirNodo_null()
 {
+    DecisionTreeEngine engine;
+
+    engine.expandirNodo(nullptr);
+
     verificar(
-        "NodoNull",
-        false);
+        "expandirNodo_null",
+        true);
 }
 
 // =====================================================
+// TERMINAL
+// =====================================================
 
-void TestDecisionTreeEngine::test_NodoTerminal_NoGeneraHijos()
+void TestDecisionTreeEngine::test_nodoTerminal_noGeneraHijos()
 {
+    DecisionTreeEngine engine;
+
+    Nodo nodo;
+
+    nodo.turnoActual = Color::Blanca;
+
+    // estado terminal por tablas
+    nodo.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0,0}));
+
+    nodo.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}));
+
+    engine.expandirNodo(&nodo);
+
     verificar(
-        "NodoTerminal_NoGeneraHijos",
-        false);
+        "nodoTerminal_noGeneraHijos",
+        nodo.hijos.empty());
 }
 
 // =====================================================
+// GENERA HIJOS
+// =====================================================
 
-void TestDecisionTreeEngine::test_NodoNoTerminal_GeneraHijos()
+void TestDecisionTreeEngine::test_nodoConMovimientos_generaHijos()
 {
+    DecisionTreeEngine engine;
+
+    Nodo nodo;
+
+    nodo.turnoActual = Color::Blanca;
+
+    nodo.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Torre,
+            Color::Blanca,
+            {1,1}));
+
+    nodo.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}));
+
+    engine.expandirNodo(&nodo);
+
     verificar(
-        "NodoNoTerminal_GeneraHijos",
-        false);
+        "nodoConMovimientos_generaHijos",
+        !nodo.hijos.empty());
 }
 
 // =====================================================
 // CAMBIO DE TURNO
 // =====================================================
 
-void TestDecisionTreeEngine::test_CambioTurno_BlancaANegra()
+void TestDecisionTreeEngine::test_cambioTurno()
 {
+    DecisionTreeEngine engine;
+
+    Nodo nodo;
+
+    nodo.turnoActual = Color::Blanca;
+
+    nodo.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Torre,
+            Color::Blanca,
+            {1,1}));
+
+    nodo.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}));
+
+    engine.expandirNodo(&nodo);
+
+    bool ok = false;
+
+    if (!nodo.hijos.empty())
+    {
+        ok =
+            nodo.hijos[0]->turnoActual
+            == Color::Negra;
+    }
+
     verificar(
-        "CambioTurno_BlancaANegra",
-        false);
+        "cambioTurno",
+        ok);
 }
 
 // =====================================================
+// HIJO GENERADO
+// =====================================================
 
-void TestDecisionTreeEngine::test_CambioTurno_NegraABlanca()
+void TestDecisionTreeEngine::test_hijoGenerado()
 {
+    DecisionTreeEngine engine;
+
+    Nodo nodo;
+
+    nodo.turnoActual = Color::Blanca;
+
+    nodo.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Torre,
+            Color::Blanca,
+            {1,1}));
+
+    nodo.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}));
+
+    engine.expandirNodo(&nodo);
+
     verificar(
-        "CambioTurno_NegraABlanca",
-        false);
-}
-
-// =====================================================
-// GENERACIÓN DE HIJOS
-// =====================================================
-
-void TestDecisionTreeEngine::test_MultiplesHijos()
-{
-    verificar(
-        "MultiplesHijos",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_CapturaGeneraMenosPiezas()
-{
-    verificar(
-        "CapturaGeneraMenosPiezas",
-        false);
-}
-
-// =====================================================
-// FILTRO DE MOVIMIENTOS
-// =====================================================
-
-void TestDecisionTreeEngine::test_NoGeneraMovimientoIlegal()
-{
-    verificar(
-        "NoGeneraMovimientoIlegal",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_SoloMovimientosLegales()
-{
-    verificar(
-        "SoloMovimientosLegales",
-        false);
-}
-
-// =====================================================
-// BUGS DE REGRESIÓN
-// =====================================================
-
-void TestDecisionTreeEngine::test_Bug_PeonBordeSuperior()
-{
-    verificar(
-        "Bug_PeonBordeSuperior",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_Bug_PeonSinMovimientos()
-{
-    verificar(
-        "Bug_PeonSinMovimientos",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_Bug_EstadoTerminalExpandido()
-{
-    verificar(
-        "Bug_EstadoTerminalExpandido",
-        false);
-}
-
-// =====================================================
-// INTEGRACIÓN
-// =====================================================
-
-void TestDecisionTreeEngine::test_ExpandirUnaVez()
-{
-    verificar(
-        "ExpandirUnaVez",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_ExpandirConCaptura()
-{
-    verificar(
-        "ExpandirConCaptura",
-        false);
-}
-
-// =====================================================
-
-void TestDecisionTreeEngine::test_ExpandirConVariasOpciones()
-{
-    verificar(
-        "ExpandirConVariasOpciones",
-        false);
+        "hijoGenerado",
+        nodo.hijos.size() > 0);
 }

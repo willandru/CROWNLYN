@@ -1,5 +1,9 @@
 #include "TestStates.h"
 
+#include "StateEvaluator.h"
+#include "Nodo.h"
+#include "Ficha.h"
+
 #include <iostream>
 
 // =====================================================
@@ -8,55 +12,25 @@
 
 void TestStates::ejecutar()
 {
-    total = 0;
-    pass = 0;
-
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "STATE EVALUATOR TESTS\n";
     std::cout << "=========================================\n";
 
-    // =====================================
-    // TABLAS
-    // =====================================
+    test_esTablas_true();
+    test_esTablas_false();
 
-    test_Tablas_MismoTipo();
-    test_NoTablas_TiposDistintos();
+    test_esDerrota_true();
+    test_esDerrota_false();
 
-    // =====================================
-    // DERROTA
-    // =====================================
-
-    test_Derrota_BlancasSinPiezas();
-    test_NoDerrota_AmbosJugadores();
-
-    // =====================================
-    // SIN MOVIMIENTOS
-    // =====================================
-
-    test_BlancoSinMovimientos();
-    test_NegroSinMovimientos();
-
-    // =====================================
-    // MATE
-    // =====================================
-
-    test_Mate_Blanco();
-    test_Mate_Negro();
-
-    // =====================================
-    // TERMINALES
-    // =====================================
-
-    test_EstadoTerminal_Tablas();
-    test_EstadoTerminal_Derrota();
-    test_EstadoTerminal_Mate();
-    test_EstadoTerminal_SinMovimientos();
+    test_sinMovimientos_true();
+    test_sinMovimientos_false();
 
     resumen();
 }
 
 // =====================================================
-// UTILIDADES
+// VERIFICAR
 // =====================================================
 
 void TestStates::verificar(
@@ -68,19 +42,29 @@ void TestStates::verificar(
     if (resultado)
     {
         pass++;
-        std::cout << "[PASS] " << nombre << "\n";
+
+        std::cout
+            << "[PASS] "
+            << nombre
+            << "\n";
     }
     else
     {
-        std::cout << "[FAIL] " << nombre << "\n";
+        std::cout
+            << "[FAIL] "
+            << nombre
+            << "\n";
     }
 }
 
 // =====================================================
+// RESUMEN
+// =====================================================
 
 void TestStates::resumen()
 {
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "RESUMEN STATE EVALUATOR\n";
     std::cout << "=========================================\n";
 
@@ -92,119 +76,175 @@ void TestStates::resumen()
 }
 
 // =====================================================
-// TABLAS
+// esTablas() TRUE
 // =====================================================
 
-void TestStates::test_Tablas_MismoTipo()
+void TestStates::test_esTablas_true()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0,0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "Tablas_MismoTipo",
-        false);
+        "esTablas_true",
+        eval.esTablas(estado));
 }
 
 // =====================================================
+// esTablas() FALSE
+// =====================================================
 
-void TestStates::test_NoTablas_TiposDistintos()
+void TestStates::test_esTablas_false()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0,0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Torre,
+            Color::Negra,
+            {2,2}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "NoTablas_TiposDistintos",
-        false);
+        "esTablas_false",
+        !eval.esTablas(estado));
 }
 
 // =====================================================
-// DERROTA
+// esDerrota() TRUE
 // =====================================================
 
-void TestStates::test_Derrota_BlancasSinPiezas()
+void TestStates::test_esDerrota_true()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Negra,
+            {1,1}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "Derrota_BlancasSinPiezas",
-        false);
+        "esDerrota_true",
+        eval.esDerrota(estado));
 }
 
 // =====================================================
+// esDerrota() FALSE
+// =====================================================
 
-void TestStates::test_NoDerrota_AmbosJugadores()
+void TestStates::test_esDerrota_false()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0,0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {1,1}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "NoDerrota_AmbosJugadores",
-        false);
+        "esDerrota_false",
+        !eval.esDerrota(estado));
 }
 
 // =====================================================
-// SIN MOVIMIENTOS
+// sinMovimientos() TRUE
 // =====================================================
 
-void TestStates::test_BlancoSinMovimientos()
+void TestStates::test_sinMovimientos_true()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0,0}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "BlancoSinMovimientos",
-        false);
+        "sinMovimientos_true",
+        eval.sinMovimientos(
+            estado,
+            Color::Blanca));
 }
 
 // =====================================================
+// sinMovimientos() FALSE
+// =====================================================
 
-void TestStates::test_NegroSinMovimientos()
+void TestStates::test_sinMovimientos_false()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Torre,
+            Color::Blanca,
+            {1,1}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Peon,
+            Color::Negra,
+            {2,2}
+        ));
+
+    StateEvaluator eval;
+
     verificar(
-        "NegroSinMovimientos",
-        false);
-}
-
-// =====================================================
-// MATE
-// =====================================================
-
-void TestStates::test_Mate_Blanco()
-{
-    verificar(
-        "Mate_Blanco",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_Mate_Negro()
-{
-    verificar(
-        "Mate_Negro",
-        false);
-}
-
-// =====================================================
-// TERMINALES
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Tablas()
-{
-    verificar(
-        "EstadoTerminal_Tablas",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Derrota()
-{
-    verificar(
-        "EstadoTerminal_Derrota",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_Mate()
-{
-    verificar(
-        "EstadoTerminal_Mate",
-        false);
-}
-
-// =====================================================
-
-void TestStates::test_EstadoTerminal_SinMovimientos()
-{
-    verificar(
-        "EstadoTerminal_SinMovimientos",
-        false);
+        "sinMovimientos_false",
+        !eval.sinMovimientos(
+            estado,
+            Color::Blanca));
 }

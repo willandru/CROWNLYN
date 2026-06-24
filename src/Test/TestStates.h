@@ -20,46 +20,26 @@ private:
     void resumen();
 
     // =====================================
-    // TABLAS
+    // ESTABLAS()
     // =====================================
 
-    void test_Tablas_MismoTipo();
+    void test_esTablas_true();
 
-    void test_NoTablas_TiposDistintos();
-
-    // =====================================
-    // DERROTA
-    // =====================================
-
-    void test_Derrota_BlancasSinPiezas();
-
-    void test_NoDerrota_AmbosJugadores();
+    void test_esTablas_false();
 
     // =====================================
-    // SIN MOVIMIENTOS
+    // ESDERROTA()
     // =====================================
 
-    void test_BlancoSinMovimientos();
+    void test_esDerrota_true();
 
-    void test_NegroSinMovimientos();
-
-    // =====================================
-    // MATE
-    // =====================================
-
-    void test_Mate_Blanco();
-
-    void test_Mate_Negro();
+    void test_esDerrota_false();
 
     // =====================================
-    // TERMINALES
+    // SINMOVIMIENTOS()
     // =====================================
 
-    void test_EstadoTerminal_Tablas();
+    void test_sinMovimientos_true();
 
-    void test_EstadoTerminal_Derrota();
-
-    void test_EstadoTerminal_Mate();
-
-    void test_EstadoTerminal_SinMovimientos();
+    void test_sinMovimientos_false();
 };

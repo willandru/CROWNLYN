@@ -1,5 +1,9 @@
 #include "TestGameAnalyzer.h"
 
+#include "GameAnalyzer.h"
+#include "Nodo.h"
+#include "Ficha.h"
+
 #include <iostream>
 
 // =====================================================
@@ -8,51 +12,26 @@
 
 void TestGameAnalyzer::ejecutar()
 {
-    total = 0;
-    pass = 0;
-
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "GAME ANALYZER TESTS\n";
     std::cout << "=========================================\n";
 
-    // =====================================
-    // VALIDACIÓN DE ESTADOS
-    // =====================================
+    test_EncontrarRey_Blanco();
+    test_EncontrarRey_Negro();
+    test_EncontrarRey_NoExiste();
 
     test_EstadoInicialValido();
     test_EstadoInicialInvalido_SinNegras();
-    test_EstadoInicialInvalido_AmbosEnJaque();
-
-    // =====================================
-    // JAQUE
-    // =====================================
 
     test_BlancoEnJaque();
-    test_NegroEnJaque();
     test_SinJaque();
-
-    // =====================================
-    // MOVIMIENTOS
-    // =====================================
-
-    test_BlancoTieneMovimientos();
-    test_BlancoSinMovimientos();
-
-    test_NegroTieneMovimientos();
-    test_NegroSinMovimientos();
-
-    // =====================================
-    // TURNO INICIAL
-    // =====================================
-
-    test_SugerirTurno_Blanco();
-    test_SugerirTurno_Negro();
 
     resumen();
 }
 
 // =====================================================
-// UTILIDADES
+// VERIFICAR
 // =====================================================
 
 void TestGameAnalyzer::verificar(
@@ -64,19 +43,29 @@ void TestGameAnalyzer::verificar(
     if (resultado)
     {
         pass++;
-        std::cout << "[PASS] " << nombre << "\n";
+
+        std::cout
+            << "[PASS] "
+            << nombre
+            << "\n";
     }
     else
     {
-        std::cout << "[FAIL] " << nombre << "\n";
+        std::cout
+            << "[FAIL] "
+            << nombre
+            << "\n";
     }
 }
 
 // =====================================================
+// RESUMEN
+// =====================================================
 
 void TestGameAnalyzer::resumen()
 {
-    std::cout << "\n=========================================\n";
+    std::cout << "\n";
+    std::cout << "=========================================\n";
     std::cout << "RESUMEN GAME ANALYZER\n";
     std::cout << "=========================================\n";
 
@@ -88,117 +77,207 @@ void TestGameAnalyzer::resumen()
 }
 
 // =====================================================
-// VALIDACIÓN DE ESTADOS
+// ENCONTRAR REY BLANCO
+// =====================================================
+
+void TestGameAnalyzer::test_EncontrarRey_Blanco()
+{
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    GameAnalyzer analyzer;
+
+    const Ficha* rey =
+        analyzer.encontrarRey(
+            estado,
+            Color::Blanca);
+
+    verificar(
+        "EncontrarRey_Blanco",
+        rey != nullptr);
+}
+
+// =====================================================
+// ENCONTRAR REY NEGRO
+// =====================================================
+
+void TestGameAnalyzer::test_EncontrarRey_Negro()
+{
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Negra,
+            {0, 0}
+        ));
+
+    GameAnalyzer analyzer;
+
+    const Ficha* rey =
+        analyzer.encontrarRey(
+            estado,
+            Color::Negra);
+
+    verificar(
+        "EncontrarRey_Negro",
+        rey != nullptr);
+}
+
+// =====================================================
+// ENCONTRAR REY NO EXISTE
+// =====================================================
+
+void TestGameAnalyzer::test_EncontrarRey_NoExiste()
+{
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Peon,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    GameAnalyzer analyzer;
+
+    const Ficha* rey =
+        analyzer.encontrarRey(
+            estado,
+            Color::Blanca);
+
+    verificar(
+        "EncontrarRey_NoExiste",
+        rey == nullptr);
+}
+
+// =====================================================
+// ESTADO INICIAL VÁLIDO
 // =====================================================
 
 void TestGameAnalyzer::test_EstadoInicialValido()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Rey,
+            Color::Negra,
+            {2, 2}
+        ));
+
+    GameAnalyzer analyzer;
+
     verificar(
         "EstadoInicialValido",
-        false);
+        analyzer.estadoInicialValido(
+            estado));
 }
 
+// =====================================================
+// ESTADO INICIAL INVÁLIDO
 // =====================================================
 
 void TestGameAnalyzer::test_EstadoInicialInvalido_SinNegras()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    GameAnalyzer analyzer;
+
     verificar(
         "EstadoInicialInvalido_SinNegras",
-        false);
+        !analyzer.estadoInicialValido(
+            estado));
 }
 
 // =====================================================
-
-void TestGameAnalyzer::test_EstadoInicialInvalido_AmbosEnJaque()
-{
-    verificar(
-        "EstadoInicialInvalido_AmbosEnJaque",
-        false);
-}
-
-// =====================================================
-// JAQUE
+// BLANCO EN JAQUE
 // =====================================================
 
 void TestGameAnalyzer::test_BlancoEnJaque()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Torre,
+            Color::Negra,
+            {0, 2}
+        ));
+
+    GameAnalyzer analyzer;
+
     verificar(
         "BlancoEnJaque",
-        false);
+        analyzer.estaEnJaque(
+            estado,
+            Color::Blanca));
 }
 
 // =====================================================
-
-void TestGameAnalyzer::test_NegroEnJaque()
-{
-    verificar(
-        "NegroEnJaque",
-        false);
-}
-
+// SIN JAQUE
 // =====================================================
 
 void TestGameAnalyzer::test_SinJaque()
 {
+    Nodo estado;
+
+    estado.piezas.push_back(
+        Ficha(
+            1,
+            TipoFicha::Rey,
+            Color::Blanca,
+            {0, 0}
+        ));
+
+    estado.piezas.push_back(
+        Ficha(
+            2,
+            TipoFicha::Torre,
+            Color::Negra,
+            {2, 2}
+        ));
+
+    GameAnalyzer analyzer;
+
     verificar(
         "SinJaque",
-        false);
-}
-
-// =====================================================
-// MOVIMIENTOS
-// =====================================================
-
-void TestGameAnalyzer::test_BlancoTieneMovimientos()
-{
-    verificar(
-        "BlancoTieneMovimientos",
-        false);
-}
-
-// =====================================================
-
-void TestGameAnalyzer::test_BlancoSinMovimientos()
-{
-    verificar(
-        "BlancoSinMovimientos",
-        false);
-}
-
-// =====================================================
-
-void TestGameAnalyzer::test_NegroTieneMovimientos()
-{
-    verificar(
-        "NegroTieneMovimientos",
-        false);
-}
-
-// =====================================================
-
-void TestGameAnalyzer::test_NegroSinMovimientos()
-{
-    verificar(
-        "NegroSinMovimientos",
-        false);
-}
-
-// =====================================================
-// TURNO INICIAL
-// =====================================================
-
-void TestGameAnalyzer::test_SugerirTurno_Blanco()
-{
-    verificar(
-        "SugerirTurno_Blanco",
-        false);
-}
-
-// =====================================================
-
-void TestGameAnalyzer::test_SugerirTurno_Negro()
-{
-    verificar(
-        "SugerirTurno_Negro",
-        false);
+        !analyzer.estaEnJaque(
+            estado,
+            Color::Blanca));
 }
