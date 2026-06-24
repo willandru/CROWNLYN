@@ -7,15 +7,29 @@
 #include <iostream>
 
 // =====================================================
+// COLORES ANSI
+// =====================================================
+
+static constexpr const char* RESET = "\033[0m";
+static constexpr const char* VERDE = "\033[32m";
+static constexpr const char* ROJO  = "\033[31m";
+static constexpr const char* CYAN  = "\033[36m";
+static constexpr const char* TITLE    = "\033[38;5;208m";
+
+
+// =====================================================
 // EJECUCIÓN
 // =====================================================
 
 void TestStates::ejecutar()
 {
     std::cout << "\n";
+
+    std::cout << TITLE;
     std::cout << "=========================================\n";
     std::cout << "STATE EVALUATOR TESTS\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
     test_esTablas_true();
     test_esTablas_false();
@@ -44,14 +58,18 @@ void TestStates::verificar(
         pass++;
 
         std::cout
+            << VERDE
             << "[PASS] "
+            << RESET
             << nombre
             << "\n";
     }
     else
     {
         std::cout
+            << ROJO
             << "[FAIL] "
+            << RESET
             << nombre
             << "\n";
     }
@@ -63,16 +81,38 @@ void TestStates::verificar(
 
 void TestStates::resumen()
 {
+    int fail = total - pass;
+
     std::cout << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
     std::cout << "RESUMEN STATE EVALUATOR\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
-    std::cout << "TOTAL : " << total << "\n";
-    std::cout << "PASS  : " << pass << "\n";
-    std::cout << "FAIL  : " << (total - pass) << "\n";
+    std::cout
+        << "TOTAL : "
+        << total
+        << "\n";
 
+    std::cout
+        << VERDE
+        << "PASS  : "
+        << pass
+        << RESET
+        << "\n";
+
+    std::cout
+        << ROJO
+        << "FAIL  : "
+        << fail
+        << RESET
+        << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
+    std::cout << RESET;
 }
 
 // =====================================================
@@ -88,7 +128,7 @@ void TestStates::test_esTablas_true()
             1,
             TipoFicha::Peon,
             Color::Blanca,
-            {0,0}
+            {0, 0}
         ));
 
     estado.piezas.push_back(
@@ -96,7 +136,7 @@ void TestStates::test_esTablas_true()
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}
+            {2, 2}
         ));
 
     StateEvaluator eval;
@@ -119,7 +159,7 @@ void TestStates::test_esTablas_false()
             1,
             TipoFicha::Peon,
             Color::Blanca,
-            {0,0}
+            {0, 0}
         ));
 
     estado.piezas.push_back(
@@ -127,7 +167,7 @@ void TestStates::test_esTablas_false()
             2,
             TipoFicha::Torre,
             Color::Negra,
-            {2,2}
+            {2, 2}
         ));
 
     StateEvaluator eval;
@@ -150,7 +190,7 @@ void TestStates::test_esDerrota_true()
             1,
             TipoFicha::Peon,
             Color::Negra,
-            {1,1}
+            {1, 1}
         ));
 
     StateEvaluator eval;
@@ -173,7 +213,7 @@ void TestStates::test_esDerrota_false()
             1,
             TipoFicha::Peon,
             Color::Blanca,
-            {0,0}
+            {0, 0}
         ));
 
     estado.piezas.push_back(
@@ -181,7 +221,7 @@ void TestStates::test_esDerrota_false()
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {1,1}
+            {1, 1}
         ));
 
     StateEvaluator eval;
@@ -204,7 +244,7 @@ void TestStates::test_sinMovimientos_true()
             1,
             TipoFicha::Peon,
             Color::Blanca,
-            {0,0}
+            {0, 0}
         ));
 
     StateEvaluator eval;
@@ -229,7 +269,7 @@ void TestStates::test_sinMovimientos_false()
             1,
             TipoFicha::Torre,
             Color::Blanca,
-            {1,1}
+            {1, 1}
         ));
 
     estado.piezas.push_back(
@@ -237,7 +277,7 @@ void TestStates::test_sinMovimientos_false()
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}
+            {2, 2}
         ));
 
     StateEvaluator eval;

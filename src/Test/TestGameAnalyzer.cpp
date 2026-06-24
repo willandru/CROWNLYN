@@ -7,15 +7,28 @@
 #include <iostream>
 
 // =====================================================
+// COLORES ANSI
+// =====================================================
+
+static constexpr const char* RESET  = "\033[0m";
+static constexpr const char* VERDE  = "\033[32m";
+static constexpr const char* ROJO   = "\033[31m";
+static constexpr const char* CYAN   = "\033[36m";
+static constexpr const char* TITLE    = "\033[91m";
+
+
+// =====================================================
 // EJECUCIÓN
 // =====================================================
 
 void TestGameAnalyzer::ejecutar()
 {
     std::cout << "\n";
+    std::cout << TITLE;
     std::cout << "=========================================\n";
     std::cout << "GAME ANALYZER TESTS\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
     test_EncontrarRey_Blanco();
     test_EncontrarRey_Negro();
@@ -45,14 +58,18 @@ void TestGameAnalyzer::verificar(
         pass++;
 
         std::cout
+            << VERDE
             << "[PASS] "
+            << RESET
             << nombre
             << "\n";
     }
     else
     {
         std::cout
+            << ROJO
             << "[FAIL] "
+            << RESET
             << nombre
             << "\n";
     }
@@ -64,16 +81,38 @@ void TestGameAnalyzer::verificar(
 
 void TestGameAnalyzer::resumen()
 {
+    int fail = total - pass;
+
     std::cout << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
     std::cout << "RESUMEN GAME ANALYZER\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
-    std::cout << "TOTAL : " << total << "\n";
-    std::cout << "PASS  : " << pass << "\n";
-    std::cout << "FAIL  : " << (total - pass) << "\n";
+    std::cout
+        << "TOTAL : "
+        << total
+        << "\n";
 
+    std::cout
+        << VERDE
+        << "PASS  : "
+        << pass
+        << RESET
+        << "\n";
+
+    std::cout
+        << ROJO
+        << "FAIL  : "
+        << fail
+        << RESET
+        << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
+    std::cout << RESET;
 }
 
 // =====================================================

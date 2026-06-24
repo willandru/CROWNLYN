@@ -7,13 +7,26 @@
 #include <iostream>
 
 // =====================================================
+// COLORES ANSI
+// =====================================================
+
+static constexpr const char* RESET   = "\033[0m";
+static constexpr const char* VERDE   = "\033[32m";
+static constexpr const char* ROJO    = "\033[31m";
+static constexpr const char* CYAN    = "\033[36m";
+static constexpr const char* TITLE    = "\033[93m";
+
+// =====================================================
 
 void TestDecisionTreeEngine::ejecutar()
 {
     std::cout << "\n";
+
+    std::cout << TITLE;
     std::cout << "=========================================\n";
     std::cout << "DECISION TREE ENGINE TESTS\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
     test_expandirNodo_null();
 
@@ -39,11 +52,22 @@ void TestDecisionTreeEngine::verificar(
     if (resultado)
     {
         pass++;
-        std::cout << "[PASS] " << nombre << "\n";
+
+        std::cout
+            << VERDE
+            << "[PASS] "
+            << RESET
+            << nombre
+            << "\n";
     }
     else
     {
-        std::cout << "[FAIL] " << nombre << "\n";
+        std::cout
+            << ROJO
+            << "[FAIL] "
+            << RESET
+            << nombre
+            << "\n";
     }
 }
 
@@ -51,16 +75,38 @@ void TestDecisionTreeEngine::verificar(
 
 void TestDecisionTreeEngine::resumen()
 {
+    int fail = total - pass;
+
     std::cout << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
     std::cout << "RESUMEN DECISION TREE ENGINE\n";
     std::cout << "=========================================\n";
+    std::cout << RESET;
 
-    std::cout << "TOTAL : " << total << "\n";
-    std::cout << "PASS  : " << pass << "\n";
-    std::cout << "FAIL  : " << (total - pass) << "\n";
+    std::cout
+        << "TOTAL : "
+        << total
+        << "\n";
 
+    std::cout
+        << VERDE
+        << "PASS  : "
+        << pass
+        << RESET
+        << "\n";
+
+    std::cout
+        << ROJO
+        << "FAIL  : "
+        << fail
+        << RESET
+        << "\n";
+
+    std::cout << CYAN;
     std::cout << "=========================================\n";
+    std::cout << RESET;
 }
 
 // =====================================================
@@ -90,20 +136,19 @@ void TestDecisionTreeEngine::test_nodoTerminal_noGeneraHijos()
 
     nodo.turnoActual = Color::Blanca;
 
-    // estado terminal por tablas
     nodo.piezas.push_back(
         Ficha(
             1,
             TipoFicha::Peon,
             Color::Blanca,
-            {0,0}));
+            {0, 0}));
 
     nodo.piezas.push_back(
         Ficha(
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}));
+            {2, 2}));
 
     engine.expandirNodo(&nodo);
 
@@ -129,14 +174,14 @@ void TestDecisionTreeEngine::test_nodoConMovimientos_generaHijos()
             1,
             TipoFicha::Torre,
             Color::Blanca,
-            {1,1}));
+            {1, 1}));
 
     nodo.piezas.push_back(
         Ficha(
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}));
+            {2, 2}));
 
     engine.expandirNodo(&nodo);
 
@@ -162,14 +207,14 @@ void TestDecisionTreeEngine::test_cambioTurno()
             1,
             TipoFicha::Torre,
             Color::Blanca,
-            {1,1}));
+            {1, 1}));
 
     nodo.piezas.push_back(
         Ficha(
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}));
+            {2, 2}));
 
     engine.expandirNodo(&nodo);
 
@@ -204,14 +249,14 @@ void TestDecisionTreeEngine::test_hijoGenerado()
             1,
             TipoFicha::Torre,
             Color::Blanca,
-            {1,1}));
+            {1, 1}));
 
     nodo.piezas.push_back(
         Ficha(
             2,
             TipoFicha::Peon,
             Color::Negra,
-            {2,2}));
+            {2, 2}));
 
     engine.expandirNodo(&nodo);
 
