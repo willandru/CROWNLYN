@@ -5,13 +5,15 @@ project(CROWNLYN)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES
-    main.cpp
+# ======================================================
+# FUENTES COMPARTIDAS
+# ======================================================
+
+set(CROWNLYN_CORE
 
     src/Arbol/Arbol.cpp
     src/Arbol/Nodo.cpp
     src/Arbol/Tablero.cpp
-    src/Arbol/Turno.cpp
     src/Arbol/DecisionTreeEngine.cpp
     src/Arbol/GameAnalyzer.cpp
     src/Arbol/StateEvaluator.cpp
@@ -25,10 +27,50 @@ set(SOURCES
     src/Fichas/Rey.cpp
 )
 
-add_executable(CROWNLYN ${SOURCES})
+# ======================================================
+# PROGRAMA PRINCIPAL
+# ======================================================
 
-target_include_directories(CROWNLYN PRIVATE
+add_executable(
+    CROWNLYN
+
+    main.cpp
+
+    ${CROWNLYN_CORE}
+)
+
+target_include_directories(
+    CROWNLYN
+    PRIVATE
+
     src
     src/Arbol
     src/Fichas
+)
+
+# ======================================================
+# TESTS
+# ======================================================
+
+add_executable(
+    CROWNLYN_TESTS
+
+    TestsMain.cpp
+
+    src/Test/TestSuite.cpp
+    src/Test/TestStates.cpp
+    src/Test/TestGameAnalyzer.cpp
+    src/Test/TestDecisionTreeEngine.cpp
+
+    ${CROWNLYN_CORE}
+)
+
+target_include_directories(
+    CROWNLYN_TESTS
+    PRIVATE
+
+    src
+    src/Arbol
+    src/Fichas
+    src/Test
 )
