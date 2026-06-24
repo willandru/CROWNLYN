@@ -5,6 +5,8 @@
 #include "Tablero.h"
 #include "Ficha.h"
 
+#include "GameAnalyzer.h"
+
 int main()
 {
     Nodo* raiz = new Nodo();
@@ -13,13 +15,33 @@ int main()
     raiz->turnoActual = Color::Blanca;
 
     // Rey negro
-    raiz->piezas.push_back(Ficha(1, TipoFicha::Rey, Color::Negra, {0, 2}));
+    raiz->piezas.push_back(Ficha(1, TipoFicha::Peon, Color::Blanca, {0, 0}));
+    // Rey negro
+    raiz->piezas.push_back(Ficha(1, TipoFicha::Torre, Color::Negra, {0, 1}));
 
-    // Torre blanca atacante
-    raiz->piezas.push_back(Ficha(2, TipoFicha::Torre, Color::Blanca, {2, 0}));
 
-    // Torre blanca de control
-    raiz->piezas.push_back(Ficha(3, TipoFicha::Peon, Color::Blanca, {2, 1}));
+    // ======================================================
+    // VALIDACIÓN DE ESTADO INICIAL (NUEVO)
+    // ======================================================
+
+    GameAnalyzer analyzer;
+
+    if (!analyzer.estadoInicialValido(*raiz))
+    {
+        std::cout << "[INIT] Estado inválido (sin ambos bandos). Abortando.\n";
+        return 0;
+    }
+
+    Color turnoCorregido = analyzer.sugerirTurnoInicial(*raiz);
+    raiz->turnoActual = turnoCorregido;
+
+    std::cout << "[INIT] Turno inicial asignado: "
+              << (turnoCorregido == Color::Blanca ? "Blanca" : "Negra")
+              << "\n";
+
+
+
+
     // ARBOL
     // ======================================================
     Arbol arbol;
@@ -46,6 +68,7 @@ int main()
     //arbol.imprimirNivel();
     arbol.resumenNivel();
 
+    /*
     std::cout << "\n=== NIVEL 4 ===\n";
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
@@ -57,6 +80,7 @@ int main()
     arbol.construirSiguienteNivel();
     //arbol.imprimirNivel();
     arbol.resumenNivel();
+    */
     
 
 

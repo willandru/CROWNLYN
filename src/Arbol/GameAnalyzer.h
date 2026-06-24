@@ -41,6 +41,10 @@ public:
         const Ficha& f,
         const Nodo& estado) const;
 
+    bool estadoInicialValido(const Nodo& estado) const;
+
+    Color sugerirTurnoInicial(const Nodo& estado) const;
+
 private:
     const Ficha* obtenerFichaEn(
         const Nodo& estado,

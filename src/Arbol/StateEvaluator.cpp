@@ -77,10 +77,26 @@ bool StateEvaluator::esTablas(const Nodo& estado) const
 
 // ======================================================
 
+#include <iostream>
+
 bool StateEvaluator::estadoTerminal(const Nodo& estado, Color color) const
 {
-    return esDerrota(estado)
-        || esTablas(estado)
-        || esMate(estado, color)
-        || sinMovimientos(estado, color);
+    bool derrota = esDerrota(estado);
+    bool tablas = esTablas(estado);
+    bool mate = esMate(estado, color);
+    bool sinMov = sinMovimientos(estado, color);
+
+    if (derrota)
+        std::cout << "[STATE] TERMINAL -> esDerrota\n";
+
+    if (tablas)
+        std::cout << "[STATE] TERMINAL -> esTablas\n";
+
+    if (mate)
+        std::cout << "[STATE] TERMINAL -> esMate\n";
+
+    if (sinMov)
+        std::cout << "[STATE] TERMINAL -> sinMovimientos\n";
+
+    return derrota || tablas || mate || sinMov;
 }

@@ -7,6 +7,8 @@
 #include "Alfil.h"
 #include "Dama.h"
 
+#include <iostream>
+
 // ======================================================
 // UTILIDAD: PIEZA EN CASILLA
 // ======================================================
@@ -241,4 +243,80 @@ bool GameAnalyzer::tieneMovimientosLegales(
     }
 
     return false;
+}
+
+// ======================================================
+//  VALIDACIÓN DE ESTADO INICIAL
+// ======================================================
+
+
+bool GameAnalyzer::estadoInicialValido(const Nodo& estado) const
+{
+    bool blancoJaque = estaEnJaque(estado, Color::Blanca);
+    bool negroJaque  = estaEnJaque(estado, Color::Negra);
+
+    // ======================================================
+    // CASO CRÍTICO: ambos en jaque -> estado imposible
+    // ======================================================
+    if (blancoJaque && negroJaque)
+        return false;
+
+    bool blancoExiste = false;
+    bool negroExiste  = false;
+
+    for (const Ficha& f : estado.piezas)
+    {
+        if (f.getColor() == Color::Blanca) blancoExiste = true;
+        else negroExiste = true;
+    }
+
+    return (blancoExiste && negroExiste);
+}
+
+// ======================================================
+// SUGERENCIA DE TURNO INICIAL
+// ======================================================
+
+Color GameAnalyzer::sugerirTurnoInicial(const Nodo& estado) const
+{
+    bool blancoJaque = estaEnJaque(estado, Color::Blanca);
+    bool negroJaque  = estaEnJaque(estado, Color::Negra);
+
+    bool blancoPuede = tieneMovimientosLegales(estado, Color::Blanca);
+    bool negroPuede  = tieneMovimientosLegales(estado, Color::Negra);
+
+    // ======================================================
+    // CASO FINAL: ambos en jaque -> estado termina
+    // ======================================================
+    if (blancoJaque && negroJaque){
+        std::cout << "[ANALY] Ambos en MATE\n";
+        return Color::Blanca; // valor irrelevante, porque NO se debe usar
+    }
+        
+
+    if (blancoJaque && !negroJaque){
+        std::cout << "[ANALY] Blanco en Jaque\n";
+        return Color::Blanca;
+    }
+        
+
+    if (negroJaque && !blancoJaque){
+        std::cout << "[ANALY] Negro en Jaque\n";
+        return Color::Negra;
+    }
+        
+
+    if (!blancoPuede && negroPuede){
+        std::cout << "[ANALY] Blanco no tiene movimientos legales\n";
+        return Color::Negra;
+    }
+        
+
+    if (!negroPuede && blancoPuede){
+        std::cout << "[ANALY] Negro no tiene movimientos legales\n";
+        return Color::Blanca;
+    }
+        
+
+    return Color::Blanca;
 }
