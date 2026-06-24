@@ -13,6 +13,8 @@ set(SOURCES
     src/Arbol/Tablero.cpp
     src/Arbol/Turno.cpp
     src/Arbol/DecisionTreeEngine.cpp
+    src/Arbol/GameAnalyzer.cpp
+    src/Arbol/StateEvaluator.cpp
 
     src/Fichas/Ficha.cpp
     src/Fichas/Peon.cpp

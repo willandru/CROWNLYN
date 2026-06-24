@@ -9,7 +9,6 @@ class Nodo
 public:
     Nodo();
     Nodo(const Nodo& other);
-
     ~Nodo() = default;
 
     void agregarHijo(Nodo* hijo);

@@ -1,41 +1,43 @@
 #include "Peon.h"
 
+// ======================================================
+// MOVIMIENTOS LEGALES (NO INCLUYE CONTROL DE CASILLAS VACÍAS COMO ATAQUE)
+// ======================================================
+
 std::vector<Posicion> Peon::getMovimientos(
     const Ficha& pieza,
     const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
-    Posicion origen = pieza.getPosicion();
+    const Posicion o = pieza.getPosicion();
 
-    int dir =
-        (pieza.getColor() == Color::Blanca)
-        ? -1
-        : 1;
+    const int dir =
+        (pieza.getColor() == Color::Blanca) ? -1 : 1;
 
     // =====================================================
-    // MOVIMIENTO FRONTAL
+    // AVANCE SIMPLE
     // =====================================================
 
-    int xFront = origen.x + dir;
-    int yFront = origen.y;
+    int xFront = o.x + dir;
+    int yFront = o.y;
 
     if (esValida(estado, xFront, yFront) &&
         !obtenerFichaEn(estado, xFront, yFront))
     {
-        movimientos.push_back({ xFront, yFront });
+        movimientos.push_back({xFront, yFront});
     }
 
     // =====================================================
-    // CAPTURAS DIAGONALES
+    // CAPTURAS DIAGONALES (SOLO SI HAY PIEZA ENEMIGA)
     // =====================================================
 
-    const int diagonales[2] = { -1, 1 };
+    const int dy[2] = {-1, 1};
 
-    for (int dy : diagonales)
+    for (int d : dy)
     {
-        int x = origen.x + dir;
-        int y = origen.y + dy;
+        int x = o.x + dir;
+        int y = o.y + d;
 
         if (!esValida(estado, x, y))
             continue;
@@ -44,12 +46,16 @@ std::vector<Posicion> Peon::getMovimientos(
 
         if (f && f->getColor() != pieza.getColor())
         {
-            movimientos.push_back({ x, y });
+            movimientos.push_back({x, y});
         }
     }
 
     return movimientos;
 }
+
+// ======================================================
+// ATAQUES (CONTROL DE CASILLAS PARA JAQUE)
+// ======================================================
 
 std::vector<Posicion> Peon::getAtaques(
     const Ficha& pieza,
@@ -57,33 +63,34 @@ std::vector<Posicion> Peon::getAtaques(
 {
     std::vector<Posicion> ataques;
 
-    Posicion origen = pieza.getPosicion();
+    const Posicion o = pieza.getPosicion();
 
-    int dir =
-        (pieza.getColor() == Color::Blanca)
-        ? -1
-        : 1;
+    const int dir =
+        (pieza.getColor() == Color::Blanca) ? -1 : 1;
 
-    const int diagonales[2] = { -1, 1 };
+    const int dy[2] = {-1, 1};
 
-    for (int dy : diagonales)
+    for (int d : dy)
     {
-        int x = origen.x + dir;
-        int y = origen.y + dy;
+        int x = o.x + dir;
+        int y = o.y + d;
 
         if (esValida(estado, x, y))
         {
-            ataques.push_back({ x, y });
+            // IMPORTANTE:
+            // el peón controla diagonales aunque no haya pieza
+            ataques.push_back({x, y});
         }
     }
 
     return ataques;
 }
 
-bool Peon::esValida(
-    const Nodo& estado,
-    int x,
-    int y) const
+// ======================================================
+// UTILIDADES
+// ======================================================
+
+bool Peon::esValida(const Nodo& estado, int x, int y) const
 {
     return estado.tablero.esValida(x, y);
 }

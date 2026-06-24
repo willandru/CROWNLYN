@@ -4,9 +4,7 @@
 #include <iostream>
 
 #include "Nodo.h"
-
-// forward declaration (CRÍTICO)
-class DecisionTreeEngine;
+#include "DecisionTreeEngine.h"
 
 class Arbol
 {
@@ -24,7 +22,6 @@ public:
     const std::vector<Nodo*>& getNodos() const;
 
     void imprimirNivel() const;
-
     void resumenNivel() const;
 
 private:
@@ -32,7 +29,9 @@ private:
 
 private:
     Nodo* raiz = nullptr;
+
+    // FRONTIER (nivel actual)
     std::vector<Nodo*> nodos;
 
-    DecisionTreeEngine* engine;
+    DecisionTreeEngine* engine = nullptr;
 };

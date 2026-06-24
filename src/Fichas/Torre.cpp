@@ -1,25 +1,27 @@
 #include "Torre.h"
 
+// ======================================================
+// MOVIMIENTOS LEGALES
+// ======================================================
+
 std::vector<Posicion> Torre::getMovimientos(
     const Ficha& pieza,
     const Nodo& estado) const
 {
     std::vector<Posicion> movimientos;
 
-    Posicion origen = pieza.getPosicion();
+    const Posicion o = pieza.getPosicion();
 
     const int dirs[4][2] =
     {
-        { 1, 0 },
-        { -1, 0 },
-        { 0, 1 },
-        { 0, -1 }
+        { 1, 0 }, { -1, 0 },
+        { 0, 1 }, { 0, -1 }
     };
 
-    for (auto& d : dirs)
+    for (const auto& d : dirs)
     {
-        int x = origen.x + d[0];
-        int y = origen.y + d[1];
+        int x = o.x + d[0];
+        int y = o.y + d[1];
 
         while (esValida(estado, x, y))
         {
@@ -27,18 +29,14 @@ std::vector<Posicion> Torre::getMovimientos(
 
             if (!f)
             {
-                // casilla vacía
-                movimientos.push_back({x, y});
+                movimientos.push_back({ x, y });
             }
             else
             {
-                // ocupada → solo si enemigo
                 if (f->getColor() != pieza.getColor())
-                {
-                    movimientos.push_back({x, y});
-                }
+                    movimientos.push_back({ x, y });
 
-                break; // siempre bloquea el rayo
+                break; // bloqueo absoluto del rayo
             }
 
             x += d[0];
@@ -49,12 +47,60 @@ std::vector<Posicion> Torre::getMovimientos(
     return movimientos;
 }
 
+// ======================================================
+// ATAQUES (CONTROL REAL DE CASILLAS)
+// ======================================================
+
+std::vector<Posicion> Torre::getAtaques(
+    const Ficha& pieza,
+    const Nodo& estado) const
+{
+    std::vector<Posicion> ataques;
+
+    const Posicion o = pieza.getPosicion();
+
+    const int dirs[4][2] =
+    {
+        { 1, 0 }, { -1, 0 },
+        { 0, 1 }, { 0, -1 }
+    };
+
+    for (const auto& d : dirs)
+    {
+        int x = o.x + d[0];
+        int y = o.y + d[1];
+
+        while (esValida(estado, x, y))
+        {
+            ataques.push_back({ x, y });
+
+            // 🔴 punto crítico: el rayo se detiene en la primera pieza
+            if (obtenerFichaEn(estado, x, y))
+                break;
+
+            x += d[0];
+            y += d[1];
+        }
+    }
+
+    return ataques;
+}
+
+// ======================================================
+// UTILIDADES
+// ======================================================
+
 bool Torre::esValida(const Nodo& estado, int x, int y) const
 {
     return estado.tablero.esValida(x, y);
 }
 
-const Ficha* Torre::obtenerFichaEn(const Nodo& estado, int x, int y) const
+// ======================================================
+
+const Ficha* Torre::obtenerFichaEn(
+    const Nodo& estado,
+    int x,
+    int y) const
 {
     for (const Ficha& f : estado.piezas)
     {
