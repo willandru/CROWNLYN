@@ -45,15 +45,34 @@ bool StateEvaluator::esDerrota(const Nodo& estado) const
 
 bool StateEvaluator::esTablas(const Nodo& estado) const
 {
-    int b = 0, n = 0;
+    Ficha blanca;
+    Ficha negra;
+
+    bool foundB = false;
+    bool foundN = false;
 
     for (const Ficha& f : estado.piezas)
     {
-        if (f.getColor() == Color::Blanca) b++;
-        else n++;
+        if (f.getColor() == Color::Blanca)
+        {
+            if (foundB) return false; // más de 1 pieza blanca
+            blanca = f;
+            foundB = true;
+        }
+        else
+        {
+            if (foundN) return false; // más de 1 pieza negra
+            negra = f;
+            foundN = true;
+        }
     }
 
-    return (b == 1 && n == 1);
+    // deben existir exactamente 1 y 1
+    if (!foundB || !foundN)
+        return false;
+
+    // mismo tipo = tablas en Crownlyn
+    return blanca.getTipo() == negra.getTipo();
 }
 
 // ======================================================

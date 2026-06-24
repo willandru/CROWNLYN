@@ -5,6 +5,7 @@
 
 DecisionTreeEngine::DecisionTreeEngine()
 {
+    std::cout << "[DTE] Engine iniciado\n";
 }
 
 // ======================================================
@@ -15,62 +16,62 @@ const std::vector<Nodo*>& DecisionTreeEngine::getNodos() const
 }
 
 // ======================================================
-// EXPANSIÓN DEL ÁRBOL
+// EXPANDIR NODO (UNA SOLA PASADA LIMPIA)
 // ======================================================
 
 void DecisionTreeEngine::expandirNodo(Nodo* nodo)
 {
     if (!nodo)
+    {
+        std::cout << "[DTE] nodo NULL\n";
         return;
+    }
 
     Color jugador = nodo->turnoActual;
 
-    // ==================================================
-    // FILTRO DE ESTADO TERMINAL
-    // ==================================================
+    std::cout << "\n[DTE] expandiendo nodo | piezas="
+              << nodo->piezas.size()
+              << " turno="
+              << (jugador == Color::Blanca ? "Blanca" : "Negra")
+              << "\n";
 
     if (evaluator.estadoTerminal(*nodo, jugador))
+    {
+        std::cout << "[DTE] nodo terminal -> skip\n";
         return;
+    }
 
     int hijos = 0;
-
-    // ==================================================
-    // ITERAR PIEZAS
-    // ==================================================
 
     for (const Ficha& f : nodo->piezas)
     {
         if (f.getColor() != jugador)
             continue;
 
-        // obtener movimientos base de la pieza
         auto movs = analyzer.obtenerMovimientosFicha(f, *nodo);
+
+        std::cout << "[DTE] pieza ID=" << f.getId()
+                  << " movs=" << movs.size() << "\n";
 
         for (const Posicion& p : movs)
         {
-            // validar legalidad (evitar dejar rey en jaque)
             if (!analyzer.esMovimientoLegal(*nodo, f, p))
                 continue;
 
-            // simular estado resultante
             Nodo nuevo = analyzer.simularMovimiento(*nodo, f, p);
 
-            // crear hijo
             Nodo* hijo = new Nodo(nuevo);
 
-            // alternar turno
             hijo->turnoActual =
                 (jugador == Color::Blanca)
-                ? Color::Negra
-                : Color::Blanca;
+                    ? Color::Negra
+                    : Color::Blanca;
 
             nodo->agregarHijo(hijo);
-
-            nodos.push_back(hijo);
 
             hijos++;
         }
     }
 
-    std::cout << "[DTE] nodo expandido hijos=" << hijos << "\n";
+    std::cout << "[DTE] hijos generados=" << hijos << "\n";
 }

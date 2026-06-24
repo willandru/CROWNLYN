@@ -4,8 +4,7 @@
 #include <iostream>
 
 #include "Nodo.h"
-
-class DecisionTreeEngine;
+#include "DecisionTreeEngine.h"
 
 class Arbol
 {
@@ -30,6 +29,9 @@ private:
 
 private:
     Nodo* raiz = nullptr;
+
+    // FRONTIER (nivel actual)
     std::vector<Nodo*> nodos;
+
     DecisionTreeEngine* engine = nullptr;
 };

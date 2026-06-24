@@ -34,6 +34,7 @@ void Arbol::setNodoInicial(Nodo* r)
     if (!raiz)
         return;
 
+    nodos.clear();
     nodos.push_back(raiz);
 }
 
@@ -50,7 +51,6 @@ void Arbol::liberarNodo(Nodo* nodo)
         liberarNodo(h);
 
     nodo->hijos.clear();
-
     delete nodo;
 }
 
@@ -68,7 +68,7 @@ void Arbol::eliminarSubarbol()
 }
 
 // ======================================================
-// NIVEL ACTUAL
+// FRONTIER ACTUAL
 // ======================================================
 
 const std::vector<Nodo*>& Arbol::getNodos() const
@@ -77,32 +77,46 @@ const std::vector<Nodo*>& Arbol::getNodos() const
 }
 
 // ======================================================
-// EXPANSIÓN DE UN NIVEL
+// CONSTRUIR SIGUIENTE NIVEL (BFS CORRECTO)
 // ======================================================
 
 void Arbol::construirSiguienteNivel()
 {
-    std::vector<Nodo*> nuevos;
+    std::vector<Nodo*> siguienteNivel;
+
+    std::cout << "\n[ARBOL] expandiendo nivel actual: "
+              << nodos.size() << " nodos\n";
 
     for (Nodo* n : nodos)
     {
         if (!n)
             continue;
 
+        size_t hijosAntes = n->hijos.size();
+
         engine->expandirNodo(n);
 
-        for (Nodo* h : n->hijos)
+        size_t hijosDespues = n->hijos.size();
+
+        std::cout << "[ARBOL] nodo expandido: hijos "
+                  << hijosAntes << " -> "
+                  << hijosDespues << "\n";
+
+        // SOLO nuevos hijos generados en esta expansión
+        for (size_t i = hijosAntes; i < hijosDespues; i++)
         {
-            if (h)
-                nuevos.push_back(h);
+            siguienteNivel.push_back(n->hijos[i]);
         }
     }
 
-    nodos = std::move(nuevos);
+    nodos = std::move(siguienteNivel);
+
+    std::cout << "[ARBOL] nuevo nivel generado: "
+              << nodos.size() << " nodos\n";
 }
 
 // ======================================================
-// CONSTRUCCIÓN DESDE RAÍZ
+// CONSTRUIR DESDE RAÍZ
 // ======================================================
 
 void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
@@ -114,10 +128,14 @@ void Arbol::construirDesdeNodo(Nodo* nodo, int profundidadMax)
     if (!raiz)
         return;
 
+    nodos.clear();
     nodos.push_back(raiz);
 
     for (int i = 0; i < profundidadMax; i++)
+    {
+        std::cout << "\n========== NIVEL " << (i + 1) << " ==========\n";
         construirSiguienteNivel();
+    }
 }
 
 // ======================================================
