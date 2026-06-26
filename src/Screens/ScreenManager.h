@@ -10,6 +10,8 @@
 #include "OneScreen.h"
 #include "MatchScreen.h"
 #include "SpecialMovesScreen.h"
+#include "HistoryEndingsScreen.h"
+#include "HistoryMovesScreen.h"
 
 enum class ScreenType
 {
@@ -17,7 +19,9 @@ enum class ScreenType
     OneVsAI,
     One,
     Match,
-    Moves
+    Moves,
+    HistoryEndings,
+    HistoryMoves
 };
 
 class ScreenManager
@@ -44,5 +48,7 @@ private:
     OneScreen m_one;
     MatchScreen m_match;
     SpecialMovesScreen m_moves;
-    
+
+    HistoryEndingsScreen m_historyEndings;
+    HistoryMovesScreen m_historyMoves;
 };

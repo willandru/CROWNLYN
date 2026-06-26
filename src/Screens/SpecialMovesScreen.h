@@ -9,12 +9,19 @@ public:
 
     int getBackground() const;
 
-    float getButtonX() const;
-    float getButtonY() const;
-    float getButtonWidth() const;
-    float getButtonHeight() const;
+    float getBackButtonX() const;
+    float getBackButtonY() const;
+    float getBackButtonWidth() const;
+    float getBackButtonHeight() const;
+
+    float getHistoryButtonX() const;
+    float getHistoryButtonY() const;
+    float getHistoryButtonWidth() const;
+    float getHistoryButtonHeight() const;
 
 private:
     int m_background;
-    BackButton m_button;
+
+    BackButton m_backButton;
+    BackButton m_historyButton;
 };

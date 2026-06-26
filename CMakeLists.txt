@@ -60,6 +60,8 @@ set(CROWNLYN_GRAPHICS
     src/Screens/MatchScreen.cpp
     src/Screens/ScreenManager.cpp
     src/Screens/SpecialMovesScreen.cpp
+    src/Screens/HistoryMovesScreen.cpp
+    src/Screens/HistoryEndingsScreen.cpp
 )
 
 # ======================================================

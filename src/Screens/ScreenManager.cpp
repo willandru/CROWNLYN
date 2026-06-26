@@ -33,6 +33,7 @@ void ScreenManager::update(const Input& input)
                 for (int i = 0; i < count; i++)
                 {
                     Button b;
+
                     b.x = m_mainMenu.getButtonX(i);
                     b.y = m_mainMenu.getButtonY(i);
                     b.width = m_mainMenu.getButtonWidth(i);
@@ -53,7 +54,7 @@ void ScreenManager::update(const Input& input)
                             case 2:
                                 m_mainMenu.setAction(MainMenuAction::Match);
                                 break;
-                            
+
                             case 3:
                                 m_mainMenu.setAction(MainMenuAction::Moves);
                                 break;
@@ -101,14 +102,25 @@ void ScreenManager::update(const Input& input)
             {
                 Button b;
 
-                b.x = m_oneVsAI.getButtonX();
-                b.y = m_oneVsAI.getButtonY();
-                b.width = m_oneVsAI.getButtonWidth();
-                b.height = m_oneVsAI.getButtonHeight();
+                b.x = m_oneVsAI.getBackButtonX();
+                b.y = m_oneVsAI.getBackButtonY();
+                b.width = m_oneVsAI.getBackButtonWidth();
+                b.height = m_oneVsAI.getBackButtonHeight();
 
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
                     m_currentScreen = ScreenType::MainMenu;
+                    break;
+                }
+
+                b.x = m_oneVsAI.getHistoryButtonX();
+                b.y = m_oneVsAI.getHistoryButtonY();
+                b.width = m_oneVsAI.getHistoryButtonWidth();
+                b.height = m_oneVsAI.getHistoryButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::HistoryEndings;
                 }
             }
 
@@ -121,10 +133,10 @@ void ScreenManager::update(const Input& input)
             {
                 Button b;
 
-                b.x = m_one.getButtonX();
-                b.y = m_one.getButtonY();
-                b.width = m_one.getButtonWidth();
-                b.height = m_one.getButtonHeight();
+                b.x = m_one.getBackButtonX();
+                b.y = m_one.getBackButtonY();
+                b.width = m_one.getBackButtonWidth();
+                b.height = m_one.getBackButtonHeight();
 
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
@@ -141,10 +153,10 @@ void ScreenManager::update(const Input& input)
             {
                 Button b;
 
-                b.x = m_match.getButtonX();
-                b.y = m_match.getButtonY();
-                b.width = m_match.getButtonWidth();
-                b.height = m_match.getButtonHeight();
+                b.x = m_match.getBackButtonX();
+                b.y = m_match.getBackButtonY();
+                b.width = m_match.getBackButtonWidth();
+                b.height = m_match.getBackButtonHeight();
 
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
@@ -161,14 +173,65 @@ void ScreenManager::update(const Input& input)
             {
                 Button b;
 
-                b.x = m_moves.getButtonX();
-                b.y = m_moves.getButtonY();
-                b.width = m_moves.getButtonWidth();
-                b.height = m_moves.getButtonHeight();
+                b.x = m_moves.getBackButtonX();
+                b.y = m_moves.getBackButtonY();
+                b.width = m_moves.getBackButtonWidth();
+                b.height = m_moves.getBackButtonHeight();
 
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
                     m_currentScreen = ScreenType::MainMenu;
+                    break;
+                }
+
+                b.x = m_moves.getHistoryButtonX();
+                b.y = m_moves.getHistoryButtonY();
+                b.width = m_moves.getHistoryButtonWidth();
+                b.height = m_moves.getHistoryButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::HistoryMoves;
+                }
+            }
+
+            break;
+        }
+
+        case ScreenType::HistoryEndings:
+        {
+            if (input.leftMouseClicked())
+            {
+                Button b;
+
+                b.x = m_historyEndings.getBackButtonX();
+                b.y = m_historyEndings.getBackButtonY();
+                b.width = m_historyEndings.getBackButtonWidth();
+                b.height = m_historyEndings.getBackButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::OneVsAI;
+                }
+            }
+
+            break;
+        }
+
+        case ScreenType::HistoryMoves:
+        {
+            if (input.leftMouseClicked())
+            {
+                Button b;
+
+                b.x = m_historyMoves.getBackButtonX();
+                b.y = m_historyMoves.getBackButtonY();
+                b.width = m_historyMoves.getBackButtonWidth();
+                b.height = m_historyMoves.getBackButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::Moves;
                 }
             }
 
@@ -211,13 +274,26 @@ void ScreenManager::render(Renderer& renderer)
         {
             DrawRectCommand cmd;
 
-            cmd.x = m_oneVsAI.getButtonX();
-            cmd.y = m_oneVsAI.getButtonY();
-            cmd.w = m_oneVsAI.getButtonWidth();
-            cmd.h = m_oneVsAI.getButtonHeight();
+            // Back
+            cmd.x = m_oneVsAI.getBackButtonX();
+            cmd.y = m_oneVsAI.getBackButtonY();
+            cmd.w = m_oneVsAI.getBackButtonWidth();
+            cmd.h = m_oneVsAI.getBackButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            // History
+            cmd.x = m_oneVsAI.getHistoryButtonX();
+            cmd.y = m_oneVsAI.getHistoryButtonY();
+            cmd.w = m_oneVsAI.getHistoryButtonWidth();
+            cmd.h = m_oneVsAI.getHistoryButtonHeight();
+
+            cmd.r = 0.3f;
+            cmd.g = 0.9f;
             cmd.b = 0.3f;
 
             renderer.drawRect(cmd, *m_uiShader);
@@ -229,10 +305,10 @@ void ScreenManager::render(Renderer& renderer)
         {
             DrawRectCommand cmd;
 
-            cmd.x = m_one.getButtonX();
-            cmd.y = m_one.getButtonY();
-            cmd.w = m_one.getButtonWidth();
-            cmd.h = m_one.getButtonHeight();
+            cmd.x = m_one.getBackButtonX();
+            cmd.y = m_one.getBackButtonY();
+            cmd.w = m_one.getBackButtonWidth();
+            cmd.h = m_one.getBackButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;
@@ -247,10 +323,10 @@ void ScreenManager::render(Renderer& renderer)
         {
             DrawRectCommand cmd;
 
-            cmd.x = m_match.getButtonX();
-            cmd.y = m_match.getButtonY();
-            cmd.w = m_match.getButtonWidth();
-            cmd.h = m_match.getButtonHeight();
+            cmd.x = m_match.getBackButtonX();
+            cmd.y = m_match.getBackButtonY();
+            cmd.w = m_match.getBackButtonWidth();
+            cmd.h = m_match.getBackButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;
@@ -265,10 +341,59 @@ void ScreenManager::render(Renderer& renderer)
         {
             DrawRectCommand cmd;
 
-            cmd.x = m_moves.getButtonX();
-            cmd.y = m_moves.getButtonY();
-            cmd.w = m_moves.getButtonWidth();
-            cmd.h = m_moves.getButtonHeight();
+            // Back
+            cmd.x = m_moves.getBackButtonX();
+            cmd.y = m_moves.getBackButtonY();
+            cmd.w = m_moves.getBackButtonWidth();
+            cmd.h = m_moves.getBackButtonHeight();
+
+            cmd.r = 1.0f;
+            cmd.g = 0.3f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            // History
+            cmd.x = m_moves.getHistoryButtonX();
+            cmd.y = m_moves.getHistoryButtonY();
+            cmd.w = m_moves.getHistoryButtonWidth();
+            cmd.h = m_moves.getHistoryButtonHeight();
+
+            cmd.r = 0.3f;
+            cmd.g = 0.9f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            break;
+        }
+
+        case ScreenType::HistoryEndings:
+        {
+            DrawRectCommand cmd;
+
+            cmd.x = m_historyEndings.getBackButtonX();
+            cmd.y = m_historyEndings.getBackButtonY();
+            cmd.w = m_historyEndings.getBackButtonWidth();
+            cmd.h = m_historyEndings.getBackButtonHeight();
+
+            cmd.r = 1.0f;
+            cmd.g = 0.3f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            break;
+        }
+
+        case ScreenType::HistoryMoves:
+        {
+            DrawRectCommand cmd;
+
+            cmd.x = m_historyMoves.getBackButtonX();
+            cmd.y = m_historyMoves.getBackButtonY();
+            cmd.w = m_historyMoves.getBackButtonWidth();
+            cmd.h = m_historyMoves.getBackButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;

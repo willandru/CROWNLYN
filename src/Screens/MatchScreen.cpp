@@ -3,7 +3,7 @@
 MatchScreen::MatchScreen()
     : m_background(0)
 {
-    m_button = {100.0f, 500.0f, 250.0f, 80.0f};
+    m_backButton = {100.0f, 500.0f, 250.0f, 80.0f};
 }
 
 int MatchScreen::getBackground() const
@@ -11,22 +11,22 @@ int MatchScreen::getBackground() const
     return m_background;
 }
 
-float MatchScreen::getButtonX() const
+float MatchScreen::getBackButtonX() const
 {
-    return m_button.x;
+    return m_backButton.x;
 }
 
-float MatchScreen::getButtonY() const
+float MatchScreen::getBackButtonY() const
 {
-    return m_button.y;
+    return m_backButton.y;
 }
 
-float MatchScreen::getButtonWidth() const
+float MatchScreen::getBackButtonWidth() const
 {
-    return m_button.w;
+    return m_backButton.w;
 }
 
-float MatchScreen::getButtonHeight() const
+float MatchScreen::getBackButtonHeight() const
 {
-    return m_button.h;
+    return m_backButton.h;
 }

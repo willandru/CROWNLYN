@@ -3,7 +3,9 @@
 OneVsAIScreen::OneVsAIScreen()
     : m_background(0)
 {
-    m_button = {100.0f, 500.0f, 250.0f, 80.0f};
+    m_backButton = {100.0f, 500.0f, 250.0f, 80.0f};
+
+    m_historyButton = {400.0f, 500.0f, 250.0f, 80.0f};
 }
 
 int OneVsAIScreen::getBackground() const
@@ -11,22 +13,42 @@ int OneVsAIScreen::getBackground() const
     return m_background;
 }
 
-float OneVsAIScreen::getButtonX() const
+float OneVsAIScreen::getBackButtonX() const
 {
-    return m_button.x;
+    return m_backButton.x;
 }
 
-float OneVsAIScreen::getButtonY() const
+float OneVsAIScreen::getBackButtonY() const
 {
-    return m_button.y;
+    return m_backButton.y;
 }
 
-float OneVsAIScreen::getButtonWidth() const
+float OneVsAIScreen::getBackButtonWidth() const
 {
-    return m_button.w;
+    return m_backButton.w;
 }
 
-float OneVsAIScreen::getButtonHeight() const
+float OneVsAIScreen::getBackButtonHeight() const
 {
-    return m_button.h;
+    return m_backButton.h;
+}
+
+float OneVsAIScreen::getHistoryButtonX() const
+{
+    return m_historyButton.x;
+}
+
+float OneVsAIScreen::getHistoryButtonY() const
+{
+    return m_historyButton.y;
+}
+
+float OneVsAIScreen::getHistoryButtonWidth() const
+{
+    return m_historyButton.w;
+}
+
+float OneVsAIScreen::getHistoryButtonHeight() const
+{
+    return m_historyButton.h;
 }
