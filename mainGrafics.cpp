@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Input.h"
 #include "ScreenManager.h"
+#include "ImagenManager.h"
 
 int main()
 {
@@ -23,6 +24,15 @@ int main()
         "Debug/basic.frag"
     );
 
+    Shader textureShader(
+        "Debug/texture.vert",
+        "Debug/texture.frag"
+    );
+
+    ImagenManager imagen(
+    "Debug/image.png"
+);
+
     screenManager.setShader(&shader);
 
     while (!window.shouldClose() && !screenManager.shouldExit())
@@ -35,6 +45,19 @@ int main()
         renderer.begin();
 
         screenManager.render(renderer);
+
+        DrawImageCommand cmd;
+
+        cmd.x = 0.2f;
+        cmd.y = 0.2f;
+        cmd.w = 0.6f;
+        cmd.h = 0.6f;
+        cmd.imagen = &imagen;
+
+        renderer.drawImage(
+            cmd,
+            textureShader
+        );
 
         renderer.end();
 
