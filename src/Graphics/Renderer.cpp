@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include "Shader.h"
+#include "Tablero.h"
+#include "ImagenManager.h"
 
 #include <glad/glad.h>
 
@@ -194,4 +196,53 @@ void Renderer::drawImage(
         GL_TEXTURE_2D,
         0
     );
+}
+
+
+void Renderer::drawTablero(
+    const DrawTableroCommand& cmd,
+    const Shader& shader
+)
+{
+    const Tablero& t = *cmd.tablero;
+
+    int ancho = t.getAncho();
+    int alto  = t.getAlto();
+
+    float cellW = t.getCellWidth();
+    float cellH = t.getCellHeight();
+
+    float startX = t.getX();
+    float startY = t.getY();
+
+    for (int y = 0; y < alto; y++)
+    {
+        for (int x = 0; x < ancho; x++)
+        {
+            DrawRectCommand rect;
+
+            rect.x = startX + x * cellW;
+            rect.y = startY + y * cellH;
+            rect.w = cellW;
+            rect.h = cellH;
+
+            // patrón ajedrez
+            bool dark = ((x + y) & 1);
+
+            if (dark)
+            {
+                rect.r = 0.2f;
+                rect.g = 0.2f;
+                rect.b = 0.2f;
+            }
+            else
+            {
+                rect.r = 0.8f;
+                rect.g = 0.8f;
+                rect.b = 0.8f;
+            }
+
+            drawRect(rect, shader);
+        }
+    }
 }

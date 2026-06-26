@@ -3,17 +3,16 @@
 #include "Shader.h"
 #include "Input.h"
 #include "ScreenManager.h"
-#include "ImagenManager.h"
+
+#include "DrawGameEngine.h"
+#include "DrawTableroEngine.h"
+#include "Tablero.h"
 
 int main()
 {
-    Window window(
-        1280,
-        720,
-        "RENDER_WINDOW"
-    );
+    Window window(1280, 720, "RENDER_WINDOW");
 
-    glViewport(0, 0, 1280, 720); 
+    glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
     Input input;
@@ -24,16 +23,19 @@ int main()
         "Debug/basic.frag"
     );
 
-    Shader textureShader(
-        "Debug/texture.vert",
-        "Debug/texture.frag"
-    );
-
-    ImagenManager imagen(
-    "Debug/image.png"
-);
-
     screenManager.setShader(&shader);
+
+    // ---------------------------
+    // GAME SYSTEM
+    // ---------------------------
+    DrawTableroEngine drawTableroEngine;
+    DrawGameEngine drawGameEngine;
+    Tablero tablero(3, 3);
+
+    tablero.setArea(300.0f, 30.0f, 450.0f, 450.0f);
+
+    drawGameEngine.setTablero(&tablero);
+    drawGameEngine.setTableroEngine(&drawTableroEngine);
 
     while (!window.shouldClose() && !screenManager.shouldExit())
     {
@@ -46,21 +48,13 @@ int main()
 
         screenManager.render(renderer);
 
+        // ---------------------------
+        // TABLERO REAL
+        // ---------------------------
         if (screenManager.currentScreen() == ScreenType::OneVsAI)
-    {
-        DrawImageCommand cmd;
-
-        cmd.x = 0.2f;
-        cmd.y = 0.2f;
-        cmd.w = 0.6f;
-        cmd.h = 0.6f;
-        cmd.imagen = &imagen;
-
-        renderer.drawImage(
-            cmd,
-            textureShader
-        );
-    }
+        {
+            drawGameEngine.draw(renderer, shader, input);
+        }
 
         renderer.end();
 

@@ -65,6 +65,10 @@ set(CROWNLYN_GRAPHICS
     src/Screens/RewardsMainMenu.cpp
 
     src/Game/ImagenManager.cpp
+    src/Screens/DrawTableroEngine.cpp
+    src/Screens/DrawGameEngine.cpp
+
+    src/Arbol/Tablero.cpp
 )
 
 # ======================================================
@@ -109,6 +113,7 @@ target_include_directories(
     src/Screens
     src/UI
     src/Game
+    src/Arbol
 
     externals/glad/include
     externals/glfw-3.4/include

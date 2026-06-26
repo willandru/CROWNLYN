@@ -1,9 +1,10 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "ImagenManager.h"
 
 class Shader;
+class Tablero;
+class ImagenManager;
 
 struct DrawRectCommand
 {
@@ -21,6 +22,11 @@ struct DrawImageCommand
     const ImagenManager* imagen;
 };
 
+struct DrawTableroCommand
+{
+    const Tablero* tablero;
+};
+
 class Renderer
 {
 public:
@@ -34,6 +40,11 @@ public:
 
     void drawImage(
         const DrawImageCommand& cmd,
+        const Shader& shader
+    );
+
+    void drawTablero(
+        const DrawTableroCommand& cmd,
         const Shader& shader
     );
 
