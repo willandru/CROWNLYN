@@ -38,6 +38,8 @@ public:
 
     bool shouldExit() const;
 
+    ScreenType currentScreen() const;
+
 private:
     ScreenType m_currentScreen;
     bool m_shouldExit;

@@ -46,6 +46,8 @@ int main()
 
         screenManager.render(renderer);
 
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
+    {
         DrawImageCommand cmd;
 
         cmd.x = 0.2f;
@@ -58,6 +60,7 @@ int main()
             cmd,
             textureShader
         );
+    }
 
         renderer.end();
 

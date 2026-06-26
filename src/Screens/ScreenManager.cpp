@@ -456,3 +456,9 @@ bool ScreenManager::shouldExit() const
 {
     return m_shouldExit;
 }
+
+ScreenType ScreenManager::currentScreen() const
+{
+    return m_currentScreen;
+}
+
