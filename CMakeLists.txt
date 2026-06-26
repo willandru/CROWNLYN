@@ -69,6 +69,11 @@ set(CROWNLYN_GRAPHICS
     src/Screens/DrawGameEngine.cpp
 
     src/Arbol/Tablero.cpp
+
+    src/Fichas/Ficha.cpp
+    src/Fichas/Torre.cpp
+    src/Game/PlayFichaEngine.cpp
+
 )
 
 # ======================================================
@@ -90,6 +95,7 @@ target_include_directories(
     src
     src/Arbol
     src/Fichas
+    src/Game
 )
 
 # ======================================================
@@ -114,6 +120,7 @@ target_include_directories(
     src/UI
     src/Game
     src/Arbol
+    src/Fichas
 
     externals/glad/include
     externals/glfw-3.4/include
@@ -176,6 +183,13 @@ add_custom_command(
         $<TARGET_FILE_DIR:RENDER_WINDOW>/image.png
 )
 
+add_custom_command(
+    TARGET RENDER_WINDOW POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/src/Assets/torre.png
+        $<TARGET_FILE_DIR:RENDER_WINDOW>/torre.png
+)
+
 set_target_properties(
     RENDER_WINDOW
     PROPERTIES
@@ -207,4 +221,5 @@ target_include_directories(
     src/Arbol
     src/Fichas
     src/Test
+    src/Game
 )

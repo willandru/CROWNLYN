@@ -6,6 +6,10 @@ class Shader;
 class Tablero;
 class ImagenManager;
 
+// =========================
+// COMMANDS
+// =========================
+
 struct DrawRectCommand
 {
     float x, y, w, h;
@@ -14,11 +18,7 @@ struct DrawRectCommand
 
 struct DrawImageCommand
 {
-    float x;
-    float y;
-    float w;
-    float h;
-
+    float x, y, w, h;
     const ImagenManager* imagen;
 };
 
@@ -26,6 +26,16 @@ struct DrawTableroCommand
 {
     const Tablero* tablero;
 };
+
+struct DrawFichaCommand
+{
+    float x, y, w, h;
+    const ImagenManager* textura;
+};
+
+// =========================
+// RENDERER
+// =========================
 
 class Renderer
 {
@@ -45,6 +55,11 @@ public:
 
     void drawTablero(
         const DrawTableroCommand& cmd,
+        const Shader& shader
+    );
+
+    void drawFicha(
+        const DrawFichaCommand& cmd,
         const Shader& shader
     );
 

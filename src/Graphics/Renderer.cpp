@@ -5,6 +5,8 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
+
 Renderer::Renderer()
 {
     float vertices[] =
@@ -245,4 +247,84 @@ void Renderer::drawTablero(
             drawRect(rect, shader);
         }
     }
+}
+
+void Renderer::drawFicha(
+    const DrawFichaCommand& cmd,
+    const Shader& shader
+)
+{
+    std::cout << "drawFicha()" << std::endl;
+
+    if (cmd.textura == nullptr)
+    {
+        std::cout << "textura nullptr" << std::endl;
+        return;
+    }
+
+    if (!cmd.textura->cargada())
+    {
+        std::cout << "textura no cargada" << std::endl;
+        return;
+    }
+
+    std::cout << "x = " << cmd.x
+              << " y = " << cmd.y
+              << " w = " << cmd.w
+              << " h = " << cmd.h
+              << std::endl;
+
+    shader.use();
+
+    GLint rectLoc = glGetUniformLocation(
+        shader.getProgram(),
+        "uRect"
+    );
+
+    GLint texLoc = glGetUniformLocation(
+        shader.getProgram(),
+        "uTexture"
+    );
+
+    std::cout << "uRect = " << rectLoc << std::endl;
+    std::cout << "uTexture = " << texLoc << std::endl;
+    std::cout << "Texture ID = " << cmd.textura->textureID() << std::endl;
+
+    glUniform4f(
+        rectLoc,
+        cmd.x,
+        cmd.y,
+        cmd.w,
+        cmd.h
+    );
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        cmd.textura->textureID()
+    );
+
+    glUniform1i(
+        texLoc,
+        0
+    );
+
+    glBindVertexArray(m_vao);
+
+    glDrawElements(
+        GL_TRIANGLES,
+        6,
+        GL_UNSIGNED_INT,
+        nullptr
+    );
+
+    GLenum err = glGetError();
+
+    std::cout << "OpenGL Error = " << err << std::endl;
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        0
+    );
 }

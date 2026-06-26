@@ -8,6 +8,10 @@
 #include "DrawTableroEngine.h"
 #include "Tablero.h"
 
+#include "PlayFichaEngine.h"
+#include "ImagenManager.h"
+#include "Ficha.h"
+
 int main()
 {
     Window window(1280, 720, "RENDER_WINDOW");
@@ -18,16 +22,27 @@ int main()
     Input input;
     ScreenManager screenManager;
 
-    Shader shader(
+    // ---------------------------------
+    // SHADER PARA GEOMETRÍA
+    // ---------------------------------
+    Shader basicShader(
         "Debug/basic.vert",
         "Debug/basic.frag"
     );
 
-    screenManager.setShader(&shader);
+    // ---------------------------------
+    // SHADER PARA TEXTURAS
+    // ---------------------------------
+    Shader textureShader(
+        "Debug/texture.vert",
+        "Debug/texture.frag"
+    );
 
-    // ---------------------------
+    screenManager.setShader(&basicShader);
+
+    // ---------------------------------
     // GAME SYSTEM
-    // ---------------------------
+    // ---------------------------------
     DrawTableroEngine drawTableroEngine;
     DrawGameEngine drawGameEngine;
     Tablero tablero(3, 3);
@@ -37,7 +52,33 @@ int main()
     drawGameEngine.setTablero(&tablero);
     drawGameEngine.setTableroEngine(&drawTableroEngine);
 
-    while (!window.shouldClose() && !screenManager.shouldExit())
+    // ---------------------------------
+    // TEXTURAS
+    // ---------------------------------
+    ImagenManager torre;
+
+    torre.cargar("Debug/torre.png");
+
+    // ---------------------------------
+    // FICHAS
+    // ---------------------------------
+    PlayFichaEngine fichaEngine;
+
+    fichaEngine.setTablero(&tablero);
+
+    FichaVisual ficha;
+
+    ficha.tipo = TipoFicha::Torre;
+    ficha.pos = {0, 0};
+    ficha.textura = &torre;
+
+    fichaEngine.addFicha(ficha);
+
+    // ---------------------------------
+    // LOOP
+    // ---------------------------------
+    while (!window.shouldClose() &&
+           !screenManager.shouldExit())
     {
         window.pollEvents();
 
@@ -48,12 +89,20 @@ int main()
 
         screenManager.render(renderer);
 
-        // ---------------------------
-        // TABLERO REAL
-        // ---------------------------
         if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
-            drawGameEngine.draw(renderer, shader, input);
+            // Tablero
+            drawGameEngine.draw(
+                renderer,
+                basicShader,
+                input
+            );
+
+            // Fichas
+            fichaEngine.render(
+                renderer,
+                textureShader
+            );
         }
 
         renderer.end();
