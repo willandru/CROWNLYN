@@ -12,6 +12,7 @@
 #include "SpecialMovesScreen.h"
 #include "HistoryEndingsScreen.h"
 #include "HistoryMovesScreen.h"
+#include "RewardsMainMenu.h"
 
 enum class ScreenType
 {
@@ -21,7 +22,8 @@ enum class ScreenType
     Match,
     Moves,
     HistoryEndings,
-    HistoryMoves
+    HistoryMoves,
+    Rewards
 };
 
 class ScreenManager
@@ -51,4 +53,5 @@ private:
 
     HistoryEndingsScreen m_historyEndings;
     HistoryMovesScreen m_historyMoves;
+    RewardsMainMenu m_rewards;
 };

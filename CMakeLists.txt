@@ -62,6 +62,7 @@ set(CROWNLYN_GRAPHICS
     src/Screens/SpecialMovesScreen.cpp
     src/Screens/HistoryMovesScreen.cpp
     src/Screens/HistoryEndingsScreen.cpp
+    src/Screens/RewardsMainMenu.cpp
 )
 
 # ======================================================

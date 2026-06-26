@@ -62,6 +62,10 @@ void ScreenManager::update(const Input& input)
                             case 4:
                                 m_mainMenu.setAction(MainMenuAction::Exit);
                                 break;
+
+                            case 5:
+                                m_mainMenu.setAction(MainMenuAction::Rewards);
+                                break;
                         }
                     }
                 }
@@ -83,6 +87,10 @@ void ScreenManager::update(const Input& input)
 
                 case MainMenuAction::Moves:
                     m_currentScreen = ScreenType::Moves;
+                    break;
+
+                case MainMenuAction::Rewards:
+                    m_currentScreen = ScreenType::Rewards;
                     break;
 
                 case MainMenuAction::Exit:
@@ -232,6 +240,26 @@ void ScreenManager::update(const Input& input)
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
                     m_currentScreen = ScreenType::Moves;
+                }
+            }
+
+            break;
+        }
+
+        case ScreenType::Rewards:
+        {
+            if (input.leftMouseClicked())
+            {
+                Button b;
+
+                b.x = m_rewards.getBackButtonX();
+                b.y = m_rewards.getBackButtonY();
+                b.width = m_rewards.getBackButtonWidth();
+                b.height = m_rewards.getBackButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::MainMenu;
                 }
             }
 
@@ -394,6 +422,24 @@ void ScreenManager::render(Renderer& renderer)
             cmd.y = m_historyMoves.getBackButtonY();
             cmd.w = m_historyMoves.getBackButtonWidth();
             cmd.h = m_historyMoves.getBackButtonHeight();
+
+            cmd.r = 1.0f;
+            cmd.g = 0.3f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            break;
+        }
+
+        case ScreenType::Rewards:
+        {
+            DrawRectCommand cmd;
+
+            cmd.x = m_rewards.getBackButtonX();
+            cmd.y = m_rewards.getBackButtonY();
+            cmd.w = m_rewards.getBackButtonWidth();
+            cmd.h = m_rewards.getBackButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;

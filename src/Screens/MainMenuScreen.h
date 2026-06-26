@@ -7,6 +7,7 @@ enum class MainMenuAction
     One,
     Match,
     Moves,
+    Rewards,
     Exit
 };
 
@@ -34,6 +35,6 @@ public:
 private:
     MainMenuAction m_action;
 
-    static constexpr int m_buttonCount = 5;
+    static constexpr int m_buttonCount = 6;
     MenuButton m_buttons[m_buttonCount];
 };
