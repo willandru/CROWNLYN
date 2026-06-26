@@ -7,6 +7,7 @@ MainMenuScreen::MainMenuScreen()
     m_buttons[1] = {100, 200, 300, 80};
     m_buttons[2] = {100, 300, 300, 80};
     m_buttons[3] = {100, 400, 300, 80};
+    m_buttons[4] = {100, 500, 300, 80};
 }
 
 MainMenuAction MainMenuScreen::getAction() const

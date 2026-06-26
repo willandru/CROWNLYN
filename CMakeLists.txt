@@ -59,6 +59,7 @@ set(CROWNLYN_GRAPHICS
     src/Screens/OneVsAIScreen.cpp
     src/Screens/MatchScreen.cpp
     src/Screens/ScreenManager.cpp
+    src/Screens/SpecialMovesScreen.cpp
 )
 
 # ======================================================

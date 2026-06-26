@@ -53,8 +53,12 @@ void ScreenManager::update(const Input& input)
                             case 2:
                                 m_mainMenu.setAction(MainMenuAction::Match);
                                 break;
-
+                            
                             case 3:
+                                m_mainMenu.setAction(MainMenuAction::Moves);
+                                break;
+
+                            case 4:
                                 m_mainMenu.setAction(MainMenuAction::Exit);
                                 break;
                         }
@@ -74,6 +78,10 @@ void ScreenManager::update(const Input& input)
 
                 case MainMenuAction::Match:
                     m_currentScreen = ScreenType::Match;
+                    break;
+
+                case MainMenuAction::Moves:
+                    m_currentScreen = ScreenType::Moves;
                     break;
 
                 case MainMenuAction::Exit:
@@ -137,6 +145,26 @@ void ScreenManager::update(const Input& input)
                 b.y = m_match.getButtonY();
                 b.width = m_match.getButtonWidth();
                 b.height = m_match.getButtonHeight();
+
+                if (b.contains(input.mouseX(), input.mouseY()))
+                {
+                    m_currentScreen = ScreenType::MainMenu;
+                }
+            }
+
+            break;
+        }
+
+        case ScreenType::Moves:
+        {
+            if (input.leftMouseClicked())
+            {
+                Button b;
+
+                b.x = m_moves.getButtonX();
+                b.y = m_moves.getButtonY();
+                b.width = m_moves.getButtonWidth();
+                b.height = m_moves.getButtonHeight();
 
                 if (b.contains(input.mouseX(), input.mouseY()))
                 {
@@ -223,6 +251,24 @@ void ScreenManager::render(Renderer& renderer)
             cmd.y = m_match.getButtonY();
             cmd.w = m_match.getButtonWidth();
             cmd.h = m_match.getButtonHeight();
+
+            cmd.r = 1.0f;
+            cmd.g = 0.3f;
+            cmd.b = 0.3f;
+
+            renderer.drawRect(cmd, *m_uiShader);
+
+            break;
+        }
+
+        case ScreenType::Moves:
+        {
+            DrawRectCommand cmd;
+
+            cmd.x = m_moves.getButtonX();
+            cmd.y = m_moves.getButtonY();
+            cmd.w = m_moves.getButtonWidth();
+            cmd.h = m_moves.getButtonHeight();
 
             cmd.r = 1.0f;
             cmd.g = 0.3f;

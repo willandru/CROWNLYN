@@ -9,13 +9,15 @@
 #include "OneVsAIScreen.h"
 #include "OneScreen.h"
 #include "MatchScreen.h"
+#include "SpecialMovesScreen.h"
 
 enum class ScreenType
 {
     MainMenu,
     OneVsAI,
     One,
-    Match
+    Match,
+    Moves
 };
 
 class ScreenManager
@@ -41,4 +43,6 @@ private:
     OneVsAIScreen m_oneVsAI;
     OneScreen m_one;
     MatchScreen m_match;
+    SpecialMovesScreen m_moves;
+    
 };
