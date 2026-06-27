@@ -74,6 +74,7 @@ set(CROWNLYN_GRAPHICS
     src/Fichas/Torre.cpp
     src/Game/DrawFichaEngine.cpp
     src/Game/TableroBuilder.cpp
+    src/Game/TextureFichasLoader.cpp
 
 )
 

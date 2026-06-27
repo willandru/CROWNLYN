@@ -10,14 +10,11 @@
 
 #include "Tablero.h"
 #include "TableroBuilder.h"
-
-#include "ImagenManager.h"
-#include "Ficha.h"
+#include "TextureFichasLoader.h"
 
 int main()
 {
     Window window(1280, 720, "RENDER_WINDOW");
-
     glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
@@ -55,12 +52,21 @@ int main()
     drawGameEngine.setFichaEngine(&drawFichaEngine);
 
     // ==========================================
-    // BUILD DEL TABLERO (NUEVO SISTEMA)
+    // LOADER (IMPORTANTE: INICIALIZACIÓN)
+    // ==========================================
+
+    TextureFichasLoader loader;
+    loader.cargarBlancas();
+    loader.cargarNegras();
+
+    // ==========================================
+    // BUILD DEL TABLERO
     // ==========================================
 
     TableroBuilder builder(
         tablero,
-        drawFichaEngine
+        drawFichaEngine,
+        loader
     );
 
     builder.agregarTorre();
@@ -69,10 +75,8 @@ int main()
     // LOOP
     // ==========================================
 
-    while (
-        !window.shouldClose() &&
-        !screenManager.shouldExit()
-    )
+    while (!window.shouldClose() &&
+           !screenManager.shouldExit())
     {
         window.pollEvents();
 

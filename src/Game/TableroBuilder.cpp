@@ -2,18 +2,17 @@
 
 #include "Tablero.h"
 #include "DrawFichaEngine.h"
-#include "ImagenManager.h"
-#include "Ficha.h"
+#include "TextureFichasLoader.h"
 
 TableroBuilder::TableroBuilder(
     Tablero& tablero,
-    DrawFichaEngine& fichaEngine
+    DrawFichaEngine& fichaEngine,
+    TextureFichasLoader& loader
 )
     : m_tablero(tablero)
     , m_fichaEngine(fichaEngine)
-    , m_torreTexture(nullptr)
+    , m_loader(loader)
 {
-    // tablero base fijo por ahora
     m_tablero = Tablero(3, 3);
 
     m_tablero.setArea(
@@ -26,20 +25,18 @@ TableroBuilder::TableroBuilder(
 
 void TableroBuilder::agregarTorre()
 {
-    if (!m_torreTexture)
-    {
-        m_torreTexture = new ImagenManager();
-        m_torreTexture->cargar("Debug/torre.png");
-    }
+    Posicion spawnPos{1, 1};
 
-    FichaVisual torre;
+    if (!m_tablero.esValida(spawnPos.x, spawnPos.y))
+        return;
 
-    torre.tipo = TipoFicha::Torre;
-
-    // posición lógica en tablero
-    torre.pos = { 0, 2 };
-
-    torre.textura = m_torreTexture;
+    // CREACIÓN DIRECTA (SIN loader lógico)
+    Ficha torre(
+        0,                  // id debug
+        TipoFicha::Torre,
+        Color::Blanca,
+        spawnPos
+    );
 
     m_fichaEngine.addFicha(torre);
 }

@@ -1,19 +1,7 @@
 #pragma once
 
 #include <vector>
-
-#include "Posicion.h"
-
-class ImagenManager;
-
-enum class TipoFicha;
-
-struct FichaVisual
-{
-    TipoFicha tipo;
-    Posicion pos;
-    const ImagenManager* textura;
-};
+#include "Ficha.h"
 
 class DrawFichaEngine
 {
@@ -21,17 +9,15 @@ public:
 
     DrawFichaEngine();
 
-    void addFicha(
-        const FichaVisual& ficha
-    );
+    void addFicha(const Ficha& ficha);
 
     int getCantidadFichas() const;
 
-    const FichaVisual& getFicha(
-        int index
-    ) const;
+    const Ficha& getFicha(int index) const;
+
+    void clear();
 
 private:
 
-    std::vector<FichaVisual> m_fichas;
+    std::vector<Ficha> m_fichas;
 };

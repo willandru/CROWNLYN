@@ -4,23 +4,22 @@ DrawFichaEngine::DrawFichaEngine()
 {
 }
 
-void DrawFichaEngine::addFicha(
-    const FichaVisual& ficha
-)
+void DrawFichaEngine::addFicha(const Ficha& ficha)
 {
     m_fichas.push_back(ficha);
 }
 
 int DrawFichaEngine::getCantidadFichas() const
 {
-    return static_cast<int>(
-        m_fichas.size()
-    );
+    return static_cast<int>(m_fichas.size());
 }
 
-const FichaVisual& DrawFichaEngine::getFicha(
-    int index
-) const
+const Ficha& DrawFichaEngine::getFicha(int index) const
 {
     return m_fichas[index];
+}
+
+void DrawFichaEngine::clear()
+{
+    m_fichas.clear();
 }

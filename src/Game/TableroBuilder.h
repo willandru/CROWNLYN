@@ -1,26 +1,24 @@
 #pragma once
 
+#include "Ficha.h"
+
 class Tablero;
 class DrawFichaEngine;
-class ImagenManager;
+class TextureFichasLoader;
 
 class TableroBuilder
 {
 public:
-
-    // crea tablero base (ej: 3x3)
     TableroBuilder(
         Tablero& tablero,
-        DrawFichaEngine& fichaEngine
+        DrawFichaEngine& fichaEngine,
+        TextureFichasLoader& loader
     );
 
-    // coloca una torre fija en (0,2)
     void agregarTorre();
 
 private:
-
     Tablero& m_tablero;
     DrawFichaEngine& m_fichaEngine;
-
-    ImagenManager* m_torreTexture;
+    TextureFichasLoader& m_loader;
 };
