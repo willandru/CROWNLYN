@@ -130,7 +130,7 @@ void DrawGameEngine::draw(
         );
     }
 
-    // ==========================================
+        // ==========================================
     // INPUT
     // ==========================================
 
@@ -146,6 +146,31 @@ void DrawGameEngine::draw(
                 input.mouseY()
             );
 
+        // ======================================
+        // 1. CHECK FICHA
+        // ======================================
+        Posicion posFicha;
+        int fichaId =
+            seleccionarFicha(mx, my, posFicha);
+
+        if (fichaId != -1)
+        {
+            std::cout
+                << "CLICK FICHA -> ID="
+                << fichaId
+                << " POS=("
+                << posFicha.x
+                << ", "
+                << posFicha.y
+                << ")"
+                << std::endl;
+
+            return; // prioridad ficha sobre tablero
+        }
+
+        // ======================================
+        // 2. CHECK TABLERO
+        // ======================================
         int id =
             m_tablero->getCasillaEn(
                 mx,
@@ -178,4 +203,37 @@ void DrawGameEngine::draw(
                 << std::endl;
         }
     }
+}
+
+
+int DrawGameEngine::seleccionarFicha(
+    float mouseX,
+    float mouseY,
+    Posicion& outPos
+)
+{
+    if (!m_tablero || !m_fichaEngine)
+        return -1;
+
+    float cellW = m_tablero->getCellWidth();
+    float cellH = m_tablero->getCellHeight();
+
+    int count = m_fichaEngine->getCantidadFichas();
+
+    for (int i = 0; i < count; i++)
+    {
+        const FichaVisual& ficha = m_fichaEngine->getFicha(i);
+
+        float x = m_tablero->getX() + ficha.pos.x * cellW;
+        float y = m_tablero->getY() + ficha.pos.y * cellH;
+
+        if (mouseX >= x && mouseX < x + cellW &&
+            mouseY >= y && mouseY < y + cellH)
+        {
+            outPos = ficha.pos;
+            return i;
+        }
+    }
+
+    return -1;
 }

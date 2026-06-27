@@ -7,33 +7,26 @@
 #include "DrawGameEngine.h"
 #include "DrawTableroEngine.h"
 #include "DrawFichaEngine.h"
+
 #include "Tablero.h"
+#include "TableroBuilder.h"
 
 #include "ImagenManager.h"
 #include "Ficha.h"
 
 int main()
 {
-    Window window(
-        1280,
-        720,
-        "RENDER_WINDOW"
-    );
+    Window window(1280, 720, "RENDER_WINDOW");
 
-    glViewport(
-        0,
-        0,
-        1280,
-        720
-    );
+    glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
     Input input;
     ScreenManager screenManager;
 
-    // ---------------------------------
+    // ==========================================
     // SHADERS
-    // ---------------------------------
+    // ==========================================
 
     Shader basicShader(
         "Debug/basic.vert",
@@ -45,73 +38,36 @@ int main()
         "Debug/texture.frag"
     );
 
-    screenManager.setShader(
-        &basicShader
-    );
+    screenManager.setShader(&basicShader);
 
-    // ---------------------------------
-    // TABLERO
-    // ---------------------------------
+    // ==========================================
+    // TABLERO + ENGINES
+    // ==========================================
 
-    Tablero tablero(
-        3,
-        3
-    );
-
-    tablero.setArea(
-        300.0f,
-        30.0f,
-        450.0f,
-        450.0f
-    );
-
-    // ---------------------------------
-    // ENGINES
-    // ---------------------------------
+    Tablero tablero(3, 3);
 
     DrawTableroEngine drawTableroEngine;
     DrawFichaEngine drawFichaEngine;
     DrawGameEngine drawGameEngine;
 
-    drawGameEngine.setTablero(
-        &tablero
+    drawGameEngine.setTablero(&tablero);
+    drawGameEngine.setTableroEngine(&drawTableroEngine);
+    drawGameEngine.setFichaEngine(&drawFichaEngine);
+
+    // ==========================================
+    // BUILD DEL TABLERO (NUEVO SISTEMA)
+    // ==========================================
+
+    TableroBuilder builder(
+        tablero,
+        drawFichaEngine
     );
 
-    drawGameEngine.setTableroEngine(
-        &drawTableroEngine
-    );
+    builder.agregarTorre();
 
-    drawGameEngine.setFichaEngine(
-        &drawFichaEngine
-    );
-
-    // ---------------------------------
-    // TEXTURAS
-    // ---------------------------------
-
-    ImagenManager torre;
-
-    torre.cargar(
-        "Debug/torre.png"
-    );
-
-    // ---------------------------------
-    // FICHAS
-    // ---------------------------------
-
-    FichaVisual ficha;
-
-    ficha.tipo = TipoFicha::Torre;
-    ficha.pos = { 0, 0 };
-    ficha.textura = &torre;
-
-    drawFichaEngine.addFicha(
-        ficha
-    );
-
-    // ---------------------------------
+    // ==========================================
     // LOOP
-    // ---------------------------------
+    // ==========================================
 
     while (
         !window.shouldClose() &&
@@ -120,24 +76,13 @@ int main()
     {
         window.pollEvents();
 
-        input.update(
-            window.getNativeWindow()
-        );
-
-        screenManager.update(
-            input
-        );
+        input.update(window.getNativeWindow());
+        screenManager.update(input);
 
         renderer.begin();
+        screenManager.render(renderer);
 
-        screenManager.render(
-            renderer
-        );
-
-        if (
-            screenManager.currentScreen() ==
-            ScreenType::OneVsAI
-        )
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
             drawGameEngine.draw(
                 renderer,
@@ -148,7 +93,6 @@ int main()
         }
 
         renderer.end();
-
         window.display();
     }
 

@@ -82,13 +82,10 @@ Renderer::~Renderer()
 
 void Renderer::begin()
 {
-    glClearColor(
-        0.05f,
-        0.05f,
-        0.05f,
-        1.0f
-    );
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -248,71 +245,32 @@ void Renderer::drawTablero(
         }
     }
 }
-
 void Renderer::drawFicha(
     const DrawFichaCommand& cmd,
     const Shader& shader
 )
 {
-  
     if (cmd.textura == nullptr)
-    {
-        std::cout << "textura nullptr" << std::endl;
         return;
-    }
 
     if (!cmd.textura->cargada())
-    {
-        std::cout << "textura no cargada" << std::endl;
         return;
-    }
-
 
     shader.use();
 
-    GLint rectLoc = glGetUniformLocation(
-        shader.getProgram(),
-        "uRect"
-    );
+    GLint rectLoc = glGetUniformLocation(shader.getProgram(), "uRect");
+    GLint texLoc  = glGetUniformLocation(shader.getProgram(), "uTexture");
 
-    GLint texLoc = glGetUniformLocation(
-        shader.getProgram(),
-        "uTexture"
-    );
-    
-    glUniform4f(
-        rectLoc,
-        cmd.x,
-        cmd.y,
-        cmd.w,
-        cmd.h
-    );
+    glUniform4f(rectLoc, cmd.x, cmd.y, cmd.w, cmd.h);
 
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, cmd.textura->textureID());
 
-    glBindTexture(
-        GL_TEXTURE_2D,
-        cmd.textura->textureID()
-    );
-
-    glUniform1i(
-        texLoc,
-        0
-    );
+    glUniform1i(texLoc, 0);
 
     glBindVertexArray(m_vao);
 
-    glDrawElements(
-        GL_TRIANGLES,
-        6,
-        GL_UNSIGNED_INT,
-        nullptr
-    );
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
-    GLenum err = glGetError();
-
-    glBindTexture(
-        GL_TEXTURE_2D,
-        0
-    );
+    glBindTexture(GL_TEXTURE_2D, 0);
 }

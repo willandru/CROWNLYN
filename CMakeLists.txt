@@ -73,6 +73,7 @@ set(CROWNLYN_GRAPHICS
     src/Fichas/Ficha.cpp
     src/Fichas/Torre.cpp
     src/Game/DrawFichaEngine.cpp
+    src/Game/TableroBuilder.cpp
 
 )
 
