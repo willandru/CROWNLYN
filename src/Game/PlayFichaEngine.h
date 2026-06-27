@@ -40,6 +40,11 @@ public:
         Shader& shader
     );
 
+    int seleccionarFicha(
+        float mouseX,
+        float mouseY
+    );
+
 private:
     Tablero* m_tablero;
 

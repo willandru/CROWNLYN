@@ -254,8 +254,7 @@ void Renderer::drawFicha(
     const Shader& shader
 )
 {
-    std::cout << "drawFicha()" << std::endl;
-
+  
     if (cmd.textura == nullptr)
     {
         std::cout << "textura nullptr" << std::endl;
@@ -268,11 +267,6 @@ void Renderer::drawFicha(
         return;
     }
 
-    std::cout << "x = " << cmd.x
-              << " y = " << cmd.y
-              << " w = " << cmd.w
-              << " h = " << cmd.h
-              << std::endl;
 
     shader.use();
 
@@ -285,11 +279,7 @@ void Renderer::drawFicha(
         shader.getProgram(),
         "uTexture"
     );
-
-    std::cout << "uRect = " << rectLoc << std::endl;
-    std::cout << "uTexture = " << texLoc << std::endl;
-    std::cout << "Texture ID = " << cmd.textura->textureID() << std::endl;
-
+    
     glUniform4f(
         rectLoc,
         cmd.x,
@@ -320,8 +310,6 @@ void Renderer::drawFicha(
     );
 
     GLenum err = glGetError();
-
-    std::cout << "OpenGL Error = " << err << std::endl;
 
     glBindTexture(
         GL_TEXTURE_2D,

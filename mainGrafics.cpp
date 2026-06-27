@@ -83,6 +83,14 @@ int main()
         window.pollEvents();
 
         input.update(window.getNativeWindow());
+
+        if (input.leftMouseClicked())
+        {
+            fichaEngine.seleccionarFicha(
+                static_cast<float>(input.mouseX()),
+                static_cast<float>(input.mouseY())
+            );
+        }
         screenManager.update(input);
 
         renderer.begin();
