@@ -102,7 +102,7 @@ int main()
     FichaVisual ficha;
 
     ficha.tipo = TipoFicha::Torre;
-    ficha.pos = {0, 0};
+    ficha.pos = { 0, 0 };
     ficha.textura = &torre;
 
     drawFichaEngine.addFicha(

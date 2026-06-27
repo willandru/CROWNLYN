@@ -1,17 +1,19 @@
 #pragma once
 
-#include "Tablero.h"
+#include "Renderer.h"
 
-class Renderer;
-class Shader;
+class Tablero;
 
 class DrawTableroEngine
 {
 public:
 
-    void draw(
+    int getCantidadCasillas(
+        const Tablero& tablero
+    ) const;
+
+    DrawRectCommand getDrawCommand(
         const Tablero& tablero,
-        Renderer& renderer,
-        const Shader& shader
-    );
+        int index
+    ) const;
 };

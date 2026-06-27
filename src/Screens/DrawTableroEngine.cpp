@@ -1,46 +1,56 @@
 #include "DrawTableroEngine.h"
 
 #include "Tablero.h"
-#include "Renderer.h" // solo por struct, NO uso directo
-#include "DrawTableroEngine.h"
 
-#include "Tablero.h"
-#include "Renderer.h"
-#include "Shader.h"
-
-void DrawTableroEngine::draw(
-    const Tablero& t,
-    Renderer& renderer,
-    const Shader& shader
-)
+int DrawTableroEngine::getCantidadCasillas(
+    const Tablero& tablero
+) const
 {
-    int ancho = t.getAncho();
-    int alto  = t.getAlto();
+    return
+        tablero.getAncho()
+        * tablero.getAlto();
+}
 
-    float cellW = t.getCellWidth();
-    float cellH = t.getCellHeight();
+DrawRectCommand DrawTableroEngine::getDrawCommand(
+    const Tablero& tablero,
+    int index
+) const
+{
+    DrawRectCommand cmd;
 
-    float startX = t.getX();
-    float startY = t.getY();
+    int ancho = tablero.getAncho();
 
-    for (int y = 0; y < alto; y++)
-    {
-        for (int x = 0; x < ancho; x++)
-        {
-            DrawRectCommand cmd;
+    int x = index % ancho;
+    int y = index / ancho;
 
-            cmd.x = startX + x * cellW;
-            cmd.y = startY + y * cellH;
-            cmd.w = cellW;
-            cmd.h = cellH;
+    float cellW =
+        tablero.getCellWidth();
 
-            bool dark = ((x + y) % 2 == 0);
+    float cellH =
+        tablero.getCellHeight();
 
-            cmd.r = dark ? 0.2f : 0.8f;
-            cmd.g = dark ? 0.2f : 0.8f;
-            cmd.b = dark ? 0.2f : 0.8f;
+    cmd.x =
+        tablero.getX()
+        + x * cellW;
 
-            renderer.drawRect(cmd, shader);
-        }
-    }
+    cmd.y =
+        tablero.getY()
+        + y * cellH;
+
+    cmd.w = cellW;
+    cmd.h = cellH;
+
+    bool dark =
+        ((x + y) % 2 == 0);
+
+    cmd.r =
+        dark ? 0.2f : 0.8f;
+
+    cmd.g =
+        dark ? 0.2f : 0.8f;
+
+    cmd.b =
+        dark ? 0.2f : 0.8f;
+
+    return cmd;
 }

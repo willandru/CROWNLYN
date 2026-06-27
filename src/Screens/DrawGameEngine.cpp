@@ -64,11 +64,25 @@ void DrawGameEngine::draw(
     // DIBUJAR TABLERO
     // ==========================================
 
-    m_tableroEngine->draw(
-        *m_tablero,
-        renderer,
-        basicShader
-    );
+    for (
+        int i = 0;
+        i < m_tableroEngine->getCantidadCasillas(
+                *m_tablero
+            );
+        i++
+    )
+    {
+        DrawRectCommand cmd =
+            m_tableroEngine->getDrawCommand(
+                *m_tablero,
+                i
+            );
+
+        renderer.drawRect(
+            cmd,
+            basicShader
+        );
+    }
 
     // ==========================================
     // DIBUJAR FICHAS
@@ -80,9 +94,11 @@ void DrawGameEngine::draw(
     float cellH =
         m_tablero->getCellHeight();
 
-    for (int i = 0;
-         i < m_fichaEngine->getCantidadFichas();
-         i++)
+    for (
+        int i = 0;
+        i < m_fichaEngine->getCantidadFichas();
+        i++
+    )
     {
         const FichaVisual& ficha =
             m_fichaEngine->getFicha(i);
@@ -105,7 +121,8 @@ void DrawGameEngine::draw(
         cmd.w = cellW;
         cmd.h = cellH;
 
-        cmd.textura = ficha.textura;
+        cmd.textura =
+            ficha.textura;
 
         renderer.drawFicha(
             cmd,
