@@ -35,7 +35,7 @@ void TextureFichasLoader::cargarBlancas()
     cargarTextura(Color::Blanca, TipoFicha::Peon,    "Debug/peon_blanco.png");
     cargarTextura(Color::Blanca, TipoFicha::Alfil,   "Debug/alfil_blanco.png");
     cargarTextura(Color::Blanca, TipoFicha::Caballo, "Debug/caballo_blanco.png");
-    cargarTextura(Color::Blanca, TipoFicha::Dama,    "Debug/reina_blanca.png");
+    cargarTextura(Color::Blanca, TipoFicha::Dama,    "Debug/dama_blanca.png");
     cargarTextura(Color::Blanca, TipoFicha::Rey,     "Debug/rey_blanco.png");
 }
 
@@ -45,7 +45,7 @@ void TextureFichasLoader::cargarNegras()
     cargarTextura(Color::Negra, TipoFicha::Peon,    "Debug/peon_negro.png");
     cargarTextura(Color::Negra, TipoFicha::Alfil,   "Debug/torre.png");
     cargarTextura(Color::Negra, TipoFicha::Caballo, "Debug/caballo_negro.png");
-    cargarTextura(Color::Negra, TipoFicha::Dama,    "Debug/reina_negra.png");
+    cargarTextura(Color::Negra, TipoFicha::Dama,    "Debug/dama_negra.png");
     cargarTextura(Color::Negra, TipoFicha::Rey,     "Debug/rey_negro.png");
 }
 

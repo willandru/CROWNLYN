@@ -65,8 +65,8 @@ set(CROWNLYN_GRAPHICS
     src/Screens/RewardsMainMenu.cpp
 
     src/Game/ImagenManager.cpp
-    src/Screens/DrawTableroEngine.cpp
-    src/Screens/DrawGameEngine.cpp
+    src/Game/DrawTableroEngine.cpp
+    src/Game/DrawGameEngine.cpp
 
     src/Arbol/Tablero.cpp
 
@@ -178,19 +178,24 @@ add_custom_command(
 
 
 
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Assets/image.png
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/image.png
+# ======================================================
+# COPIAR TODOS LOS ASSETS
+# ======================================================
+
+file(GLOB ASSET_FILES
+    "${CMAKE_SOURCE_DIR}/src/Assets/*"
 )
 
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Assets/torre.png
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/torre.png
-)
+foreach(FILE ${ASSET_FILES})
+
+    add_custom_command(
+        TARGET RENDER_WINDOW POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${FILE}
+            $<TARGET_FILE_DIR:RENDER_WINDOW>
+    )
+
+endforeach()
 
 set_target_properties(
     RENDER_WINDOW

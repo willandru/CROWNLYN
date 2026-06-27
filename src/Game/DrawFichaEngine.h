@@ -9,11 +9,15 @@ public:
 
     DrawFichaEngine();
 
-    void addFicha(const Ficha& ficha);
+    void addFicha(
+        const Ficha& ficha
+    );
 
     int getCantidadFichas() const;
 
-    const Ficha& getFicha(int index) const;
+    const Ficha& getFicha(
+        int index
+    ) const;
 
     void clear();
 

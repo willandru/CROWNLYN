@@ -6,10 +6,8 @@ class Renderer;
 class Shader;
 class Input;
 
-class Tablero;
+class TableroBuilder;
 class DrawTableroEngine;
-class DrawFichaEngine;
-class TextureFichasLoader;
 
 class DrawGameEngine
 {
@@ -17,10 +15,13 @@ public:
 
     DrawGameEngine();
 
-    void setTablero(const Tablero* tablero);
-    void setTableroEngine(DrawTableroEngine* engine);
-    void setFichaEngine(DrawFichaEngine* engine);
-    void setTextureLoader(TextureFichasLoader* loader);
+    void setBuilder(
+        TableroBuilder* builder
+    );
+
+    void setTableroEngine(
+        DrawTableroEngine* engine
+    );
 
     void draw(
         Renderer& renderer,
@@ -37,8 +38,7 @@ public:
 
 private:
 
-    const Tablero* m_tablero;
+    TableroBuilder* m_builder;
+
     DrawTableroEngine* m_tableroEngine;
-    DrawFichaEngine* m_fichaEngine;
-    TextureFichasLoader* m_loader;
 };
