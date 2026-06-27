@@ -72,7 +72,7 @@ set(CROWNLYN_GRAPHICS
 
     src/Fichas/Ficha.cpp
     src/Fichas/Torre.cpp
-    src/Game/PlayFichaEngine.cpp
+    src/Game/DrawFichaEngine.cpp
 
 )
 
