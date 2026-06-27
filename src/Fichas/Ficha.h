@@ -1,12 +1,7 @@
 #pragma once
 
 #include <string>
-
-struct Posicion
-{
-    int x;
-    int y;
-};
+#include "Posicion.h"
 
 enum class Color
 {

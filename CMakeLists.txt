@@ -63,6 +63,17 @@ set(CROWNLYN_GRAPHICS
     src/Screens/HistoryMovesScreen.cpp
     src/Screens/HistoryEndingsScreen.cpp
     src/Screens/RewardsMainMenu.cpp
+
+    src/Game/ImagenManager.cpp
+    src/Screens/DrawTableroEngine.cpp
+    src/Screens/DrawGameEngine.cpp
+
+    src/Arbol/Tablero.cpp
+
+    src/Fichas/Ficha.cpp
+    src/Fichas/Torre.cpp
+    src/Game/PlayFichaEngine.cpp
+
 )
 
 # ======================================================
@@ -84,6 +95,7 @@ target_include_directories(
     src
     src/Arbol
     src/Fichas
+    src/Game
 )
 
 # ======================================================
@@ -106,10 +118,16 @@ target_include_directories(
     src/Graphics
     src/Screens
     src/UI
+    src/Game
+    src/Arbol
+    src/Fichas
 
     externals/glad/include
     externals/glfw-3.4/include
     externals/glm
+    externals/stb
+
+    assets
 )
 
 target_link_libraries(
@@ -140,6 +158,36 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/basic.frag
         $<TARGET_FILE_DIR:RENDER_WINDOW>/basic.frag
+)
+
+add_custom_command(
+    TARGET RENDER_WINDOW POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/texture.vert
+        $<TARGET_FILE_DIR:RENDER_WINDOW>/texture.vert
+)
+
+add_custom_command(
+    TARGET RENDER_WINDOW POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/texture.frag
+        $<TARGET_FILE_DIR:RENDER_WINDOW>/texture.frag
+)
+
+
+
+add_custom_command(
+    TARGET RENDER_WINDOW POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/src/Assets/image.png
+        $<TARGET_FILE_DIR:RENDER_WINDOW>/image.png
+)
+
+add_custom_command(
+    TARGET RENDER_WINDOW POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/src/Assets/torre.png
+        $<TARGET_FILE_DIR:RENDER_WINDOW>/torre.png
 )
 
 set_target_properties(
@@ -173,4 +221,5 @@ target_include_directories(
     src/Arbol
     src/Fichas
     src/Test
+    src/Game
 )
