@@ -115,51 +115,6 @@ float Tablero::getCellHeight() const
     return m_height / static_cast<float>(m_alto);
 }
 
-// ========================================
-// COORDENADAS NORMALIZADAS
-// ========================================
-
-float Tablero::getXNormalized() const
-{
-    return m_x / 1280.0f;
-}
-
-float Tablero::getYNormalized() const
-{
-    return m_y / 720.0f;
-}
-
-float Tablero::getWidthNormalized() const
-{
-    return m_width / 1280.0f;
-}
-
-float Tablero::getHeightNormalized() const
-{
-    return m_height / 720.0f;
-}
-
-float Tablero::getCellWidthNormalized() const
-{
-    if (m_ancho == 0)
-    {
-        return 0.0f;
-    }
-
-    return getWidthNormalized()
-        / static_cast<float>(m_ancho);
-}
-
-float Tablero::getCellHeightNormalized() const
-{
-    if (m_alto == 0)
-    {
-        return 0.0f;
-    }
-
-    return getHeightNormalized()
-        / static_cast<float>(m_alto);
-}
 
 int Tablero::getCasillaEn(
     float x,

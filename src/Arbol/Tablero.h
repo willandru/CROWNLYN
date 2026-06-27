@@ -44,18 +44,6 @@ public:
     float getCellWidth() const;
     float getCellHeight() const;
 
-    // =========================
-    // COORDENADAS NORMALIZADAS
-    // =========================
-
-    float getXNormalized() const;
-    float getYNormalized() const;
-
-    float getWidthNormalized() const;
-    float getHeightNormalized() const;
-
-    float getCellWidthNormalized() const;
-    float getCellHeightNormalized() const;
 
     int getCasillaEn(
         float x,

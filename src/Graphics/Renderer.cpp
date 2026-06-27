@@ -12,10 +12,10 @@ Renderer::Renderer()
     float vertices[] =
     {
         // Posición      // UV
-        0.0f, 0.0f,      0.0f, 0.0f,
-        1.0f, 0.0f,      1.0f, 0.0f,
-        1.0f, 1.0f,      1.0f, 1.0f,
-        0.0f, 1.0f,      0.0f, 1.0f
+        0.0f, 0.0f,      0.0f, 1.0f,
+        1.0f, 0.0f,      1.0f, 1.0f,
+        1.0f, 1.0f,      1.0f, 0.0f,
+        0.0f, 1.0f,      0.0f, 0.0f
     };
 
     unsigned int indices[] =

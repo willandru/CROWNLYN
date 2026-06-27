@@ -26,7 +26,6 @@ void PlayFichaEngine::addFicha(const FichaVisual& ficha)
 void PlayFichaEngine::update(const Input&)
 {
 }
-
 void PlayFichaEngine::render(
     Renderer& renderer,
     Shader& shader
@@ -35,23 +34,30 @@ void PlayFichaEngine::render(
     std::cout << "PlayFichaEngine::render()" << std::endl;
 
     if (!m_tablero)
+    {
         return;
+    }
 
     for (const auto& ficha : m_fichas)
     {
         if (!ficha.textura)
+        {
             continue;
+        }
 
         DrawFichaCommand cmd;
 
-        // =====================================================
-        // PRUEBA: NO USAR EL TABLERO
-        // =====================================================
-        cmd.x = 0.2f;
-        cmd.y = 0.2f;
-        cmd.w = 0.3f;
-        cmd.h = 0.3f;
-        // =====================================================
+        float cellW = m_tablero->getCellWidth();
+        float cellH = m_tablero->getCellHeight();
+
+        cmd.x = m_tablero->getX()
+              + ficha.pos.x * cellW;
+
+        cmd.y = m_tablero->getY()
+              + ficha.pos.y * cellH;
+
+        cmd.w = cellW;
+        cmd.h = cellH;
 
         cmd.textura = ficha.textura;
 
@@ -60,7 +66,10 @@ void PlayFichaEngine::render(
             << ficha.pos.x
             << ", "
             << ficha.pos.y
-            << ")"
+            << ") -> x="
+            << cmd.x
+            << " y="
+            << cmd.y
             << std::endl;
 
         renderer.drawFicha(
