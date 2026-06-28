@@ -35,6 +35,12 @@ public:
 
     TextureFichasLoader& getTextureLoader();
 
+    void agregarFilaPeones(Color color);
+
+    void agregarPiezasIniciales(Color color);
+
+    void crearConfiguracionInicial();
+
 private:
 
     Tablero m_tablero;

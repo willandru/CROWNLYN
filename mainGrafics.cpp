@@ -56,11 +56,11 @@ int main()
     TableroBuilder builder;
 
     builder.crearTablero(
-        3,
-        3
+        8,
+        8
     );
 
-    builder.agregarTorre();
+    builder.crearConfiguracionInicial();
 
     drawGameEngine.setBuilder(
         &builder

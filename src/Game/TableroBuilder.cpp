@@ -95,3 +95,68 @@ void TableroBuilder::agregarTorre()
         Posicion{1, 1}
     );
 }
+
+void TableroBuilder::agregarFilaPeones(Color color)
+{
+    int fila =
+        (color == Color::Blanca)
+        ? 1
+        : 6;
+
+    for (int x = 0; x < 8; x++)
+    {
+        agregarFicha(
+            TipoFicha::Peon,
+            color,
+            Posicion{x, fila}
+        );
+    }
+}
+
+void TableroBuilder::agregarPiezasIniciales(Color color)
+{
+    int fila =
+        (color == Color::Blanca)
+        ? 0
+        : 7;
+
+    TipoFicha piezas[8] =
+    {
+        TipoFicha::Torre,
+        TipoFicha::Caballo,
+        TipoFicha::Alfil,
+        TipoFicha::Dama,
+        TipoFicha::Rey,
+        TipoFicha::Alfil,
+        TipoFicha::Caballo,
+        TipoFicha::Torre
+    };
+
+    for (int x = 0; x < 8; x++)
+    {
+        agregarFicha(
+            piezas[x],
+            color,
+            Posicion{x, fila}
+        );
+    }
+}
+
+void TableroBuilder::crearConfiguracionInicial()
+{
+    agregarPiezasIniciales(
+        Color::Blanca
+    );
+
+    agregarFilaPeones(
+        Color::Blanca
+    );
+
+    agregarPiezasIniciales(
+        Color::Negra
+    );
+
+    agregarFilaPeones(
+        Color::Negra
+    );
+}
