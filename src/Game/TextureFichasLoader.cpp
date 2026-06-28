@@ -43,7 +43,7 @@ void TextureFichasLoader::cargarNegras()
 {
     cargarTextura(Color::Negra, TipoFicha::Torre,   "Debug/torre_negra.png");
     cargarTextura(Color::Negra, TipoFicha::Peon,    "Debug/peon_negro.png");
-    cargarTextura(Color::Negra, TipoFicha::Alfil,   "Debug/torre.png");
+    cargarTextura(Color::Negra, TipoFicha::Alfil,   "Debug/alfil_negro.png");
     cargarTextura(Color::Negra, TipoFicha::Caballo, "Debug/caballo_negro.png");
     cargarTextura(Color::Negra, TipoFicha::Dama,    "Debug/dama_negra.png");
     cargarTextura(Color::Negra, TipoFicha::Rey,     "Debug/rey_negro.png");

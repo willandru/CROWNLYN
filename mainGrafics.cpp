@@ -6,6 +6,7 @@
 
 #include "DrawGameEngine.h"
 #include "DrawTableroEngine.h"
+#include "PlayFichaEngine.h"
 #include "TableroBuilder.h"
 
 int main()
@@ -53,6 +54,8 @@ int main()
 
     DrawGameEngine drawGameEngine;
 
+    PlayFichaEngine playFichaEngine;
+
     TableroBuilder builder;
 
     builder.crearTablero(
@@ -68,6 +71,10 @@ int main()
 
     drawGameEngine.setTableroEngine(
         &drawTableroEngine
+    );
+
+    playFichaEngine.setBuilder(
+        &builder
     );
 
     // ==========================================
@@ -89,6 +96,24 @@ int main()
             input
         );
 
+        // ==========================================
+        // GAMEPLAY
+        // ==========================================
+
+        if (
+            screenManager.currentScreen()
+            == ScreenType::OneVsAI
+        )
+        {
+            playFichaEngine.update(
+                input
+            );
+        }
+
+        // ==========================================
+        // RENDER
+        // ==========================================
+
         renderer.begin();
 
         screenManager.render(
@@ -103,8 +128,7 @@ int main()
             drawGameEngine.draw(
                 renderer,
                 basicShader,
-                textureShader,
-                input
+                textureShader
             );
         }
 

@@ -67,6 +67,7 @@ set(CROWNLYN_GRAPHICS
     src/Game/ImagenManager.cpp
     src/Game/DrawTableroEngine.cpp
     src/Game/DrawGameEngine.cpp
+    src/Game/PlayFichaEngine.cpp
 
     src/Arbol/Tablero.cpp
 

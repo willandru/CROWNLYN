@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Posicion.h"
-
 class Renderer;
 class Shader;
-class Input;
 
 class TableroBuilder;
 class DrawTableroEngine;
@@ -26,14 +23,7 @@ public:
     void draw(
         Renderer& renderer,
         Shader& basicShader,
-        Shader& textureShader,
-        const Input& input
-    );
-
-    int seleccionarFicha(
-        float mouseX,
-        float mouseY,
-        Posicion& outPos
+        Shader& textureShader
     );
 
 private:

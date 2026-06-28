@@ -18,6 +18,13 @@ int DrawFichaEngine::getCantidadFichas() const
     );
 }
 
+Ficha& DrawFichaEngine::getFicha(
+    int index
+)
+{
+    return m_fichas[index];
+}
+
 const Ficha& DrawFichaEngine::getFicha(
     int index
 ) const

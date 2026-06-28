@@ -15,6 +15,10 @@ public:
 
     int getCantidadFichas() const;
 
+    Ficha& getFicha(
+        int index
+    );
+
     const Ficha& getFicha(
         int index
     ) const;
