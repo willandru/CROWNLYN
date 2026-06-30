@@ -1,8 +1,11 @@
 #pragma once
 
 #include <vector>
-#include "Ficha.h"
-#include "Tablero.h"
+
+class Ficha;
+class Tablero;
+
+enum class Color;
 
 class Nodo
 {
@@ -25,8 +28,10 @@ private:
 public:
     std::vector<Ficha> piezas;
     std::vector<Nodo*> hijos;
+
     Nodo* padre;
 
     Color turnoActual;
-    Tablero tablero;
+
+    Tablero* tablero;
 };

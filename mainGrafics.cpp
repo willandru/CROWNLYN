@@ -4,33 +4,37 @@
 #include "Input.h"
 #include "ScreenManager.h"
 
+#include "Nodo.h"
+#include "Arbol.h"
+
+#include "TableroBuilder.h"
+
 #include "DrawGameEngine.h"
 #include "DrawTableroEngine.h"
+
 #include "PlayFichaEngine.h"
-#include "TableroBuilder.h"
 
 int main()
 {
+    //--------------------------------------------------
+    // WINDOW
+    //--------------------------------------------------
+
     Window window(
         1280,
         720,
-        "RENDER_WINDOW"
+        "CROWNLYN"
     );
 
-    glViewport(
-        0,
-        0,
-        1280,
-        720
-    );
+    glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
     Input input;
     ScreenManager screenManager;
 
-    // ==========================================
+    //--------------------------------------------------
     // SHADERS
-    // ==========================================
+    //--------------------------------------------------
 
     Shader basicShader(
         "Debug/basic.vert",
@@ -42,44 +46,47 @@ int main()
         "Debug/texture.frag"
     );
 
-    screenManager.setShader(
-        &basicShader
-    );
+    screenManager.setShader(&basicShader);
 
-    // ==========================================
-    // ENGINES
-    // ==========================================
+    //--------------------------------------------------
+    // GAME STATE (SOURCE OF TRUTH)
+    //--------------------------------------------------
+
+    Nodo nodoRaiz;
+
+    Arbol arbol;
+    arbol.setNodoInicial(&nodoRaiz);
+
+    //--------------------------------------------------
+    // BUILDER
+    //--------------------------------------------------
+
+    TableroBuilder builder;
+    builder.setNodo(&nodoRaiz);
+
+    builder.crearTablero(8, 8);
+    builder.crearConfiguracionInicial();
+
+    //--------------------------------------------------
+    // INPUT ENGINE
+    //--------------------------------------------------
+
+    PlayFichaEngine playFichaEngine;
+    playFichaEngine.setBuilder(&builder);
+
+    //--------------------------------------------------
+    // DRAW ENGINE
+    //--------------------------------------------------
 
     DrawTableroEngine drawTableroEngine;
 
     DrawGameEngine drawGameEngine;
+    drawGameEngine.setBuilder(&builder);
+    drawGameEngine.setTableroEngine(&drawTableroEngine);
 
-    PlayFichaEngine playFichaEngine;
-
-    TableroBuilder builder;
-
-    builder.crearTablero(
-        8,
-        8
-    );
-
-    builder.crearConfiguracionInicial();
-
-    drawGameEngine.setBuilder(
-        &builder
-    );
-
-    drawGameEngine.setTableroEngine(
-        &drawTableroEngine
-    );
-
-    playFichaEngine.setBuilder(
-        &builder
-    );
-
-    // ==========================================
-    // LOOP
-    // ==========================================
+    //--------------------------------------------------
+    // GAME LOOP
+    //--------------------------------------------------
 
     while (
         !window.shouldClose() &&
@@ -88,42 +95,28 @@ int main()
     {
         window.pollEvents();
 
-        input.update(
-            window.getNativeWindow()
-        );
+        input.update(window.getNativeWindow());
 
-        screenManager.update(
-            input
-        );
+        screenManager.update(input);
 
-        // ==========================================
-        // GAMEPLAY
-        // ==========================================
+        //--------------------------------------------------
+        // GAMEPLAY UPDATE
+        //--------------------------------------------------
 
-        if (
-            screenManager.currentScreen()
-            == ScreenType::OneVsAI
-        )
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
-            playFichaEngine.update(
-                input
-            );
+            playFichaEngine.update(input);
         }
 
-        // ==========================================
+        //--------------------------------------------------
         // RENDER
-        // ==========================================
+        //--------------------------------------------------
 
         renderer.begin();
 
-        screenManager.render(
-            renderer
-        );
+        screenManager.render(renderer);
 
-        if (
-            screenManager.currentScreen()
-            == ScreenType::OneVsAI
-        )
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
             drawGameEngine.draw(
                 renderer,

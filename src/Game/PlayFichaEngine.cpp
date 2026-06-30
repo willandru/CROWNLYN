@@ -1,22 +1,22 @@
 #include "PlayFichaEngine.h"
 
 #include "Input.h"
-
 #include "TableroBuilder.h"
-#include "DrawFichaEngine.h"
+#include "Nodo.h"
 #include "Tablero.h"
 #include "Ficha.h"
+
+// ======================================================
 
 PlayFichaEngine::PlayFichaEngine()
 {
     m_builder = nullptr;
-
-    m_selectedIndex = -1;
-
+    m_selectedId = -1;
     m_haySeleccion = false;
-
-    m_posSeleccionada = {0, 0};
+    m_posSeleccionada = { 0, 0 };
 }
+
+// ======================================================
 
 void PlayFichaEngine::setBuilder(
     TableroBuilder* builder
@@ -25,6 +25,8 @@ void PlayFichaEngine::setBuilder(
     m_builder = builder;
 }
 
+// ======================================================
+
 void PlayFichaEngine::update(
     const Input& input
 )
@@ -32,40 +34,54 @@ void PlayFichaEngine::update(
     if (!m_builder)
         return;
 
+    const Nodo* nodo =
+        m_builder->getNodo();
+
+    if (!nodo)
+        return;
+
+    if (!nodo->tablero)
+        return;
+
     if (!input.leftMouseClicked())
         return;
 
     float mx =
-        static_cast<float>(
-            input.mouseX()
-        );
+        static_cast<float>(input.mouseX());
 
     float my =
-        static_cast<float>(
-            input.mouseY()
-        );
+        static_cast<float>(input.mouseY());
 
     Posicion posFicha;
     Posicion posCasilla;
 
-    int ficha =
+    int idFicha =
         obtenerFichaEnMouse(
             mx,
             my,
             posFicha
         );
 
-    if (ficha != -1)
-    {
-        seleccionarFicha(
-            ficha
-        );
+    // ==================================================
+    // Seleccionar ficha
+    // ==================================================
 
+    if (idFicha != -1)
+    {
+        seleccionarFicha(idFicha);
         return;
     }
 
-    if (!hayFichaSeleccionada())
+    // ==================================================
+    // No hay selección
+    // ==================================================
+
+    if (!m_haySeleccion)
         return;
+
+    // ==================================================
+    // Intentar mover
+    // ==================================================
 
     if (
         obtenerCasillaEnMouse(
@@ -75,21 +91,25 @@ void PlayFichaEngine::update(
         )
     )
     {
-        moverFicha(
-            posCasilla
-        );
+        moverFicha(posCasilla);
     }
 }
+
+// ======================================================
 
 bool PlayFichaEngine::hayFichaSeleccionada() const
 {
     return m_haySeleccion;
 }
 
+// ======================================================
+
 int PlayFichaEngine::getFichaSeleccionada() const
 {
-    return m_selectedIndex;
+    return m_selectedId;
 }
+
+// ======================================================
 
 int PlayFichaEngine::obtenerFichaEnMouse(
     float mouseX,
@@ -97,34 +117,33 @@ int PlayFichaEngine::obtenerFichaEnMouse(
     Posicion& outPos
 )
 {
+    const Nodo* nodo =
+        m_builder->getNodo();
+
+    if (!nodo || !nodo->tablero)
+        return -1;
+
     const Tablero& tablero =
-        m_builder->getTablero();
+        *nodo->tablero;
 
-    DrawFichaEngine& fichaEngine =
-        m_builder->getFichaEngine();
+    const std::vector<Ficha>& piezas =
+        nodo->piezas;
 
-    float cellW =
+    const float cellW =
         tablero.getCellWidth();
 
-    float cellH =
+    const float cellH =
         tablero.getCellHeight();
 
-    for (
-        int i = 0;
-        i < fichaEngine.getCantidadFichas();
-        i++
-    )
+    for (const Ficha& f : piezas)
     {
-        const Ficha& ficha =
-            fichaEngine.getFicha(i);
-
         float x =
-            tablero.getX()
-            + ficha.getPosicion().x * cellW;
+            tablero.getX() +
+            f.getPosicion().x * cellW;
 
         float y =
-            tablero.getY()
-            + ficha.getPosicion().y * cellH;
+            tablero.getY() +
+            f.getPosicion().y * cellH;
 
         if (
             mouseX >= x &&
@@ -134,14 +153,16 @@ int PlayFichaEngine::obtenerFichaEnMouse(
         )
         {
             outPos =
-                ficha.getPosicion();
+                f.getPosicion();
 
-            return i;
+            return f.getId();
         }
     }
 
     return -1;
 }
+
+// ======================================================
 
 bool PlayFichaEngine::obtenerCasillaEnMouse(
     float mouseX,
@@ -149,8 +170,14 @@ bool PlayFichaEngine::obtenerCasillaEnMouse(
     Posicion& outPos
 )
 {
+    const Nodo* nodo =
+        m_builder->getNodo();
+
+    if (!nodo || !nodo->tablero)
+        return false;
+
     const Tablero& tablero =
-        m_builder->getTablero();
+        *nodo->tablero;
 
     int id =
         tablero.getCasillaEn(
@@ -170,45 +197,62 @@ bool PlayFichaEngine::obtenerCasillaEnMouse(
     return true;
 }
 
+// ======================================================
+
 bool PlayFichaEngine::estaDentroDelTablero(
     float mouseX,
     float mouseY
 ) const
 {
+    const Nodo* nodo =
+        m_builder->getNodo();
+
+    if (!nodo || !nodo->tablero)
+        return false;
+
     return
-        m_builder
-            ->getTablero()
-            .getCasillaEn(
-                mouseX,
-                mouseY
-            ) != -1;
+        nodo->tablero->getCasillaEn(
+            mouseX,
+            mouseY
+        ) != -1;
 }
 
+// ======================================================
+
 void PlayFichaEngine::seleccionarFicha(
-    int index
+    int idFicha
 )
 {
-    m_selectedIndex =
-        index;
+    m_selectedId =
+        idFicha;
 
     m_haySeleccion =
         true;
 
-    m_posSeleccionada =
-        m_builder
-            ->getFichaEngine()
-            .getFicha(index)
-            .getPosicion();
+    const Nodo* nodo =
+        m_builder->getNodo();
+
+    const Ficha* ficha =
+        nodo->obtenerFichaPorId(
+            idFicha
+        );
+
+    if (ficha)
+    {
+        m_posSeleccionada =
+            ficha->getPosicion();
+    }
 }
+
+// ======================================================
 
 void PlayFichaEngine::deseleccionarFicha()
 {
-    m_selectedIndex =
-        -1;
-
-    m_haySeleccion =
-        false;
+    m_selectedId = -1;
+    m_haySeleccion = false;
 }
+
+// ======================================================
 
 void PlayFichaEngine::moverFicha(
     const Posicion& destino
@@ -217,16 +261,18 @@ void PlayFichaEngine::moverFicha(
     if (!m_haySeleccion)
         return;
 
-    Ficha& ficha =
-        m_builder
-            ->getFichaEngine()
-            .getFicha(
-                m_selectedIndex
-            );
+    Nodo* nodo =
+        m_builder->getNodo();
 
-    ficha.setPosicion(
-        destino
-    );
+    Ficha* ficha =
+        nodo->obtenerFichaPorId(
+            m_selectedId
+        );
+
+    if (!ficha)
+        return;
+
+    ficha->setPosicion(destino);
 
     deseleccionarFicha();
 }

@@ -2,6 +2,10 @@
 
 #include "Tablero.h"
 
+//==================================================
+// CANTIDAD DE CASILLAS
+//==================================================
+
 int DrawTableroEngine::getCantidadCasillas(
     const Tablero& tablero
 ) const
@@ -11,6 +15,10 @@ int DrawTableroEngine::getCantidadCasillas(
         * tablero.getAlto();
 }
 
+//==================================================
+// COMANDO DE DIBUJO
+//==================================================
+
 DrawRectCommand DrawTableroEngine::getDrawCommand(
     const Tablero& tablero,
     int index
@@ -18,39 +26,47 @@ DrawRectCommand DrawTableroEngine::getDrawCommand(
 {
     DrawRectCommand cmd;
 
-    int ancho = tablero.getAncho();
+    const int ancho =
+        tablero.getAncho();
 
-    int x = index % ancho;
-    int y = index / ancho;
+    const int columna =
+        index % ancho;
 
-    float cellW =
+    const int fila =
+        index / ancho;
+
+    const float cellW =
         tablero.getCellWidth();
 
-    float cellH =
+    const float cellH =
         tablero.getCellHeight();
 
     cmd.x =
         tablero.getX()
-        + x * cellW;
+        + columna * cellW;
 
     cmd.y =
         tablero.getY()
-        + y * cellH;
+        + fila * cellH;
 
     cmd.w = cellW;
     cmd.h = cellH;
 
-    bool dark =
-        ((x + y) % 2 == 0);
+    const bool casillaOscura =
+        (columna + fila) % 2 == 0;
 
-    cmd.r =
-        dark ? 0.2f : 0.8f;
-
-    cmd.g =
-        dark ? 0.2f : 0.8f;
-
-    cmd.b =
-        dark ? 0.2f : 0.8f;
+    if (casillaOscura)
+    {
+        cmd.r = 0.20f;
+        cmd.g = 0.20f;
+        cmd.b = 0.20f;
+    }
+    else
+    {
+        cmd.r = 0.80f;
+        cmd.g = 0.80f;
+        cmd.b = 0.80f;
+    }
 
     return cmd;
 }

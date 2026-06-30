@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
-#include "Nodo.h"
+
 #include "Ficha.h"
+
+class Nodo;
 
 class GameAnalyzer
 {

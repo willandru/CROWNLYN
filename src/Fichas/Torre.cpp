@@ -1,3 +1,4 @@
+#include "Tablero.h"
 #include "Torre.h"
 
 // ======================================================
@@ -92,7 +93,10 @@ std::vector<Posicion> Torre::getAtaques(
 
 bool Torre::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 // ======================================================

@@ -1,5 +1,5 @@
 #include "Caballo.h"
-
+#include "Tablero.h"
 // ======================================================
 // MOVIMIENTOS LEGALES (SALTOS)
 // ======================================================
@@ -84,7 +84,10 @@ std::vector<Posicion> Caballo::getAtaques(
 
 bool Caballo::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 const Ficha* Caballo::obtenerFichaEn(

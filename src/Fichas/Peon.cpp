@@ -1,5 +1,6 @@
 #include "Peon.h"
 
+#include "Tablero.h"
 // ======================================================
 // MOVIMIENTOS LEGALES (NO INCLUYE CONTROL DE CASILLAS VACÍAS COMO ATAQUE)
 // ======================================================
@@ -92,7 +93,10 @@ std::vector<Posicion> Peon::getAtaques(
 
 bool Peon::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 const Ficha* Peon::obtenerFichaEn(

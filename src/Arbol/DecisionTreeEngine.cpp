@@ -1,77 +1,79 @@
 #include "DecisionTreeEngine.h"
-#include <iostream>
 
-// ======================================================
+#include "MoveGenerator.h"
+#include "MoveExecutor.h"
+
+#include <vector>
+
+//==================================================
+// CONSTRUCTOR
+//==================================================
 
 DecisionTreeEngine::DecisionTreeEngine()
 {
-    std::cout << "[DTE] Engine iniciado\n";
 }
 
-// ======================================================
+//==================================================
+// EXPANSIÓN DE NODO
+//==================================================
 
-const std::vector<Nodo*>& DecisionTreeEngine::getNodos() const
-{
-    return nodos;
-}
-
-// ======================================================
-// EXPANDIR NODO (UNA SOLA PASADA LIMPIA)
-// ======================================================
-
-void DecisionTreeEngine::expandirNodo(Nodo* nodo)
+void DecisionTreeEngine::expandirNodo(
+    Nodo* nodo
+)
 {
     if (!nodo)
+        return;
+
+    //==================================================
+    // VALIDACIÓN DE ESTADO
+    //==================================================
+
+    if (
+        m_evaluator.estadoTerminal(
+            *nodo,
+            nodo->turnoActual
+        )
+    )
     {
-        std::cout << "[DTE] nodo NULL\n";
         return;
     }
 
-    Color jugador = nodo->turnoActual;
+    //==================================================
+    // RECORRER PIEZAS DEL TURNO ACTUAL
+    //==================================================
 
-    std::cout << "\n[DTE] expandiendo nodo | piezas="
-              << nodo->piezas.size()
-              << " turno="
-              << (jugador == Color::Blanca ? "Blanca" : "Negra")
-              << "\n";
-
-    if (evaluator.estadoTerminal(*nodo, jugador))
+    for (const Ficha& ficha : nodo->piezas)
     {
-        std::cout << "[DTE] nodo terminal -> skip\n";
-        return;
-    }
-
-    int hijos = 0;
-
-    for (const Ficha& f : nodo->piezas)
-    {
-        if (f.getColor() != jugador)
+        if (ficha.getColor() != nodo->turnoActual)
             continue;
 
-        auto movs = analyzer.obtenerMovimientosFicha(f, *nodo);
+        //==================================================
+        // GENERAR MOVIMIENTOS
+        //==================================================
 
-        std::cout << "[DTE] pieza ID=" << f.getId()
-                  << " movs=" << movs.size() << "\n";
+        std::vector<Posicion> movimientos =
+            MoveGenerator::getMovimientos(
+                ficha,
+                *nodo
+            );
 
-        for (const Posicion& p : movs)
+        //==================================================
+        // CREAR HIJOS
+        //==================================================
+
+        for (const Posicion& destino : movimientos)
         {
-            if (!analyzer.esMovimientoLegal(*nodo, f, p))
+            Nodo* hijo =
+                MoveExecutor::crearNodoMovimiento(
+                    *nodo,
+                    ficha.getId(),
+                    destino
+                );
+
+            if (!hijo)
                 continue;
 
-            Nodo nuevo = analyzer.simularMovimiento(*nodo, f, p);
-
-            Nodo* hijo = new Nodo(nuevo);
-
-            hijo->turnoActual =
-                (jugador == Color::Blanca)
-                    ? Color::Negra
-                    : Color::Blanca;
-
             nodo->agregarHijo(hijo);
-
-            hijos++;
         }
     }
-
-    std::cout << "[DTE] hijos generados=" << hijos << "\n";
 }

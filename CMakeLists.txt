@@ -20,14 +20,13 @@ target_include_directories(glad PUBLIC
 )
 
 # ======================================================
-# FUENTES COMPARTIDAS (LÓGICA)
+# CORE (LÓGICA PURA)
 # ======================================================
 
 set(CROWNLYN_CORE
 
     src/Arbol/Arbol.cpp
     src/Arbol/Nodo.cpp
-    src/Arbol/Tablero.cpp
     src/Arbol/DecisionTreeEngine.cpp
     src/Arbol/GameAnalyzer.cpp
     src/Arbol/StateEvaluator.cpp
@@ -39,10 +38,15 @@ set(CROWNLYN_CORE
     src/Fichas/Caballo.cpp
     src/Fichas/Dama.cpp
     src/Fichas/Rey.cpp
+
+    src/Arbol/Tablero.cpp
+
+    src/Game/MoveGenerator.cpp
+    src/Game/MoveExecutor.cpp
 )
 
 # ======================================================
-# FUENTES GRÁFICAS
+# GRAPHICS + ENGINE
 # ======================================================
 
 set(CROWNLYN_GRAPHICS
@@ -53,6 +57,8 @@ set(CROWNLYN_GRAPHICS
     src/Graphics/Shader.cpp
 
     src/UI/Button.cpp
+
+    src/Arbol/Tablero.cpp
 
     src/Screens/MainMenuScreen.cpp
     src/Screens/OneScreen.cpp
@@ -68,48 +74,19 @@ set(CROWNLYN_GRAPHICS
     src/Game/DrawTableroEngine.cpp
     src/Game/DrawGameEngine.cpp
     src/Game/PlayFichaEngine.cpp
-
-    src/Arbol/Tablero.cpp
-
-    src/Fichas/Ficha.cpp
-    src/Fichas/Torre.cpp
-    src/Game/DrawFichaEngine.cpp
     src/Game/TableroBuilder.cpp
     src/Game/TextureFichasLoader.cpp
-
+    src/Game/GameEngine.cpp
 )
 
 # ======================================================
-# PROGRAMA PRINCIPAL (LÓGICA)
-# ======================================================
-
-add_executable(
-    CROWNLYN
-
-    main.cpp
-
-    ${CROWNLYN_CORE}
-)
-
-target_include_directories(
-    CROWNLYN
-    PRIVATE
-
-    src
-    src/Arbol
-    src/Fichas
-    src/Game
-)
-
-# ======================================================
-# PROGRAMA GRÁFICO
+# RENDER APP
 # ======================================================
 
 add_executable(
     RENDER_WINDOW
-
     mainGrafics.cpp
-
+    ${CROWNLYN_CORE}
     ${CROWNLYN_GRAPHICS}
 )
 
@@ -136,51 +113,36 @@ target_include_directories(
 target_link_libraries(
     RENDER_WINDOW
     PRIVATE
-
     glad
     glfw
 )
 
 if(WIN32)
-    target_link_libraries(
-        RENDER_WINDOW
-        PRIVATE
-        opengl32
-    )
+    target_link_libraries(RENDER_WINDOW PRIVATE opengl32)
 endif()
 
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/basic.vert
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/basic.vert
+# ======================================================
+# SHADERS COPY
+# ======================================================
+
+set(SHADERS
+    basic.vert
+    basic.frag
+    texture.vert
+    texture.frag
 )
 
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/basic.frag
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/basic.frag
-)
-
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/texture.vert
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/texture.vert
-)
-
-add_custom_command(
-    TARGET RENDER_WINDOW POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/texture.frag
-        $<TARGET_FILE_DIR:RENDER_WINDOW>/texture.frag
-)
-
-
+foreach(SHADER ${SHADERS})
+    add_custom_command(
+        TARGET RENDER_WINDOW POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/src/Graphics/Shaders/${SHADER}
+            $<TARGET_FILE_DIR:RENDER_WINDOW>/${SHADER}
+    )
+endforeach()
 
 # ======================================================
-# COPIAR TODOS LOS ASSETS
+# ASSETS COPY
 # ======================================================
 
 file(GLOB ASSET_FILES
@@ -188,14 +150,12 @@ file(GLOB ASSET_FILES
 )
 
 foreach(FILE ${ASSET_FILES})
-
     add_custom_command(
         TARGET RENDER_WINDOW POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${FILE}
             $<TARGET_FILE_DIR:RENDER_WINDOW>
     )
-
 endforeach()
 
 set_target_properties(
@@ -210,7 +170,6 @@ set_target_properties(
 
 add_executable(
     CROWNLYN_TESTS
-
     TestsMain.cpp
 
     src/Test/TestSuite.cpp

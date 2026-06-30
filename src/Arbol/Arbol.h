@@ -3,8 +3,11 @@
 #include <vector>
 #include <iostream>
 
-#include "Nodo.h"
+
 #include "DecisionTreeEngine.h"
+
+class Nodo;
+
 
 class Arbol
 {

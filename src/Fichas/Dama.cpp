@@ -1,4 +1,5 @@
 #include "Dama.h"
+#include "Tablero.h"
 
 // ======================================================
 // MOVIMIENTOS LEGALES (TORRE + ALFIL)
@@ -101,7 +102,10 @@ std::vector<Posicion> Dama::getAtaques(
 
 bool Dama::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 const Ficha* Dama::obtenerFichaEn(

@@ -1,3 +1,4 @@
+#include "Tablero.h"
 #include "Rey.h"
 
 // ======================================================
@@ -80,7 +81,10 @@ std::vector<Posicion> Rey::getAtaques(
 
 bool Rey::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 const Ficha* Rey::obtenerFichaEn(const Nodo& estado, int x, int y) const

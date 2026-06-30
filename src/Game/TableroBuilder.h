@@ -1,14 +1,31 @@
 #pragma once
 
-#include "Tablero.h"
-#include "DrawFichaEngine.h"
+#include "Nodo.h"
 #include "TextureFichasLoader.h"
+
+class Tablero;
 
 class TableroBuilder
 {
 public:
 
     TableroBuilder();
+
+    //==================================================
+    // NODO OBJETIVO
+    //==================================================
+
+    void setNodo(
+        Nodo* nodo
+    );
+
+    Nodo* getNodo();
+
+    const Nodo* getNodo() const;
+
+    //==================================================
+    // CONSTRUCCIÓN DEL TABLERO
+    //==================================================
 
     void crearTablero(
         int ancho,
@@ -19,35 +36,43 @@ public:
         float h = 450.0f
     );
 
+    void clear();
+
+    //==================================================
+    // CONSTRUCCIÓN DE PIEZAS
+    //==================================================
+
     void agregarFicha(
         TipoFicha tipo,
         Color color,
         const Posicion& pos
     );
 
-    void agregarTorre();
+    void agregarFilaPeones(
+        Color color
+    );
 
-    void clear();
-
-    const Tablero& getTablero() const;
-
-    DrawFichaEngine& getFichaEngine();
-
-    TextureFichasLoader& getTextureLoader();
-
-    void agregarFilaPeones(Color color);
-
-    void agregarPiezasIniciales(Color color);
+    void agregarPiezasIniciales(
+        Color color
+    );
 
     void crearConfiguracionInicial();
 
+    //==================================================
+    // RECURSOS
+    //==================================================
+
+    TextureFichasLoader&
+    getTextureLoader();
+
+    const TextureFichasLoader&
+    getTextureLoader() const;
+
 private:
 
-    Tablero m_tablero;
-
-    DrawFichaEngine m_fichaEngine;
+    Nodo* m_nodo = nullptr;
 
     TextureFichasLoader m_loader;
 
-    int m_nextId;
+    int m_nextId = 0;
 };

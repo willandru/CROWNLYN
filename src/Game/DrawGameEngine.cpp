@@ -4,11 +4,12 @@
 #include "Shader.h"
 
 #include "TableroBuilder.h"
-
-#include "Tablero.h"
-#include "DrawFichaEngine.h"
 #include "DrawTableroEngine.h"
 #include "TextureFichasLoader.h"
+
+#include "Nodo.h"
+#include "Ficha.h"
+#include "Tablero.h"
 
 DrawGameEngine::DrawGameEngine()
 {
@@ -16,16 +17,12 @@ DrawGameEngine::DrawGameEngine()
     m_tableroEngine = nullptr;
 }
 
-void DrawGameEngine::setBuilder(
-    TableroBuilder* builder
-)
+void DrawGameEngine::setBuilder(TableroBuilder* builder)
 {
     m_builder = builder;
 }
 
-void DrawGameEngine::setTableroEngine(
-    DrawTableroEngine* engine
-)
+void DrawGameEngine::setTableroEngine(DrawTableroEngine* engine)
 {
     m_tableroEngine = engine;
 }
@@ -36,62 +33,48 @@ void DrawGameEngine::draw(
     Shader& textureShader
 )
 {
-    if (!m_builder)
+    if (!m_builder || !m_tableroEngine)
         return;
 
-    if (!m_tableroEngine)
+    Nodo* nodo = m_builder->getNodo();
+    if (!nodo || !nodo->tablero)
         return;
 
-    const Tablero& tablero =
-        m_builder->getTablero();
-
-    DrawFichaEngine& fichaEngine =
-        m_builder->getFichaEngine();
+    // ============================
+    // FIX: tablero es puntero
+    // ============================
+    Tablero* tablero = nodo->tablero;
 
     TextureFichasLoader& loader =
         m_builder->getTextureLoader();
 
-    // ==========================================
+    // =====================================================
     // TABLERO
-    // ==========================================
+    // =====================================================
 
-    for (
-        int i = 0;
-        i < m_tableroEngine->getCantidadCasillas(tablero);
-        i++
-    )
+    const int cantidadCasillas =
+        m_tableroEngine->getCantidadCasillas(*tablero);
+
+    for (int i = 0; i < cantidadCasillas; i++)
     {
         DrawRectCommand cmd =
-            m_tableroEngine->getDrawCommand(
-                tablero,
-                i
-            );
+            m_tableroEngine->getDrawCommand(*tablero, i);
 
-        renderer.drawRect(
-            cmd,
-            basicShader
-        );
+        renderer.drawRect(cmd, basicShader);
     }
 
-    // ==========================================
+    // =====================================================
     // FICHAS
-    // ==========================================
+    // =====================================================
 
-    float cellW =
-        tablero.getCellWidth();
+    const float cellW = tablero->getCellWidth();
+    const float cellH = tablero->getCellHeight();
 
-    float cellH =
-        tablero.getCellHeight();
+    const float tableroX = tablero->getX();
+    const float tableroY = tablero->getY();
 
-    for (
-        int i = 0;
-        i < fichaEngine.getCantidadFichas();
-        i++
-    )
+    for (const Ficha& ficha : nodo->piezas)
     {
-        const Ficha& ficha =
-            fichaEngine.getFicha(i);
-
         const ImagenManager* textura =
             loader.getTextura(
                 ficha.getTipo(),
@@ -103,22 +86,14 @@ void DrawGameEngine::draw(
 
         DrawFichaCommand cmd;
 
-        cmd.x =
-            tablero.getX()
-            + ficha.getPosicion().x * cellW;
-
-        cmd.y =
-            tablero.getY()
-            + ficha.getPosicion().y * cellH;
+        cmd.x = tableroX + ficha.getPosicion().x * cellW;
+        cmd.y = tableroY + ficha.getPosicion().y * cellH;
 
         cmd.w = cellW;
         cmd.h = cellH;
 
         cmd.textura = textura;
 
-        renderer.drawFicha(
-            cmd,
-            textureShader
-        );
+        renderer.drawFicha(cmd, textureShader);
     }
 }

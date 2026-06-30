@@ -1,24 +1,20 @@
 #pragma once
 
+#include <vector>
 #include "Posicion.h"
 
 class Input;
-
 class TableroBuilder;
+class Nodo;
 
 class PlayFichaEngine
 {
 public:
-
     PlayFichaEngine();
 
-    void setBuilder(
-        TableroBuilder* builder
-    );
+    void setBuilder(TableroBuilder* builder);
 
-    void update(
-        const Input& input
-    );
+    void update(const Input& input);
 
     bool hayFichaSeleccionada() const;
 
@@ -43,23 +39,21 @@ private:
         float mouseY
     ) const;
 
-    void seleccionarFicha(
-        int index
-    );
+    void seleccionarFicha(int idFicha);
 
     void deseleccionarFicha();
 
-    void moverFicha(
-        const Posicion& destino
-    );
+    void moverFicha(const Posicion& destino);
 
 private:
 
-    TableroBuilder* m_builder;
+    TableroBuilder* m_builder = nullptr;
 
-    int m_selectedIndex;
+    int m_selectedId = -1;
 
-    bool m_haySeleccion;
+    bool m_haySeleccion = false;
 
     Posicion m_posSeleccionada;
+
+    std::vector<Posicion> m_movimientosPosibles;
 };

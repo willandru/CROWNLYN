@@ -1,4 +1,5 @@
 #include "Alfil.h"
+#include "Tablero.h"
 
 // ======================================================
 // MOVIMIENTOS LEGALES (DIAGONALES CON BLOQUEO)
@@ -91,7 +92,10 @@ std::vector<Posicion> Alfil::getAtaques(
 
 bool Alfil::esValida(const Nodo& estado, int x, int y) const
 {
-    return estado.tablero.esValida(x, y);
+    if (!estado.tablero)
+        return false;
+
+    return estado.tablero->esValida(x, y);
 }
 
 const Ficha* Alfil::obtenerFichaEn(

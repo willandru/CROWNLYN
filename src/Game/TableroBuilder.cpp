@@ -1,13 +1,45 @@
 #include "TableroBuilder.h"
 
+#include "Tablero.h"
+#include "Ficha.h"
+
+//==================================================
+// CONSTRUCTOR
+//==================================================
+
 TableroBuilder::TableroBuilder()
     :
-    m_tablero(1,1),
+    m_nodo(nullptr),
     m_nextId(0)
 {
     m_loader.cargarBlancas();
     m_loader.cargarNegras();
 }
+
+//==================================================
+// NODO
+//==================================================
+
+void TableroBuilder::setNodo(
+    Nodo* nodo
+)
+{
+    m_nodo = nodo;
+}
+
+Nodo* TableroBuilder::getNodo()
+{
+    return m_nodo;
+}
+
+const Nodo* TableroBuilder::getNodo() const
+{
+    return m_nodo;
+}
+
+//==================================================
+// TABLERO
+//==================================================
 
 void TableroBuilder::crearTablero(
     int ancho,
@@ -18,22 +50,49 @@ void TableroBuilder::crearTablero(
     float h
 )
 {
-    m_tablero = Tablero(
-        ancho,
-        alto
-    );
+    if (!m_nodo)
+        return;
 
-    m_tablero.setArea(
+    // destruir tablero anterior
+    delete m_nodo->tablero;
+
+    m_nodo->tablero =
+        new Tablero(
+            ancho,
+            alto
+        );
+
+    m_nodo->tablero->setArea(
         x,
         y,
         w,
         h
     );
 
-    m_fichaEngine.clear();
+    m_nodo->piezas.clear();
 
     m_nextId = 0;
 }
+
+//==================================================
+// LIMPIAR
+//==================================================
+
+void TableroBuilder::clear()
+{
+    if (!m_nodo)
+        return;
+
+    m_nodo->piezas.clear();
+
+    m_nodo->hijos.clear();
+
+    m_nextId = 0;
+}
+
+//==================================================
+// AGREGAR FICHA
+//==================================================
 
 void TableroBuilder::agregarFicha(
     TipoFicha tipo,
@@ -41,65 +100,37 @@ void TableroBuilder::agregarFicha(
     const Posicion& pos
 )
 {
-    if (!m_tablero.esValida(
+    if (!m_nodo)
+        return;
+
+    if (!m_nodo->tablero)
+        return;
+
+    if (!m_nodo->tablero->esValida(
             pos.x,
             pos.y))
     {
         return;
     }
 
-    m_fichaEngine.addFicha(
-
-        Ficha(
-
-            m_nextId++,
-
-            tipo,
-
-            color,
-
-            pos
-        )
+    m_nodo->piezas.emplace_back(
+        m_nextId++,
+        tipo,
+        color,
+        pos
     );
 }
 
-void TableroBuilder::clear()
-{
-    m_fichaEngine.clear();
+//==================================================
+// PEONES
+//==================================================
 
-    m_nextId = 0;
-}
-
-const Tablero& TableroBuilder::getTablero() const
-{
-    return m_tablero;
-}
-
-DrawFichaEngine&
-TableroBuilder::getFichaEngine()
-{
-    return m_fichaEngine;
-}
-
-TextureFichasLoader&
-TableroBuilder::getTextureLoader()
-{
-    return m_loader;
-}
-
-void TableroBuilder::agregarTorre()
-{
-    agregarFicha(
-        TipoFicha::Dama,
-        Color::Negra,
-        Posicion{1, 1}
-    );
-}
-
-void TableroBuilder::agregarFilaPeones(Color color)
+void TableroBuilder::agregarFilaPeones(
+    Color color
+)
 {
     int fila =
-        (color == Color::Blanca)
+        color == Color::Blanca
         ? 1
         : 6;
 
@@ -108,19 +139,25 @@ void TableroBuilder::agregarFilaPeones(Color color)
         agregarFicha(
             TipoFicha::Peon,
             color,
-            Posicion{x, fila}
+            { x, fila }
         );
     }
 }
 
-void TableroBuilder::agregarPiezasIniciales(Color color)
+//==================================================
+// PIEZAS MAYORES
+//==================================================
+
+void TableroBuilder::agregarPiezasIniciales(
+    Color color
+)
 {
     int fila =
-        (color == Color::Blanca)
+        color == Color::Blanca
         ? 0
         : 7;
 
-    TipoFicha piezas[8] =
+    TipoFicha piezas[8]
     {
         TipoFicha::Torre,
         TipoFicha::Caballo,
@@ -137,26 +174,36 @@ void TableroBuilder::agregarPiezasIniciales(Color color)
         agregarFicha(
             piezas[x],
             color,
-            Posicion{x, fila}
+            { x, fila }
         );
     }
 }
 
+//==================================================
+// POSICIÓN INICIAL
+//==================================================
+
 void TableroBuilder::crearConfiguracionInicial()
 {
-    agregarPiezasIniciales(
-        Color::Blanca
-    );
+    agregarPiezasIniciales(Color::Blanca);
+    agregarFilaPeones(Color::Blanca);
 
-    agregarFilaPeones(
-        Color::Blanca
-    );
+    agregarPiezasIniciales(Color::Negra);
+    agregarFilaPeones(Color::Negra);
+}
 
-    agregarPiezasIniciales(
-        Color::Negra
-    );
+//==================================================
+// TEXTURAS
+//==================================================
 
-    agregarFilaPeones(
-        Color::Negra
-    );
+TextureFichasLoader&
+TableroBuilder::getTextureLoader()
+{
+    return m_loader;
+}
+
+const TextureFichasLoader&
+TableroBuilder::getTextureLoader() const
+{
+    return m_loader;
 }
