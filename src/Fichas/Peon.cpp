@@ -1,53 +1,103 @@
 #include "Peon.h"
 
 #include "Tablero.h"
+
 // ======================================================
-// MOVIMIENTOS LEGALES (NO INCLUYE CONTROL DE CASILLAS VACÍAS COMO ATAQUE)
+// MOVIMIENTOS LEGALES
 // ======================================================
 
 std::vector<Posicion> Peon::getMovimientos(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> movimientos;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion o =
+        pieza.getPosicion();
 
+    // Blancas avanzan hacia abajo (+Y)
+    // Negras avanzan hacia arriba (-Y)
     const int dir =
-        (pieza.getColor() == Color::Blanca) ? -1 : 1;
+        (pieza.getColor() == Color::Blanca)
+        ? 1
+        : -1;
 
-    // =====================================================
+    //--------------------------------------------------
     // AVANCE SIMPLE
-    // =====================================================
+    //--------------------------------------------------
 
-    int xFront = o.x + dir;
-    int yFront = o.y;
+    int xFront =
+        o.x;
 
-    if (esValida(estado, xFront, yFront) &&
-        !obtenerFichaEn(estado, xFront, yFront))
+    int yFront =
+        o.y + dir;
+
+    if (
+        esValida(
+            estado,
+            xFront,
+            yFront
+        ) &&
+        !obtenerFichaEn(
+            estado,
+            xFront,
+            yFront
+        )
+    )
     {
-        movimientos.push_back({xFront, yFront});
+        movimientos.push_back(
+            {
+                xFront,
+                yFront
+            }
+        );
     }
 
-    // =====================================================
-    // CAPTURAS DIAGONALES (SOLO SI HAY PIEZA ENEMIGA)
-    // =====================================================
+    //--------------------------------------------------
+    // CAPTURAS
+    //--------------------------------------------------
 
-    const int dy[2] = {-1, 1};
-
-    for (int d : dy)
+    const int dx[2] =
     {
-        int x = o.x + dir;
-        int y = o.y + d;
+        -1,
+         1
+    };
 
-        if (!esValida(estado, x, y))
-            continue;
+    for (int d : dx)
+    {
+        int x =
+            o.x + d;
 
-        const Ficha* f = obtenerFichaEn(estado, x, y);
+        int y =
+            o.y + dir;
 
-        if (f && f->getColor() != pieza.getColor())
+        if (!esValida(
+                estado,
+                x,
+                y))
         {
-            movimientos.push_back({x, y});
+            continue;
+        }
+
+        const Ficha* ficha =
+            obtenerFichaEn(
+                estado,
+                x,
+                y
+            );
+
+        if (
+            ficha &&
+            ficha->getColor() != pieza.getColor()
+        )
+        {
+            movimientos.push_back(
+                {
+                    x,
+                    y
+                }
+            );
         }
     }
 
@@ -55,32 +105,52 @@ std::vector<Posicion> Peon::getMovimientos(
 }
 
 // ======================================================
-// ATAQUES (CONTROL DE CASILLAS PARA JAQUE)
+// ATAQUES
 // ======================================================
 
 std::vector<Posicion> Peon::getAtaques(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> ataques;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion o =
+        pieza.getPosicion();
 
     const int dir =
-        (pieza.getColor() == Color::Blanca) ? -1 : 1;
+        (pieza.getColor() == Color::Blanca)
+        ? 1
+        : -1;
 
-    const int dy[2] = {-1, 1};
-
-    for (int d : dy)
+    const int dx[2] =
     {
-        int x = o.x + dir;
-        int y = o.y + d;
+        -1,
+         1
+    };
 
-        if (esValida(estado, x, y))
+    for (int d : dx)
+    {
+        int x =
+            o.x + d;
+
+        int y =
+            o.y + dir;
+
+        if (
+            esValida(
+                estado,
+                x,
+                y
+            )
+        )
         {
-            // IMPORTANTE:
-            // el peón controla diagonales aunque no haya pieza
-            ataques.push_back({x, y});
+            ataques.push_back(
+                {
+                    x,
+                    y
+                }
+            );
         }
     }
 
@@ -91,25 +161,35 @@ std::vector<Posicion> Peon::getAtaques(
 // UTILIDADES
 // ======================================================
 
-bool Peon::esValida(const Nodo& estado, int x, int y) const
+bool Peon::esValida(
+    const Nodo& estado,
+    int x,
+    int y
+) const
 {
     if (!estado.tablero)
         return false;
 
-    return estado.tablero->esValida(x, y);
+    return estado.tablero->esValida(
+        x,
+        y
+    );
 }
 
 const Ficha* Peon::obtenerFichaEn(
     const Nodo& estado,
     int x,
-    int y) const
+    int y
+) const
 {
-    for (const Ficha& f : estado.piezas)
+    for (const Ficha& ficha : estado.piezas)
     {
-        if (f.getPosicion().x == x &&
-            f.getPosicion().y == y)
+        if (
+            ficha.getPosicion().x == x &&
+            ficha.getPosicion().y == y
+        )
         {
-            return &f;
+            return &ficha;
         }
     }
 

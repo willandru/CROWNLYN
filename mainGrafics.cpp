@@ -26,7 +26,12 @@ int main()
         "CROWNLYN"
     );
 
-    glViewport(0, 0, 1280, 720);
+    glViewport(
+        0,
+        0,
+        1280,
+        720
+    );
 
     Renderer renderer;
     Input input;
@@ -46,39 +51,69 @@ int main()
         "Debug/texture.frag"
     );
 
-    screenManager.setShader(&basicShader);
+    screenManager.setShader(
+        &basicShader
+    );
 
     //--------------------------------------------------
     // GAME STATE (SOURCE OF TRUTH)
     //--------------------------------------------------
 
-    Nodo* nodoRaiz = new Nodo;
+    Nodo* nodoRaiz =
+        new Nodo;
 
     Arbol arbol;
-    arbol.setNodoInicial(nodoRaiz);
+
+    arbol.setNodoInicial(
+        nodoRaiz
+    );
+
+    //--------------------------------------------------
+    // BUILDER
+    //--------------------------------------------------
 
     TableroBuilder builder;
-    builder.setNodo(nodoRaiz);
 
-    builder.crearTablero(8, 8);
+    builder.setNodo(
+        nodoRaiz
+    );
+
+    builder.crearTablero(
+        8,
+        8
+    );
+
     builder.crearConfiguracionInicial();
 
     //--------------------------------------------------
-    // INPUT ENGINE
+    // PLAY ENGINE
     //--------------------------------------------------
 
     PlayFichaEngine playFichaEngine;
-    playFichaEngine.setBuilder(&builder);
+
+    playFichaEngine.setBuilder(
+        &builder
+    );
 
     //--------------------------------------------------
-    // DRAW ENGINE
+    // DRAW ENGINES
     //--------------------------------------------------
 
     DrawTableroEngine drawTableroEngine;
 
     DrawGameEngine drawGameEngine;
-    drawGameEngine.setBuilder(&builder);
-    drawGameEngine.setTableroEngine(&drawTableroEngine);
+
+    drawGameEngine.setBuilder(
+        &builder
+    );
+
+    drawGameEngine.setTableroEngine(
+        &drawTableroEngine
+    );
+
+    drawGameEngine.setPlayEngine(
+        &playFichaEngine
+    );
 
     //--------------------------------------------------
     // GAME LOOP
@@ -91,17 +126,26 @@ int main()
     {
         window.pollEvents();
 
-        input.update(window.getNativeWindow());
+        input.update(
+            window.getNativeWindow()
+        );
 
-        screenManager.update(input);
+        screenManager.update(
+            input
+        );
 
         //--------------------------------------------------
-        // GAMEPLAY UPDATE
+        // GAMEPLAY
         //--------------------------------------------------
 
-        if (screenManager.currentScreen() == ScreenType::OneVsAI)
+        if (
+            screenManager.currentScreen() ==
+            ScreenType::OneVsAI
+        )
         {
-            playFichaEngine.update(input);
+            playFichaEngine.update(
+                input
+            );
         }
 
         //--------------------------------------------------
@@ -110,9 +154,14 @@ int main()
 
         renderer.begin();
 
-        screenManager.render(renderer);
+        screenManager.render(
+            renderer
+        );
 
-        if (screenManager.currentScreen() == ScreenType::OneVsAI)
+        if (
+            screenManager.currentScreen() ==
+            ScreenType::OneVsAI
+        )
         {
             drawGameEngine.draw(
                 renderer,

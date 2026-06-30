@@ -5,6 +5,7 @@ class Shader;
 
 class TableroBuilder;
 class DrawTableroEngine;
+class PlayFichaEngine;
 
 class DrawGameEngine
 {
@@ -20,6 +21,10 @@ public:
         DrawTableroEngine* engine
     );
 
+    void setPlayEngine(
+        PlayFichaEngine* engine
+    );
+
     void draw(
         Renderer& renderer,
         Shader& basicShader,
@@ -28,7 +33,9 @@ public:
 
 private:
 
-    TableroBuilder* m_builder;
+    TableroBuilder* m_builder = nullptr;
 
-    DrawTableroEngine* m_tableroEngine;
+    DrawTableroEngine* m_tableroEngine = nullptr;
+
+    PlayFichaEngine* m_playEngine = nullptr;
 };
