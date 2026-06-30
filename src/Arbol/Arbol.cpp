@@ -51,7 +51,7 @@ void Arbol::liberarNodo(Nodo* nodo)
         liberarNodo(h);
 
     nodo->hijos.clear();
-    //delete nodo;
+    delete nodo;
 }
 
 // ======================================================

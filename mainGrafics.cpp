@@ -52,17 +52,13 @@ int main()
     // GAME STATE (SOURCE OF TRUTH)
     //--------------------------------------------------
 
-    Nodo nodoRaiz;
+    Nodo* nodoRaiz = new Nodo;
 
     Arbol arbol;
-    arbol.setNodoInicial(&nodoRaiz);
-
-    //--------------------------------------------------
-    // BUILDER
-    //--------------------------------------------------
+    arbol.setNodoInicial(nodoRaiz);
 
     TableroBuilder builder;
-    builder.setNodo(&nodoRaiz);
+    builder.setNodo(nodoRaiz);
 
     builder.crearTablero(8, 8);
     builder.crearConfiguracionInicial();
