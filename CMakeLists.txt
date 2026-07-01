@@ -80,6 +80,7 @@ set(CROWNLYN_GRAPHICS
 
     src/Arbol/NuevaPartidaEngine.cpp
     src/Arbol/DecisionTreeEngine.cpp
+    src/Arbol/NodeEncoder.cpp
 )
 
 # ======================================================
@@ -179,6 +180,7 @@ add_executable(
     src/Test/TestStates.cpp
     src/Test/TestGameAnalyzer.cpp
     src/Test/TestDecisionTreeEngine.cpp
+    src/Arbol/NodeEncoder.cpp
 
     ${CROWNLYN_CORE}
 )

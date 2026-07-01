@@ -16,170 +16,92 @@
 #include "DrawTableroEngine.h"
 
 #include "PlayFichaEngine.h"
-
 #include "DecisionTreeEngine.h"
 
 int main()
 {
-    //--------------------------------------------------
-    // WINDOW
-    //--------------------------------------------------
+    Window window(1280, 720, "CROWNLYN");
 
-    Window window(
-        1280,
-        720,
-        "CROWNLYN"
-    );
-
-    glViewport(
-        0,
-        0,
-        1280,
-        720
-    );
+    glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
     Input input;
     ScreenManager screenManager;
 
-    //--------------------------------------------------
-    // SHADERS
-    //--------------------------------------------------
+    Shader basicShader("Debug/basic.vert", "Debug/basic.frag");
+    Shader textureShader("Debug/texture.vert", "Debug/texture.frag");
 
-    Shader basicShader(
-        "Debug/basic.vert",
-        "Debug/basic.frag"
-    );
+    screenManager.setShader(&basicShader);
 
-    Shader textureShader(
-        "Debug/texture.vert",
-        "Debug/texture.frag"
-    );
-
-    screenManager.setShader(
-        &basicShader
-    );
-
-    //--------------------------------------------------
+    //==================================================
     // GAME STATE
-    //--------------------------------------------------
+    //==================================================
 
     Arbol arbol;
-
     TableroBuilder builder;
-
     NuevaPartidaEngine nuevaPartida;
 
     Nodo* nodoRaiz =
-        nuevaPartida.crearPartida(
-            arbol,
-            builder
-        );
+        nuevaPartida.crearPartida(arbol, builder);
 
-    //--------------------------------------------------
-    // DEBUG TREE
-    //--------------------------------------------------
+    //==================================================
+    // TREE ENGINE
+    //==================================================
 
     DecisionTreeEngine treeEngine;
 
-    treeEngine.expandirNodo(
-        nodoRaiz
-    );
+    treeEngine.expandirNodo(nodoRaiz);
+    treeEngine.imprimirRama(nodoRaiz);
 
     std::cout << "\n=====================================\n";
     std::cout << "NODO RAIZ\n";
-    std::cout << "HIJOS GENERADOS: "
-              << nodoRaiz->hijos.size()
-              << "\n";
+    std::cout << "HIJOS GENERADOS: " << nodoRaiz->hijos.size() << "\n";
     std::cout << "=====================================\n\n";
 
-    //--------------------------------------------------
+    //==================================================
     // PLAY ENGINE
-    //--------------------------------------------------
+    //==================================================
 
     PlayFichaEngine playFichaEngine;
+    playFichaEngine.setBuilder(&builder);
 
-    playFichaEngine.setBuilder(
-        &builder
-    );
-
-    //--------------------------------------------------
-    // DRAW ENGINES
-    //--------------------------------------------------
+    //==================================================
+    // DRAW ENGINE
+    //==================================================
 
     DrawTableroEngine drawTableroEngine;
 
     DrawGameEngine drawGameEngine;
+    drawGameEngine.setBuilder(&builder);
+    drawGameEngine.setTableroEngine(&drawTableroEngine);
+    drawGameEngine.setPlayEngine(&playFichaEngine);
 
-    drawGameEngine.setBuilder(
-        &builder
-    );
+    //==================================================
+    // LOOP
+    //==================================================
 
-    drawGameEngine.setTableroEngine(
-        &drawTableroEngine
-    );
-
-    drawGameEngine.setPlayEngine(
-        &playFichaEngine
-    );
-
-    //--------------------------------------------------
-    // GAME LOOP
-    //--------------------------------------------------
-
-    while (
-        !window.shouldClose() &&
-        !screenManager.shouldExit()
-    )
+    while (!window.shouldClose() && !screenManager.shouldExit())
     {
         window.pollEvents();
 
-        input.update(
-            window.getNativeWindow()
-        );
+        input.update(window.getNativeWindow());
+        screenManager.update(input);
 
-        screenManager.update(
-            input
-        );
-
-        //--------------------------------------------------
-        // GAMEPLAY
-        //--------------------------------------------------
-
-        if (
-            screenManager.currentScreen() ==
-            ScreenType::OneVsAI
-        )
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
-            playFichaEngine.update(
-                input
-            );
+            playFichaEngine.update(input);
         }
-
-        //--------------------------------------------------
-        // RENDER
-        //--------------------------------------------------
 
         renderer.begin();
 
-        screenManager.render(
-            renderer
-        );
+        screenManager.render(renderer);
 
-        if (
-            screenManager.currentScreen() ==
-            ScreenType::OneVsAI
-        )
+        if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
-            drawGameEngine.draw(
-                renderer,
-                basicShader,
-                textureShader
-            );
+            drawGameEngine.draw(renderer, basicShader, textureShader);
         }
 
         renderer.end();
-
         window.display();
     }
 

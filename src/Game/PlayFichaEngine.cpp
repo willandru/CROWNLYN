@@ -374,9 +374,8 @@ void PlayFichaEngine::moverFicha(
     // Expandir el nuevo nodo
     //--------------------------------------------------
 
-    m_tree.expandirNodo(
-        hijo
-    );
+    m_tree.expandirNodo(hijo);
+    m_tree.imprimirRama(hijo);
 
     //--------------------------------------------------
     // DEBUG

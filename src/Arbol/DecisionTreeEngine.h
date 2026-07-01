@@ -10,13 +10,9 @@ public:
 
     DecisionTreeEngine();
 
-    void expandirNodo(
-        Nodo* nodo
-    );
+    void expandirNodo(Nodo* nodo);
 
-    void imprimirRama(
-        const Nodo* nodo
-    ) const;
+    void imprimirRama(const Nodo* nodo) const;
 
 private:
 
