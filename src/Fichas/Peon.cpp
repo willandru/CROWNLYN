@@ -43,11 +43,41 @@ std::vector<Posicion> Peon::getMovimientos(
     )
     {
         movimientos.push_back(
+        {
+            xFront,
+            yFront
+        });
+
+        //--------------------------------------------------
+        // DOBLE AVANCE
+        //--------------------------------------------------
+
+        const bool filaInicial =
+            (pieza.getColor() == Color::Blanca)
+                ? origen.y == 1
+                : origen.y == 6;
+
+        const int yDouble =
+            origen.y + dir * 2;
+
+        if (
+            filaInicial &&
+            estado.esValida(
+                origen.x,
+                yDouble
+            ) &&
+            !estado.obtenerFichaEn(
+                origen.x,
+                yDouble
+            )
+        )
+        {
+            movimientos.push_back(
             {
-                xFront,
-                yFront
-            }
-        );
+                origen.x,
+                yDouble
+            });
+        }
     }
 
     //--------------------------------------------------
