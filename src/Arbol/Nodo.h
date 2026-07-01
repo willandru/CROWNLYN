@@ -16,6 +16,8 @@ public:
 
     void agregarHijo(Nodo* hijo);
 
+    bool esValida(int x, int y) const;
+
     const Ficha* obtenerFichaEn(int x, int y) const;
     bool hayFichaEn(int x, int y) const;
 

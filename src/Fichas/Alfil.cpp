@@ -1,47 +1,76 @@
 #include "Alfil.h"
-#include "Tablero.h"
 
 // ======================================================
-// MOVIMIENTOS LEGALES (DIAGONALES CON BLOQUEO)
+// MOVIMIENTOS LEGALES
 // ======================================================
 
 std::vector<Posicion> Alfil::getMovimientos(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> movimientos;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion origen =
+        pieza.getPosicion();
 
-    const int dirs[4][2] =
+    const int direcciones[4][2] =
     {
-        { 1, 1 }, { 1, -1 },
-        { -1, 1 }, { -1, -1 }
+        {  1,  1 },
+        {  1, -1 },
+        { -1,  1 },
+        { -1, -1 }
     };
 
-    for (const auto& d : dirs)
+    for (const auto& dir : direcciones)
     {
-        int x = o.x + d[0];
-        int y = o.y + d[1];
+        int x =
+            origen.x + dir[0];
 
-        while (esValida(estado, x, y))
+        int y =
+            origen.y + dir[1];
+
+        while (
+            estado.esValida(
+                x,
+                y
+            )
+        )
         {
-            const Ficha* f = obtenerFichaEn(estado, x, y);
+            const Ficha* ficha =
+                estado.obtenerFichaEn(
+                    x,
+                    y
+                );
 
-            if (!f)
+            if (!ficha)
             {
-                movimientos.push_back({x, y});
+                movimientos.push_back(
+                    {
+                        x,
+                        y
+                    }
+                );
             }
             else
             {
-                if (f->getColor() != pieza.getColor())
-                    movimientos.push_back({x, y});
+                if (
+                    ficha->getColor() != pieza.getColor()
+                )
+                {
+                    movimientos.push_back(
+                        {
+                            x,
+                            y
+                        }
+                    );
+                }
 
-                break; // bloqueo del rayo
+                break;
             }
 
-            x += d[0];
-            y += d[1];
+            x += dir[0];
+            y += dir[1];
         }
     }
 
@@ -49,68 +78,63 @@ std::vector<Posicion> Alfil::getMovimientos(
 }
 
 // ======================================================
-// ATAQUES (CONTROL DE CASILLAS)
+// ATAQUES
 // ======================================================
 
 std::vector<Posicion> Alfil::getAtaques(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> ataques;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion origen =
+        pieza.getPosicion();
 
-    const int dirs[4][2] =
+    const int direcciones[4][2] =
     {
-        { 1, 1 }, { 1, -1 },
-        { -1, 1 }, { -1, -1 }
+        {  1,  1 },
+        {  1, -1 },
+        { -1,  1 },
+        { -1, -1 }
     };
 
-    for (const auto& d : dirs)
+    for (const auto& dir : direcciones)
     {
-        int x = o.x + d[0];
-        int y = o.y + d[1];
+        int x =
+            origen.x + dir[0];
 
-        while (esValida(estado, x, y))
+        int y =
+            origen.y + dir[1];
+
+        while (
+            estado.esValida(
+                x,
+                y
+            )
+        )
         {
-            ataques.push_back({x, y});
+            ataques.push_back(
+                {
+                    x,
+                    y
+                }
+            );
 
-            if (obtenerFichaEn(estado, x, y))
+            if (
+                estado.obtenerFichaEn(
+                    x,
+                    y
+                )
+            )
+            {
                 break;
+            }
 
-            x += d[0];
-            y += d[1];
+            x += dir[0];
+            y += dir[1];
         }
     }
 
     return ataques;
-}
-
-// ======================================================
-// UTILIDADES
-// ======================================================
-
-bool Alfil::esValida(const Nodo& estado, int x, int y) const
-{
-    if (!estado.tablero)
-        return false;
-
-    return estado.tablero->esValida(x, y);
-}
-
-const Ficha* Alfil::obtenerFichaEn(
-    const Nodo& estado,
-    int x,
-    int y) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x &&
-            f.getPosicion().y == y)
-        {
-            return &f;
-        }
-    }
-
-    return nullptr;
 }

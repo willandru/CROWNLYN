@@ -1,42 +1,74 @@
 #include "Caballo.h"
-#include "Tablero.h"
+
 // ======================================================
-// MOVIMIENTOS LEGALES (SALTOS)
+// MOVIMIENTOS LEGALES
 // ======================================================
 
 std::vector<Posicion> Caballo::getMovimientos(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> movimientos;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion origen =
+        pieza.getPosicion();
 
-    const int jumps[8][2] =
+    const int saltos[8][2] =
     {
-        { 2, 1 }, { 2, -1 },
-        { -2, 1 }, { -2, -1 },
-        { 1, 2 }, { 1, -2 },
-        { -1, 2 }, { -1, -2 }
+        {  2,  1 },
+        {  2, -1 },
+        { -2,  1 },
+        { -2, -1 },
+        {  1,  2 },
+        {  1, -2 },
+        { -1,  2 },
+        { -1, -2 }
     };
 
-    for (const auto& j : jumps)
+    for (const auto& salto : saltos)
     {
-        int x = o.x + j[0];
-        int y = o.y + j[1];
+        const int x =
+            origen.x + salto[0];
 
-        if (!esValida(estado, x, y))
+        const int y =
+            origen.y + salto[1];
+
+        if (
+            !estado.esValida(
+                x,
+                y
+            )
+        )
+        {
             continue;
-
-        const Ficha* f = obtenerFichaEn(estado, x, y);
-
-        if (!f)
-        {
-            movimientos.push_back({x, y});
         }
-        else if (f->getColor() != pieza.getColor())
+
+        const Ficha* ficha =
+            estado.obtenerFichaEn(
+                x,
+                y
+            );
+
+        if (!ficha)
         {
-            movimientos.push_back({x, y});
+            movimientos.push_back(
+                {
+                    x,
+                    y
+                }
+            );
+        }
+        else if (
+            ficha->getColor() != pieza.getColor()
+        )
+        {
+            movimientos.push_back(
+                {
+                    x,
+                    y
+                }
+            );
         }
     }
 
@@ -44,65 +76,54 @@ std::vector<Posicion> Caballo::getMovimientos(
 }
 
 // ======================================================
-// ATAQUES (CONTROL DE CASILLAS - SIN DEPENDENCIAS)
+// ATAQUES
 // ======================================================
 
 std::vector<Posicion> Caballo::getAtaques(
     const Ficha& pieza,
-    const Nodo& estado) const
+    const Nodo& estado
+) const
 {
     std::vector<Posicion> ataques;
 
-    const Posicion o = pieza.getPosicion();
+    const Posicion origen =
+        pieza.getPosicion();
 
-    const int jumps[8][2] =
+    const int saltos[8][2] =
     {
-        { 2, 1 }, { 2, -1 },
-        { -2, 1 }, { -2, -1 },
-        { 1, 2 }, { 1, -2 },
-        { -1, 2 }, { -1, -2 }
+        {  2,  1 },
+        {  2, -1 },
+        { -2,  1 },
+        { -2, -1 },
+        {  1,  2 },
+        {  1, -2 },
+        { -1,  2 },
+        { -1, -2 }
     };
 
-    for (const auto& j : jumps)
+    for (const auto& salto : saltos)
     {
-        int x = o.x + j[0];
-        int y = o.y + j[1];
+        const int x =
+            origen.x + salto[0];
 
-        if (esValida(estado, x, y))
+        const int y =
+            origen.y + salto[1];
+
+        if (
+            estado.esValida(
+                x,
+                y
+            )
+        )
         {
-            // el caballo controla la casilla aunque esté vacía
-            ataques.push_back({x, y});
+            ataques.push_back(
+                {
+                    x,
+                    y
+                }
+            );
         }
     }
 
     return ataques;
-}
-
-// ======================================================
-// UTILIDADES
-// ======================================================
-
-bool Caballo::esValida(const Nodo& estado, int x, int y) const
-{
-    if (!estado.tablero)
-        return false;
-
-    return estado.tablero->esValida(x, y);
-}
-
-const Ficha* Caballo::obtenerFichaEn(
-    const Nodo& estado,
-    int x,
-    int y) const
-{
-    for (const Ficha& f : estado.piezas)
-    {
-        if (f.getPosicion().x == x &&
-            f.getPosicion().y == y)
-        {
-            return &f;
-        }
-    }
-
-    return nullptr;
 }

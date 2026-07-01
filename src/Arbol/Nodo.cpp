@@ -94,3 +94,15 @@ Ficha* Nodo::obtenerFichaPorId(int id)
 
     return nullptr;
 }
+
+// ======================================================
+
+bool Nodo::esValida(int x, int y) const
+{
+    if (!tablero)
+    {
+        return false;
+    }
+
+    return tablero->esValida(x, y);
+}

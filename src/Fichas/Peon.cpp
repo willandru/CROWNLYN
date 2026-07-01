@@ -1,7 +1,5 @@
 #include "Peon.h"
 
-#include "Tablero.h"
-
 // ======================================================
 // MOVIMIENTOS LEGALES
 // ======================================================
@@ -13,7 +11,7 @@ std::vector<Posicion> Peon::getMovimientos(
 {
     std::vector<Posicion> movimientos;
 
-    const Posicion o =
+    const Posicion origen =
         pieza.getPosicion();
 
     // Blancas avanzan hacia abajo (+Y)
@@ -28,14 +26,13 @@ std::vector<Posicion> Peon::getMovimientos(
     //--------------------------------------------------
 
     const int xFront =
-        o.x;
+        origen.x;
 
     const int yFront =
-        o.y + dir;
+        origen.y + dir;
 
     if (
-        esValida(
-            estado,
+        estado.esValida(
             xFront,
             yFront
         ) &&
@@ -66,14 +63,13 @@ std::vector<Posicion> Peon::getMovimientos(
     for (int d : dx)
     {
         const int x =
-            o.x + d;
+            origen.x + d;
 
         const int y =
-            o.y + dir;
+            origen.y + dir;
 
         if (
-            !esValida(
-                estado,
+            !estado.esValida(
                 x,
                 y
             )
@@ -116,7 +112,7 @@ std::vector<Posicion> Peon::getAtaques(
 {
     std::vector<Posicion> ataques;
 
-    const Posicion o =
+    const Posicion origen =
         pieza.getPosicion();
 
     const int dir =
@@ -133,14 +129,13 @@ std::vector<Posicion> Peon::getAtaques(
     for (int d : dx)
     {
         const int x =
-            o.x + d;
+            origen.x + d;
 
         const int y =
-            o.y + dir;
+            origen.y + dir;
 
         if (
-            esValida(
-                estado,
+            estado.esValida(
                 x,
                 y
             )
@@ -156,25 +151,4 @@ std::vector<Posicion> Peon::getAtaques(
     }
 
     return ataques;
-}
-
-// ======================================================
-// UTILIDADES
-// ======================================================
-
-bool Peon::esValida(
-    const Nodo& estado,
-    int x,
-    int y
-) const
-{
-    if (!estado.tablero)
-    {
-        return false;
-    }
-
-    return estado.tablero->esValida(
-        x,
-        y
-    );
 }

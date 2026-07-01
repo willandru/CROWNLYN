@@ -17,11 +17,4 @@ public:
         const Ficha& pieza,
         const Nodo& estado
     ) const;
-
-private:
-    bool esValida(
-        const Nodo& estado,
-        int x,
-        int y
-    ) const;
 };
