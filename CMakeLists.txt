@@ -81,6 +81,8 @@ set(CROWNLYN_GRAPHICS
     src/Arbol/NuevaPartidaEngine.cpp
     src/Arbol/DecisionTreeEngine.cpp
     src/Arbol/NodeEncoder.cpp
+
+    src/AI/RandomAI.cpp
 )
 
 # ======================================================
@@ -105,6 +107,7 @@ target_include_directories(
     src/Game
     src/Arbol
     src/Fichas
+    src/AI
 
     externals/glad/include
     externals/glfw-3.4/include

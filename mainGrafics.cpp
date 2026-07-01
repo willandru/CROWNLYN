@@ -18,10 +18,13 @@
 #include "PlayFichaEngine.h"
 #include "DecisionTreeEngine.h"
 
+#include "RandomAI.h"
+
+//==================================================
+
 int main()
 {
     Window window(1280, 720, "CROWNLYN");
-
     glViewport(0, 0, 1280, 720);
 
     Renderer renderer;
@@ -45,7 +48,7 @@ int main()
         nuevaPartida.crearPartida(arbol, builder);
 
     //==================================================
-    // TREE ENGINE
+    // DEBUG TREE INIT
     //==================================================
 
     DecisionTreeEngine treeEngine;
@@ -59,14 +62,20 @@ int main()
     std::cout << "=====================================\n\n";
 
     //==================================================
-    // PLAY ENGINE
+    // PLAY ENGINE (HUMAN)
     //==================================================
 
     PlayFichaEngine playFichaEngine;
     playFichaEngine.setBuilder(&builder);
 
     //==================================================
-    // DRAW ENGINE
+    // AI ENGINE
+    //==================================================
+
+    RandomAI ia;
+
+    //==================================================
+    // RENDER ENGINE
     //==================================================
 
     DrawTableroEngine drawTableroEngine;
@@ -83,14 +92,47 @@ int main()
     while (!window.shouldClose() && !screenManager.shouldExit())
     {
         window.pollEvents();
-
         input.update(window.getNativeWindow());
         screenManager.update(input);
 
+        //==================================================
+        // HUMAN + AI TURN SYSTEM
+        //==================================================
+
         if (screenManager.currentScreen() == ScreenType::OneVsAI)
         {
-            playFichaEngine.update(input);
+            Nodo* actual = builder.getNodo();
+
+            if (actual)
+            {
+                //==================================================
+                // AI TURN
+                //==================================================
+                if (actual->turnoActual == Color::Negra)
+                {
+                    Nodo* siguiente = ia.jugar(actual);
+
+                    if (siguiente)
+                    {
+                        actual->agregarHijo(siguiente);
+                        builder.setNodo(siguiente);
+
+                        std::cout << "[AI MOVE EXECUTED]\n";
+                    }
+                }
+                else
+                {
+                    //==================================================
+                    // HUMAN TURN
+                    //==================================================
+                    playFichaEngine.update(input);
+                }
+            }
         }
+
+        //==================================================
+        // RENDER
+        //==================================================
 
         renderer.begin();
 
