@@ -27,10 +27,10 @@ std::vector<Posicion> Peon::getMovimientos(
     // AVANCE SIMPLE
     //--------------------------------------------------
 
-    int xFront =
+    const int xFront =
         o.x;
 
-    int yFront =
+    const int yFront =
         o.y + dir;
 
     if (
@@ -39,8 +39,7 @@ std::vector<Posicion> Peon::getMovimientos(
             xFront,
             yFront
         ) &&
-        !obtenerFichaEn(
-            estado,
+        !estado.obtenerFichaEn(
             xFront,
             yFront
         )
@@ -66,23 +65,25 @@ std::vector<Posicion> Peon::getMovimientos(
 
     for (int d : dx)
     {
-        int x =
+        const int x =
             o.x + d;
 
-        int y =
+        const int y =
             o.y + dir;
 
-        if (!esValida(
+        if (
+            !esValida(
                 estado,
                 x,
-                y))
+                y
+            )
+        )
         {
             continue;
         }
 
         const Ficha* ficha =
-            obtenerFichaEn(
-                estado,
+            estado.obtenerFichaEn(
                 x,
                 y
             );
@@ -131,10 +132,10 @@ std::vector<Posicion> Peon::getAtaques(
 
     for (int d : dx)
     {
-        int x =
+        const int x =
             o.x + d;
 
-        int y =
+        const int y =
             o.y + dir;
 
         if (
@@ -168,30 +169,12 @@ bool Peon::esValida(
 ) const
 {
     if (!estado.tablero)
+    {
         return false;
+    }
 
     return estado.tablero->esValida(
         x,
         y
     );
-}
-
-const Ficha* Peon::obtenerFichaEn(
-    const Nodo& estado,
-    int x,
-    int y
-) const
-{
-    for (const Ficha& ficha : estado.piezas)
-    {
-        if (
-            ficha.getPosicion().x == x &&
-            ficha.getPosicion().y == y
-        )
-        {
-            return &ficha;
-        }
-    }
-
-    return nullptr;
 }
