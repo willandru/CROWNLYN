@@ -8,6 +8,7 @@
 #include "Arbol.h"
 
 #include "TableroBuilder.h"
+#include "NuevaPartidaEngine.h"
 
 #include "DrawGameEngine.h"
 #include "DrawTableroEngine.h"
@@ -56,34 +57,20 @@ int main()
     );
 
     //--------------------------------------------------
-    // GAME STATE (SOURCE OF TRUTH)
+    // GAME STATE
     //--------------------------------------------------
-
-    Nodo* nodoRaiz =
-        new Nodo;
 
     Arbol arbol;
 
-    arbol.setNodoInicial(
-        nodoRaiz
-    );
-
-    //--------------------------------------------------
-    // BUILDER
-    //--------------------------------------------------
-
     TableroBuilder builder;
 
-    builder.setNodo(
-        nodoRaiz
-    );
+    NuevaPartidaEngine nuevaPartida;
 
-    builder.crearTablero(
-        8,
-        8
-    );
-
-    builder.crearConfiguracionInicial();
+    Nodo* nodoRaiz =
+        nuevaPartida.crearPartida(
+            arbol,
+            builder
+        );
 
     //--------------------------------------------------
     // PLAY ENGINE

@@ -77,6 +77,8 @@ set(CROWNLYN_GRAPHICS
     src/Game/TableroBuilder.cpp
     src/Game/TextureFichasLoader.cpp
     src/Game/GameEngine.cpp
+    
+    src/Arbol/NuevaPartidaEngine.cpp
 )
 
 # ======================================================

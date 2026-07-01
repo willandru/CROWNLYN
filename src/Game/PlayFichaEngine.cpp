@@ -237,6 +237,20 @@ void PlayFichaEngine::seleccionarFicha(
     if (!ficha)
         return;
 
+    //--------------------------------------------------
+    // SOLO PUEDE MOVER EL COLOR DEL TURNO
+    //--------------------------------------------------
+
+    if (
+        ficha->getColor() !=
+        nodo->turnoActual
+    )
+    {
+        return;
+    }
+
+    //--------------------------------------------------
+
     m_selectedId = idFicha;
 
     m_haySeleccion = true;

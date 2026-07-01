@@ -12,29 +12,79 @@ bool MoveExecutor::ejecutarMovimiento(
     const Posicion& destino
 )
 {
-    Ficha* ficha = nodo.obtenerFichaPorId(idFicha);
+    Ficha* ficha =
+        nodo.obtenerFichaPorId(idFicha);
 
     if (!ficha)
         return false;
 
-    // validar tablero
+    //--------------------------------------------------
+    // VALIDAR TABLERO
+    //--------------------------------------------------
+
     if (!nodo.tablero)
         return false;
 
-    // evitar captura propia
-    const Ficha* target = nodo.obtenerFichaEn(destino.x, destino.y);
+    //--------------------------------------------------
+    // VALIDAR TURNO
+    //--------------------------------------------------
 
-    if (target && target->getColor() == ficha->getColor())
+    if (
+        ficha->getColor() !=
+        nodo.turnoActual
+    )
+    {
         return false;
+    }
 
-    // eliminar captura
-    if (hayFichaEn(nodo, destino))
-        eliminarFichaEn(nodo, destino);
+    //--------------------------------------------------
+    // EVITAR CAPTURAR PIEZA PROPIA
+    //--------------------------------------------------
 
-    // mover pieza
-    ficha->setPosicion(destino);
+    const Ficha* target =
+        nodo.obtenerFichaEn(
+            destino.x,
+            destino.y
+        );
 
-    // cambiar turno
+    if (
+        target &&
+        target->getColor() ==
+        ficha->getColor()
+    )
+    {
+        return false;
+    }
+
+    //--------------------------------------------------
+    // CAPTURA
+    //--------------------------------------------------
+
+    if (
+        hayFichaEn(
+            nodo,
+            destino
+        )
+    )
+    {
+        eliminarFichaEn(
+            nodo,
+            destino
+        );
+    }
+
+    //--------------------------------------------------
+    // MOVER
+    //--------------------------------------------------
+
+    ficha->setPosicion(
+        destino
+    );
+
+    //--------------------------------------------------
+    // CAMBIAR TURNO
+    //--------------------------------------------------
+
     nodo.turnoActual =
         (nodo.turnoActual == Color::Blanca)
         ? Color::Negra
@@ -42,7 +92,6 @@ bool MoveExecutor::ejecutarMovimiento(
 
     return true;
 }
-
 // ======================================================
 
 bool MoveExecutor::esMovimientoValido(
