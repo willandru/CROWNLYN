@@ -26,7 +26,7 @@ void PlayFichaEngine::setBuilder(
 )
 {
     m_builder = builder;
-}
+}   
 
 // ======================================================
 void PlayFichaEngine::update(
@@ -65,24 +65,65 @@ void PlayFichaEngine::update(
         );
 
     //--------------------------------------------------
-    // Click sobre una ficha
+    // NO HAY SELECCIÓN
     //--------------------------------------------------
 
-    if (idFicha != -1)
+    if (!m_haySeleccion)
     {
-        seleccionarFicha(idFicha);
+        if (idFicha != -1)
+        {
+            seleccionarFicha(idFicha);
+        }
+
         return;
     }
 
     //--------------------------------------------------
-    // Sin selección
+    // CLICK SOBRE UNA FICHA
     //--------------------------------------------------
 
-    if (!m_haySeleccion)
+    if (idFicha != -1)
+    {
+        Ficha* ficha =
+            nodo->obtenerFichaPorId(idFicha);
+
+        if (!ficha)
+            return;
+
+        //--------------------------------------------------
+        // MISMA FICHA -> DESELECCIONAR
+        //--------------------------------------------------
+
+        if (idFicha == m_selectedId)
+        {
+            deseleccionarFicha();
+            return;
+        }
+
+        //--------------------------------------------------
+        // OTRA FICHA DEL MISMO COLOR -> CAMBIAR SELECCIÓN
+        //--------------------------------------------------
+
+        if (ficha->getColor() == nodo->turnoActual)
+        {
+            seleccionarFicha(idFicha);
+            return;
+        }
+
+        //--------------------------------------------------
+        // FICHA ENEMIGA
+        // intentar capturar moviendo a su casilla
+        //--------------------------------------------------
+
+        moverFicha(
+            ficha->getPosicion()
+        );
+
         return;
+    }
 
     //--------------------------------------------------
-    // Click sobre tablero
+    // CLICK EN CASILLA VACÍA
     //--------------------------------------------------
 
     if (!obtenerCasillaEnMouse(
@@ -90,13 +131,12 @@ void PlayFichaEngine::update(
             my,
             posDestino))
     {
+        deseleccionarFicha();
         return;
     }
 
     moverFicha(posDestino);
 }
-
-
 // ======================================================
 
 bool PlayFichaEngine::hayFichaSeleccionada() const
@@ -276,15 +316,29 @@ void PlayFichaEngine::deseleccionarFicha()
 }
 // ======================================================
 
+// ======================================================
+
 void PlayFichaEngine::moverFicha(
     const Posicion& destino
 )
 {
+    //--------------------------------------------------
+    // DEBE HABER UNA PIEZA SELECCIONADA
+    //--------------------------------------------------
+
     if (!m_haySeleccion)
         return;
 
+    //--------------------------------------------------
+    // EL DESTINO DEBE SER UN MOVIMIENTO LEGAL
+    //--------------------------------------------------
+
     if (!esMovimientoPosible(destino))
         return;
+
+    //--------------------------------------------------
+    // OBTENER NODO ACTUAL
+    //--------------------------------------------------
 
     Nodo* nodo =
         m_builder->getNodo();
@@ -292,13 +346,25 @@ void PlayFichaEngine::moverFicha(
     if (!nodo)
         return;
 
-    MoveExecutor::ejecutarMovimiento(
-        *nodo,
-        m_selectedId,
-        destino
-    );
+    //--------------------------------------------------
+    // EJECUTAR MOVIMIENTO
+    //--------------------------------------------------
 
-    deseleccionarFicha();
+    bool movimientoRealizado =
+        MoveExecutor::ejecutarMovimiento(
+            *nodo,
+            m_selectedId,
+            destino
+        );
+
+    //--------------------------------------------------
+    // SOLO DESELECCIONAR SI EL MOVIMIENTO FUE EXITOSO
+    //--------------------------------------------------
+
+    if (movimientoRealizado)
+    {
+        deseleccionarFicha();
+    }
 }
 
 bool PlayFichaEngine::esMovimientoPosible(

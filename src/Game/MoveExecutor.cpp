@@ -12,17 +12,21 @@ bool MoveExecutor::ejecutarMovimiento(
     const Posicion& destino
 )
 {
-    Ficha* ficha =
-        nodo.obtenerFichaPorId(idFicha);
-
-    if (!ficha)
-        return false;
-
     //--------------------------------------------------
     // VALIDAR TABLERO
     //--------------------------------------------------
 
     if (!nodo.tablero)
+        return false;
+
+    //--------------------------------------------------
+    // OBTENER FICHA
+    //--------------------------------------------------
+
+    Ficha* ficha =
+        nodo.obtenerFichaPorId(idFicha);
+
+    if (!ficha)
         return false;
 
     //--------------------------------------------------
@@ -38,7 +42,7 @@ bool MoveExecutor::ejecutarMovimiento(
     }
 
     //--------------------------------------------------
-    // EVITAR CAPTURAR PIEZA PROPIA
+    // VALIDAR DESTINO
     //--------------------------------------------------
 
     const Ficha* target =
@@ -71,10 +75,20 @@ bool MoveExecutor::ejecutarMovimiento(
             nodo,
             destino
         );
+
+        // IMPORTANTE:
+        // erase() invalida punteros del vector.
+        ficha =
+            nodo.obtenerFichaPorId(
+                idFicha
+            );
+
+        if (!ficha)
+            return false;
     }
 
     //--------------------------------------------------
-    // MOVER
+    // MOVER FICHA
     //--------------------------------------------------
 
     ficha->setPosicion(
@@ -92,6 +106,7 @@ bool MoveExecutor::ejecutarMovimiento(
 
     return true;
 }
+
 // ======================================================
 
 bool MoveExecutor::esMovimientoValido(
@@ -100,18 +115,31 @@ bool MoveExecutor::esMovimientoValido(
     const Posicion& destino
 )
 {
-    const Ficha* ficha = nodo.obtenerFichaPorId(idFicha);
+    if (!nodo.tablero)
+        return false;
+
+    const Ficha* ficha =
+        nodo.obtenerFichaPorId(
+            idFicha
+        );
 
     if (!ficha)
         return false;
 
-    if (!nodo.tablero)
-        return false;
+    const Ficha* target =
+        nodo.obtenerFichaEn(
+            destino.x,
+            destino.y
+        );
 
-    const Ficha* target = nodo.obtenerFichaEn(destino.x, destino.y);
-
-    if (target && target->getColor() == ficha->getColor())
+    if (
+        target &&
+        target->getColor() ==
+        ficha->getColor()
+    )
+    {
         return false;
+    }
 
     return true;
 }
@@ -123,7 +151,10 @@ bool MoveExecutor::hayFichaEn(
     const Posicion& pos
 )
 {
-    return nodo.hayFichaEn(pos.x, pos.y);
+    return nodo.hayFichaEn(
+        pos.x,
+        pos.y
+    );
 }
 
 // ======================================================
@@ -133,10 +164,16 @@ void MoveExecutor::eliminarFichaEn(
     const Posicion& pos
 )
 {
-    for (auto it = nodo.piezas.begin(); it != nodo.piezas.end(); ++it)
+    for (
+        auto it = nodo.piezas.begin();
+        it != nodo.piezas.end();
+        ++it
+    )
     {
-        if (it->getPosicion().x == pos.x &&
-            it->getPosicion().y == pos.y)
+        if (
+            it->getPosicion().x == pos.x &&
+            it->getPosicion().y == pos.y
+        )
         {
             nodo.piezas.erase(it);
             return;
@@ -144,6 +181,7 @@ void MoveExecutor::eliminarFichaEn(
     }
 }
 
+// ======================================================
 
 Nodo* MoveExecutor::crearNodoMovimiento(
     const Nodo& origen,
@@ -151,9 +189,20 @@ Nodo* MoveExecutor::crearNodoMovimiento(
     const Posicion& destino
 )
 {
-    Nodo* nuevo = new Nodo(origen);
+    Nodo* nuevo =
+        new Nodo(origen);
 
-    ejecutarMovimiento(*nuevo, idFicha, destino);
+    if (
+        !ejecutarMovimiento(
+            *nuevo,
+            idFicha,
+            destino
+        )
+    )
+    {
+        delete nuevo;
+        return nullptr;
+    }
 
     return nuevo;
 }
