@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "StateEvaluator.h"
 
 class Nodo;
@@ -14,6 +13,10 @@ public:
     void expandirNodo(
         Nodo* nodo
     );
+
+    void imprimirRama(
+        const Nodo* nodo
+    ) const;
 
 private:
 

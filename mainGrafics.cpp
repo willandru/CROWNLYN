@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Window.h"
 #include "Renderer.h"
 #include "Shader.h"
@@ -14,6 +16,8 @@
 #include "DrawTableroEngine.h"
 
 #include "PlayFichaEngine.h"
+
+#include "DecisionTreeEngine.h"
 
 int main()
 {
@@ -71,6 +75,23 @@ int main()
             arbol,
             builder
         );
+
+    //--------------------------------------------------
+    // DEBUG TREE
+    //--------------------------------------------------
+
+    DecisionTreeEngine treeEngine;
+
+    treeEngine.expandirNodo(
+        nodoRaiz
+    );
+
+    std::cout << "\n=====================================\n";
+    std::cout << "NODO RAIZ\n";
+    std::cout << "HIJOS GENERADOS: "
+              << nodoRaiz->hijos.size()
+              << "\n";
+    std::cout << "=====================================\n\n";
 
     //--------------------------------------------------
     // PLAY ENGINE

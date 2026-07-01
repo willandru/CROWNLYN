@@ -207,3 +207,13 @@ TableroBuilder::getTextureLoader() const
 {
     return m_loader;
 }
+
+void TableroBuilder::avanzarNodo(
+    Nodo* nodo
+)
+{
+    if (!nodo)
+        return;
+
+    m_nodo = nodo;
+}

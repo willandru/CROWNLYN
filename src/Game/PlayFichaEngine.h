@@ -3,9 +3,11 @@
 #include <vector>
 
 #include "Posicion.h"
+#include "DecisionTreeEngine.h"
 
 class Input;
 class TableroBuilder;
+
 
 class PlayFichaEngine
 {
@@ -72,4 +74,6 @@ private:
     Posicion m_posSeleccionada;
 
     std::vector<Posicion> m_movimientosPosibles;
+
+    DecisionTreeEngine m_tree;
 };

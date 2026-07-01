@@ -58,6 +58,10 @@ public:
 
     void crearConfiguracionInicial();
 
+    void avanzarNodo(
+        Nodo* nodo
+    );
+
     //==================================================
     // RECURSOS
     //==================================================
@@ -67,6 +71,8 @@ public:
 
     const TextureFichasLoader&
     getTextureLoader() const;
+
+    
 
 private:
 

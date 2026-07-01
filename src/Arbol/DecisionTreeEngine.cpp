@@ -3,6 +3,8 @@
 #include "MoveGenerator.h"
 #include "MoveExecutor.h"
 
+#include <iostream>
+
 #include <vector>
 
 //==================================================
@@ -76,4 +78,46 @@ void DecisionTreeEngine::expandirNodo(
             nodo->agregarHijo(hijo);
         }
     }
+}
+
+
+
+void DecisionTreeEngine::imprimirRama(
+    const Nodo* nodo
+) const
+{
+    if (!nodo)
+        return;
+
+    std::vector<const Nodo*> rama;
+
+    const Nodo* actual = nodo;
+
+    while (actual)
+    {
+        rama.push_back(actual);
+        actual = actual->padre;
+    }
+
+    std::cout << "\n==============================\n";
+    std::cout << "RAMA ACTUAL\n";
+    std::cout << "==============================\n";
+
+    for (auto it = rama.rbegin(); it != rama.rend(); ++it)
+    {
+        const Nodo* n = *it;
+
+        std::cout
+            << "Nodo "
+            << n
+            << " | turno: "
+            << (n->turnoActual == Color::Blanca ? "Blancas" : "Negras")
+            << " | piezas: "
+            << n->piezas.size()
+            << " | hijos: "
+            << n->hijos.size()
+            << '\n';
+    }
+
+    std::cout << "==============================\n";
 }

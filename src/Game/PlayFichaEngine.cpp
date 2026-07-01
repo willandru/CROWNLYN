@@ -4,9 +4,11 @@
 #include "Tablero.h"
 #include "Ficha.h"
 #include "PlayFichaEngine.h"
+#include "DecisionTreeEngine.h"
 
 #include "MoveGenerator.h"
 #include "MoveExecutor.h"
+#include <iostream>
 
 PlayFichaEngine::PlayFichaEngine()
 {
@@ -323,48 +325,97 @@ void PlayFichaEngine::moverFicha(
 )
 {
     //--------------------------------------------------
-    // DEBE HABER UNA PIEZA SELECCIONADA
+    // Debe existir una selección
     //--------------------------------------------------
 
     if (!m_haySeleccion)
         return;
 
     //--------------------------------------------------
-    // EL DESTINO DEBE SER UN MOVIMIENTO LEGAL
+    // Debe ser un movimiento legal
     //--------------------------------------------------
 
     if (!esMovimientoPosible(destino))
         return;
 
     //--------------------------------------------------
-    // OBTENER NODO ACTUAL
+    // Nodo actual
     //--------------------------------------------------
 
-    Nodo* nodo =
+    Nodo* actual =
         m_builder->getNodo();
 
-    if (!nodo)
+    if (!actual)
         return;
 
     //--------------------------------------------------
-    // EJECUTAR MOVIMIENTO
+    // Crear el nuevo estado
     //--------------------------------------------------
 
-    bool movimientoRealizado =
-        MoveExecutor::ejecutarMovimiento(
-            *nodo,
+    Nodo* hijo =
+        MoveExecutor::crearNodoMovimiento(
+            *actual,
             m_selectedId,
             destino
         );
 
+    if (!hijo)
+        return;
+
     //--------------------------------------------------
-    // SOLO DESELECCIONAR SI EL MOVIMIENTO FUE EXITOSO
+    // Conectar árbol
     //--------------------------------------------------
 
-    if (movimientoRealizado)
-    {
-        deseleccionarFicha();
-    }
+    actual->agregarHijo(
+        hijo
+    );
+
+    //--------------------------------------------------
+    // Expandir el nuevo nodo
+    //--------------------------------------------------
+
+    m_tree.expandirNodo(
+        hijo
+    );
+
+    //--------------------------------------------------
+    // DEBUG
+    //--------------------------------------------------
+
+    std::cout
+        << "====================================\n";
+
+    std::cout
+        << "Nodo padre : "
+        << actual
+        << "\n";
+
+    std::cout
+        << "Nodo hijo  : "
+        << hijo
+        << "\n";
+
+    std::cout
+        << "Hijos del nuevo nodo: "
+        << hijo->hijos.size()
+        << "\n";
+
+    std::cout
+        << "====================================\n";
+
+    //--------------------------------------------------
+    // Ahora el juego continúa desde el hijo
+    //--------------------------------------------------
+
+    m_builder->setNodo(
+        hijo
+    );
+
+    //--------------------------------------------------
+    // Limpiar selección
+    //--------------------------------------------------
+
+    deseleccionarFicha();
 }
 
 bool PlayFichaEngine::esMovimientoPosible(
