@@ -14,6 +14,8 @@ public:
 
     void imprimirRama(const Nodo* nodo) const;
 
+    void expandirProfundidad( Nodo* nodo, int profundidad);
+
 private:
 
     StateEvaluator m_evaluator;

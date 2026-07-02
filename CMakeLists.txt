@@ -84,6 +84,7 @@ set(CROWNLYN_GRAPHICS
 
     src/AI/RandomAI.cpp
     src/AI/CaptureAI.cpp
+    src/AI/DefenseAI.cpp
 )
 
 # ======================================================

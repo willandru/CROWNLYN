@@ -18,7 +18,7 @@
 #include "PlayFichaEngine.h"
 #include "DecisionTreeEngine.h"
 
-#include "CaptureAI.h"
+#include "DefenseAI.h"
 
 //==================================================
 
@@ -72,7 +72,7 @@ int main()
     // AI ENGINE
     //==================================================
 
-    CaptureAI ia;
+    DefenseAI ia;
 
     //==================================================
     // RENDER ENGINE

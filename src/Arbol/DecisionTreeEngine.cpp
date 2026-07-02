@@ -128,3 +128,40 @@ void DecisionTreeEngine::imprimirRama(const Nodo* nodo) const
 
     std::cout << "==============================\n";
 }
+
+//==================================================
+// EXPANSIÓN RECURSIVA
+//==================================================
+
+void DecisionTreeEngine::expandirProfundidad(
+    Nodo* nodo,
+    int profundidad
+)
+{
+    if (!nodo)
+        return;
+
+    if (profundidad <= 0)
+        return;
+
+    //--------------------------------------------------
+    // Expandir este nodo únicamente si aún no tiene hijos
+    //--------------------------------------------------
+
+    if (nodo->hijos.empty())
+    {
+        expandirNodo(nodo);
+    }
+
+    //--------------------------------------------------
+    // Expandir los hijos
+    //--------------------------------------------------
+
+    for (Nodo* hijo : nodo->hijos)
+    {
+        expandirProfundidad(
+            hijo,
+            profundidad - 1
+        );
+    }
+}
