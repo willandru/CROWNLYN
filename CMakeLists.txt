@@ -83,6 +83,7 @@ set(CROWNLYN_GRAPHICS
     src/Arbol/NodeEncoder.cpp
 
     src/AI/RandomAI.cpp
+    src/AI/CaptureAI.cpp
 )
 
 # ======================================================
